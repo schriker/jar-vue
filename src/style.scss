@@ -1,0 +1,142 @@
+// Backgrounds
+$header-bg: #151C26;
+$body-bg: #2E3440;
+$bullet: #374356;
+
+// Main colors
+$bookmarks: #FFF064;
+$success: #00E1AB;
+$error: #DB0E30;
+
+// Font colors
+$light: #8596AE;
+$dark: #515D71;
+
+$box-shadow: 0px 3px 6px 0px rgba(0,0,0,0.2);
+
+html {
+  box-sizing: border-box;
+}
+*,
+*::before,
+*::after {
+  box-sizing: inherit;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+a {
+  text-decoration: none;
+}
+
+body {
+  font-size: 16px;
+  background-color: $body-bg;
+  font-family: 'Roboto', sans-serif;
+  background: url('./assets/bg.jpg') no-repeat top right;
+  background-color: $body-bg;
+  background-size: contain;
+}
+
+.container {
+  width: 100%;
+  margin: 0 auto;
+}
+
+.row {
+  width: 100%;
+  padding: 0 25px;
+}
+
+.header {
+  height: 75px;
+  background-color: $header-bg;
+  box-shadow: $box-shadow;
+  ul {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    li {
+      list-style: none;
+      margin: 0 45px 0 0;
+    }
+  }
+}
+
+.stream {
+  display: flex;
+  align-items: center;
+  margin: 0 0 -20px 0;
+  padding: 0 0 20px 0;
+  &:hover {
+    .stream__icon::after {
+      background-color: white;
+      width: 35px;
+    }
+    .stream__remove {
+      opacity: 1;
+    }
+  }
+  &__icon {
+    position: relative;
+    img {
+      width: 50px;
+      height: 50px;
+      border-radius: 13px;
+    }
+    &::after {
+      content: '';
+      position: absolute;
+      left: 50%;
+      bottom: -10px;
+      transform: translate(-50%, 0);
+      border-top-left-radius: 5px;
+      border-top-right-radius: 5px;
+      width: 15px;
+      height: 5px;
+      background-color: $bullet;
+      transition: all .3s ease;
+    }
+  }
+  &__badge {
+    width: 18px;
+    height: 18px;
+    text-align: center;
+    line-height: 18px;
+    color: white;
+    font-size: 12px;
+    border-radius: 50%;
+    position: absolute;
+    right: -5px;
+    top: -5px;
+    background-color: $error;
+  }
+  &__remove {
+    position: absolute;
+    opacity: 0;
+    left: -4px;
+    top: -4px;
+    font-size: 12px;
+    color: $light;
+    transition: all .3s ease;
+    &:hover {
+      color: $error;
+      cursor: pointer;
+    }
+  }
+  &__title {
+    margin: 0 0 0 15px;
+    font-size: 16px;
+    color: $light;
+  }
+  &__status {
+    font-size: 14px;
+    color: $dark;
+    span {
+      color: $success;
+    }
+  }
+}

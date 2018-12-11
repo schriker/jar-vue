@@ -149,7 +149,7 @@ body {
 
 .user-menu {
   img {
-    width: 42px;
+    width: 36px;
   }
   a {
     font-size: 28px;
@@ -173,6 +173,113 @@ body {
         background-color: white;
         width: 35px;
       }
+    }
+  }
+}
+
+.videos {
+  h2 {
+    color: white;
+    font-size: 16px;
+    font-weight: normal;
+    border-bottom: 1px solid $bullet;
+    padding: 0 0 8px 0;
+    margin: 40px 0 20px 0;
+  }
+  &__list {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0 -10px;
+  }
+  &__item {
+    flex: 0 1 20%;
+    max-width: 20%;
+    position: relative;
+    padding: 0 10px;
+    margin: 10px 0 30px 0;
+    a {
+      width: 100%;
+      height: 100%;
+      display: block;
+      position: absolute;
+      z-index: 800;
+      &:hover {
+        +.videos__thumbnail img {
+          box-shadow: 0px 0px 13px 0px rgba(0,0,0,0.4);
+        }
+      }
+    }
+  }
+  &__thumbnail {
+    position: relative;
+    img {
+      border-radius: 5px;
+      width: 100%;
+      height: auto;
+      transition: all .3s ease;
+    }
+  }
+  &__title {
+    position: relative;
+    font-size: 16px;
+    font-weight: 400; 
+    color: white;
+    margin: 15px 0 0 0;
+    h3 {
+    font-size: 16px;
+    font-weight: 400;
+      margin: 0 0 5px 0;
+    }
+    span {
+      color: $light;
+      font-size: 14px;
+    }
+  }
+  &__badge {
+    position: absolute;
+    border-radius: 3px;
+    background-color: black;
+    color: white;
+    font-size: 13px;
+    padding: 5px 8px;
+    i {
+      margin: 0 8px 0 0;
+    }
+    &--new {
+      background-color: $error;
+      text-transform: uppercase;
+      top: 12px;
+      left: 8px;
+    }
+    &--bookmark {
+      background-color: transparent;
+      top: 12px;
+      right: 8px;
+      padding: 0;
+      z-index: 900;
+      font-size: 18px;
+      &:hover {
+        color: $bookmarks;
+        cursor: pointer;
+      }
+    }
+    &--views {
+      right: 8px;
+      bottom: 12px;
+    }
+    &--time {
+      left: 8px;
+      bottom: 12px;
+    }
+  }
+  &__watched {
+    z-index: 900;
+    position: absolute;
+    top: 0;
+    right: 0;
+    &:hover {
+      cursor: pointer;
+      color: $success;
     }
   }
 }

@@ -1,15 +1,15 @@
 <template>
-    <div class="stream">
-        <div class="stream__icon">
-            <div class="stream__badge">4</div>
-            <div class="stream__remove">
+    <div class="streamer">
+        <div class="streamer__icon">
+            <div class="streamer__badge">4</div>
+            <div class="streamer__remove">
                 <i class="fas fa-minus-circle"></i>
             </div>
             <img src="../../assets/default_avatar.png" alt="Avatar">
         </div>
-        <div class="stream__title">
+        <div class="streamer__title">
             <span>Wonziu</span>
-            <div class="stream__status">
+            <div class="streamer__status">
                 <span>ON</span> 359
             </div>
         </div>

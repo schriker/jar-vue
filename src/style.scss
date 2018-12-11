@@ -55,31 +55,37 @@ body {
   height: 75px;
   background-color: $header-bg;
   box-shadow: $box-shadow;
+  display: flex;
+  justify-content: space-between;
   ul {
     height: 100%;
     display: flex;
-    align-items: center;
     li {
       list-style: none;
-      margin: 0 45px 0 0;
+      height: 100%;
+      a {
+        display: flex;
+        align-items: center;
+        height: 100%;
+        padding: 0 20px;
+        &:hover {
+          background-color: #1D252F;
+          .streamer__icon::after {
+            background-color: white;
+            width: 35px;
+          }
+          .streamer__remove {
+            opacity: 1;
+          }
+        }
+      }
     }
   }
 }
 
-.stream {
+.streamer {
   display: flex;
   align-items: center;
-  margin: 0 0 -20px 0;
-  padding: 0 0 20px 0;
-  &:hover {
-    .stream__icon::after {
-      background-color: white;
-      width: 35px;
-    }
-    .stream__remove {
-      opacity: 1;
-    }
-  }
   &__icon {
     position: relative;
     img {
@@ -137,6 +143,36 @@ body {
     color: $dark;
     span {
       color: $success;
+    }
+  }
+}
+
+.user-menu {
+  img {
+    width: 42px;
+  }
+  a {
+    font-size: 28px;
+    color: $bookmarks;
+    position: relative;
+    &::after {
+      content: '';
+      position: absolute;
+      left: 50%;
+      bottom: 0;
+      transform: translate(-50%, 0);
+      border-top-left-radius: 5px;
+      border-top-right-radius: 5px;
+      width: 15px;
+      height: 5px;
+      background-color: $bullet;
+      transition: all .3s ease;
+    }
+    &:hover {
+      &::after {
+        background-color: white;
+        width: 35px;
+      }
     }
   }
 }

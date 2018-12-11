@@ -3,19 +3,22 @@
       <ul>
         <li v-for="n in 2" :key="n">
           <a href="#">
-            <app-stream></app-stream>
+            <app-streamer></app-streamer>
           </a>
         </li>
       </ul>
+      <app-user-menu></app-user-menu>
     </header>
 </template>
 
 <script>
-import AppStream from './Stream'
+import AppStreamer from './Streamer'
+import AppUserMenu from './UserMenu'
 
 export default {
   components: {
-    AppStream
+    AppStreamer,
+    AppUserMenu
   }
 }
 </script>

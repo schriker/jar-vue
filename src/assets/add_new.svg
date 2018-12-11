@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #556378;
+        font-size: 24px;
+        font-family: Roboto-Regular, Roboto;
+      }
+
+      .cls-2, .cls-4 {
+        fill: none;
+      }
+
+      .cls-2 {
+        stroke: #556378;
+        stroke-width: 2px;
+        stroke-dasharray: 10;
+      }
+
+      .cls-3 {
+        stroke: none;
+      }
+    </style>
+  </defs>
+  <g id="add_new" transform="translate(-20 -18)">
+    <text id="_" data-name="+" class="cls-1" transform="translate(38 52)"><tspan x="0" y="0">+</tspan></text>
+    <g id="Rectangle_1" data-name="Rectangle 1" class="cls-2" transform="translate(20 18)">
+      <rect class="cls-3" width="50" height="50" rx="13"/>
+      <rect class="cls-4" x="1" y="1" width="48" height="48" rx="12"/>
+    </g>
+  </g>
+</svg>

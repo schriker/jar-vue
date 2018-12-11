@@ -104,7 +104,7 @@ body {
       width: 15px;
       height: 5px;
       background-color: $bullet;
-      transition: all .3s ease;
+      transition: all .2s ease;
     }
   }
   &__badge {
@@ -127,7 +127,7 @@ body {
     top: -4px;
     font-size: 12px;
     color: $light;
-    transition: all .3s ease;
+    transition: all .2s ease;
     &:hover {
       color: $error;
       cursor: pointer;
@@ -166,7 +166,7 @@ body {
       width: 15px;
       height: 5px;
       background-color: $bullet;
-      transition: all .3s ease;
+      transition: all .2s ease;
     }
     &:hover {
       &::after {
@@ -213,10 +213,10 @@ body {
   &__thumbnail {
     position: relative;
     img {
-      border-radius: 5px;
+      border-radius: 8px;
       width: 100%;
       height: auto;
-      transition: all .3s ease;
+      transition: all .2s ease;
     }
   }
   &__title {
@@ -258,6 +258,7 @@ body {
       padding: 0;
       z-index: 900;
       font-size: 18px;
+      transition: all .2s ease;
       &:hover {
         color: $bookmarks;
         cursor: pointer;
@@ -276,10 +277,43 @@ body {
     z-index: 900;
     position: absolute;
     top: 0;
+    transition: all .2s ease;
     right: 0;
     &:hover {
       cursor: pointer;
       color: $success;
     }
+  }
+}
+
+.notification {
+  color: white;
+  position: fixed;
+  left: 50%;
+  bottom: 100px;
+  transform: translate(-50%, 0);
+  padding: 15px 100px 15px 25px;
+  background-color: $header-bg;
+  border-radius: 8px;
+  box-shadow: $box-shadow;
+  &__close {
+    color: $dark;
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    transition: all .2s ease;
+    &:hover {
+      cursor: pointer;
+      color: $light;
+    }
+  }
+  &--success {
+    border-left: 3px solid $success;
+  }
+  &--error {
+    border-left: 3px solid $error;
+  }
+  &--bookmarks {
+    border-left: 3px solid $bookmarks;
   }
 }

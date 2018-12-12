@@ -78,6 +78,13 @@ body {
             opacity: 1;
           }
         }
+        &.active {
+          background-color: #1D252F;
+          .streamer__icon::after {
+            background-color: white;
+            width: 35px;
+          }
+        }
       }
     }
   }
@@ -290,7 +297,7 @@ body {
   color: white;
   position: fixed;
   left: 50%;
-  bottom: 100px;
+  bottom: 80px;
   transform: translate(-50%, 0);
   padding: 15px 100px 15px 25px;
   background-color: $header-bg;
@@ -300,7 +307,8 @@ body {
     color: $dark;
     position: absolute;
     right: 10px;
-    top: 10px;
+    top: 50%;
+    transform: translate(0, -50%);
     transition: all .2s ease;
     &:hover {
       cursor: pointer;

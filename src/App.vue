@@ -17,6 +17,9 @@ export default {
     AppHeader,
     AppVideosList,
     AppNotification
+  },
+  mounted () {
+    this.$store.dispatch('fetchStreamers')
   }
 }
 </script>

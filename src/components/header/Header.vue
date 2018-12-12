@@ -1,7 +1,12 @@
 <template>
     <header class="header row">
       <ul>
-        <li v-for="n in 2" :key="n">
+        <li>
+          <a class="active" href="#">
+            <app-streamer></app-streamer>
+          </a>
+        </li>
+        <li>
           <a href="#">
             <app-streamer></app-streamer>
           </a>

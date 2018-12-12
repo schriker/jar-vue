@@ -7,8 +7,7 @@
           </a>
         </li>
         <li v-for="streamer of streamers" :key="streamer.info.id">
-          <!-- add class active to router link -->
-          <router-link :to="`/${streamer.info.login}`">
+          <router-link :to="`/${streamer.info.login}`" active-class="active">
             <app-streamer :streamer="streamer"></app-streamer>
           </router-link>
         </li>

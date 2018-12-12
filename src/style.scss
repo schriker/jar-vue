@@ -113,6 +113,15 @@ body {
       background-color: $bullet;
       transition: all .2s ease;
     }
+    &--placeholder {
+      background-color: $bullet;
+      width: 50px;
+      height: 50px;
+      border-radius: 13px;
+      &::after {
+        display: none;
+      }
+    }
   }
   &__badge {
     width: 18px;
@@ -144,12 +153,33 @@ body {
     margin: 0 0 0 15px;
     font-size: 16px;
     color: $light;
+    &--placeholder {
+      span {
+        display: block;
+        border-radius: 5px;
+        background-color: $bullet;
+      }
+      span:nth-child(1) {
+        height: 14px;
+        width: 40px;
+        margin: 0 0 5px 0;
+      }
+      span:nth-child(2) {
+        height: 12px;
+        width: 60px;
+      }
+    }
   }
   &__status {
     font-size: 14px;
     color: $dark;
     span {
       color: $success;
+    }
+    &--off {
+      span {
+        color: $error;
+      }
     }
   }
 }

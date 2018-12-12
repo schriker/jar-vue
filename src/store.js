@@ -14,11 +14,13 @@ export default new Vuex.Store({
       watched: [],
       bookmarks: []
     },
+    loadingStreamers: true,
     streamers: {}
   },
   mutations: {
     updateStreamers (state, payload) {
       state.streamers = payload
+      state.loadingStreamers = false
     }
   },
   actions: {
@@ -37,7 +39,7 @@ export default new Vuex.Store({
           for (let streamer of data) {
             streamers = {
               ...streamers,
-              [streamer.display_name]: {
+              [streamer.login]: {
                 info: {
                   ...streamer
                 },
@@ -48,10 +50,12 @@ export default new Vuex.Store({
           axios.get(`/streams?${streamsQueryString}`)
             .then(({ data: { data } }) => {
               for (let streamer of data) {
+                let streamerLogin = streamer.user_name.toLowerCase()
+
                 streamers = {
                   ...streamers,
-                  [streamer.user_name]: {
-                    ...streamers[streamer.user_name],
+                  [streamerLogin]: {
+                    ...streamers[streamerLogin],
                     status: {
                       ...streamer
                     }

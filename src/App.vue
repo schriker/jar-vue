@@ -18,7 +18,7 @@ export default {
     AppVideosList,
     AppNotification
   },
-  mounted () {
+  created () {
     this.$store.dispatch('fetchStreamers')
   }
 }

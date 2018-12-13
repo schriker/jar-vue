@@ -1,11 +1,19 @@
 <template>
-    <div class="notification notification--bookmarks">
-        Użytkownik został dodany.
-        <div class="notification__close"><i class="far fa-times-circle"></i></div>
-    </div>
+    <transition name="slide-in" appear>
+        <div v-if="notification.show" class="notification" :class="`notification--${notification.type}`">
+            {{ notification.message }}
+        <div @click="$store.commit('hideNotification')" class="notification__close"><i class="far fa-times-circle"></i></div>
+        </div>
+    </transition>
 </template>
 <script>
-export default {
+import { mapState } from 'vuex'
 
+export default {
+  computed: {
+    ...mapState([
+      'notification'
+    ])
+  }
 }
 </script>

@@ -17,8 +17,10 @@ export default {
     AppNotification
   },
   created () {
-    this.$store.dispatch('fetchStreamers')
-    this.$router.push({ path: `/${this.$store.state.userData.streamers[0]}` })
+    if (!this.$route.params.id) {
+      this.$router.push({ path: `/${this.$store.state.userData.streamers[0]}` })
+    }
+    this.$store.dispatch('fetchStreamers', this.$route.params.id)
   }
 }
 </script>

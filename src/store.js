@@ -9,22 +9,37 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
+    notification: {
+      type: '',
+      show: false,
+      message: ''
+    },
     userData: {
-      streamers: ['wonziu', 'dzejth', 'urqueeen'],
+      streamers: ['wonziu', 'dzejth', 'sovietwomble', 'nvidiageforcepl'],
       watched: [],
       bookmarks: []
     },
     loadingStreamers: true,
-    streamers: {}
+    streamers: {},
+    loadingVideos: true,
+    videos: {}
   },
   mutations: {
     updateStreamers (state, payload) {
       state.streamers = payload
       state.loadingStreamers = false
+    },
+    showNotification (state, payload) {
+      state.notification.show = true
+      state.notification.message = payload.message
+      state.notification.type = payload.type
+    },
+    hideNotification (state) {
+      state.notification.show = false
     }
   },
   actions: {
-    fetchStreamers ({ commit, state }) {
+    fetchStreamers ({ commit, state, dispatch }, streamerName) {
       let usersQueryString = ''
       let streamsQueryString = ''
       let streamers = {}
@@ -63,8 +78,22 @@ export default new Vuex.Store({
                 }
               }
               commit('updateStreamers', streamers)
+              dispatch('fetchVideos', streamerName)
             })
         })
+    },
+    fetchVideos ({ commit, state, dispatch }, streamerName) {
+      if (!state.streamers[streamerName]) {
+        dispatch('displayNotification', { type: 'error', message: 'Podany streamer nie istnieje.' })
+      } else {
+        axios.get(`/videos?user_id=${state.streamers[streamerName].info.id}`)
+          .then((res) => console.log(res))
+      }
+    },
+    displayNotification ({ commit }, payload) {
+      commit('hideNotification')
+      commit('showNotification', payload)
+      setTimeout(() => commit('hideNotification'), 4000)
     }
   }
 })

@@ -70,10 +70,7 @@ body {
         padding: 0 20px;
         &:hover {
           background-color: #1D252F;
-          .streamer__icon::after {
-            background-color: white;
-            width: 35px;
-          }
+
           .streamer__remove {
             opacity: 1;
           }
@@ -354,4 +351,21 @@ body {
   &--bookmarks {
     border-left: 3px solid $bookmarks;
   }
+}
+
+.slide-in-enter-active {
+  bottom: -50px;
+  transition: all 700ms ease-out;
+}
+
+.slide-in-enter-to {
+  transform: translate(-50%, -130px);
+}
+
+.slide-in-leave-active {
+  transition: all 500ms ease-in;
+}
+
+.slide-in-leave-to {
+  transform: translate(-50%, +130px);
 }

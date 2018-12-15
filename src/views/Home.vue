@@ -5,10 +5,13 @@
     </div>
     <app-spinner v-if="loadingVideos"></app-spinner>
     <app-videos-list v-else :videos="streamers[streamerName].videos.videos"></app-videos-list>
+    <div v-if="!loadingVideos" class="row load-more">
+      <button :disabled="loadingMore" @click="fetchVideos({ streamerName: streamerName, loadMore: true })" class="btn">{{ loadingMore ? 'Pobieram...' : 'Załaduj więcej' }}</button>
+    </div>
   </div>
 </template>
 <script>
-import { mapState, mapMutations } from 'vuex'
+import { mapState, mapMutations, mapActions } from 'vuex'
 import AppSpinner from '../components/Spinner'
 import AppVideosList from '../components/videos/VideosList'
 
@@ -22,6 +25,9 @@ export default {
       'toggleWatched',
       'updateLocalStorage'
     ]),
+    ...mapActions([
+      'fetchVideos'
+    ]),
     setToggleWatched () {
       this.toggleWatched()
       this.updateLocalStorage()
@@ -30,6 +36,7 @@ export default {
   computed: {
     ...mapState([
       'loadingVideos',
+      'loadingMore',
       'streamers',
       'userData'
     ]),
@@ -39,7 +46,7 @@ export default {
   },
   watch: {
     '$route' () {
-      this.$store.dispatch('fetchVideos', this.$route.params.id)
+      this.$store.dispatch('fetchVideos', { streamerName: this.$route.params.id, loadMore: false })
     }
   }
 }

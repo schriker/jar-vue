@@ -25,7 +25,14 @@ const actinos = {
               ...streamer
             },
             status: {},
-            videos: {}
+            videos: {
+              videos: {
+                today: [],
+                yesterday: [],
+                older: []
+              },
+              pagination: {}
+            }
           }
         }
       }
@@ -51,33 +58,84 @@ const actinos = {
     }
 
     commit('updateStreamers', streamers)
-    dispatch('fetchVideos', streamerName)
+    dispatch('fetchVideos', { streamerName: streamerName, loadMore: false })
   },
-  async fetchVideos ({ commit, state, dispatch }, streamerName) {
-    if (!state.streamers[streamerName]) {
+  async fetchVideos ({ commit, state, dispatch }, actionPayload) {
+    if (!state.streamers[actionPayload.streamerName]) {
       dispatch('displayNotification', { type: 'error', message: 'Podany streamer nie istnieje.' })
     } else {
-      commit('loadingVideosStart')
+      if (!actionPayload.loadMore) {
+        commit('loadingVideosStart')
+      } else {
+        commit('loadingMoreStart')
+      }
+
       let payload = {
-        streamer: streamerName,
+        streamer: actionPayload.streamerName,
         data: {
-          // ...state.videos[streamerName].videos add that when loading more
-          videos: [],
+          videos: {
+            today: [],
+            yesterday: [],
+            older: []
+          },
           pagination: {}
         }
       }
+
+      if (actionPayload.loadMore) {
+        payload = {
+          streamer: actionPayload.streamerName,
+          data: {
+            videos: {
+              today: [
+                ...state.streamers[actionPayload.streamerName].videos.videos.today
+              ],
+              yesterday: [
+                ...state.streamers[actionPayload.streamerName].videos.videos.yesterday
+              ],
+              older: [
+                ...state.streamers[actionPayload.streamerName].videos.videos.older
+              ]
+            },
+            pagination: {}
+          }
+        }
+      }
+
+      let queryString = `/videos?user_id=${state.streamers[actionPayload.streamerName].info.id}`
+
+      if (actionPayload.loadMore) {
+        queryString += `&after=${state.streamers[actionPayload.streamerName].videos.pagination.cursor}`
+      }
+
       try {
-        const { data: { data: videosArr, pagination } } = await axios.get(`/videos?user_id=${state.streamers[streamerName].info.id}`)
+        const { data: { data: videosArr, pagination } } = await axios.get(queryString)
 
         payload.data.pagination = {
           ...pagination
         }
+
+        if (!pagination.cursor) {
+          dispatch('displayNotification', { type: 'error', message: 'Koniec listy :(' })
+        }
+
+        let today = new Date()
+
         for (let video of videosArr) {
           let videoObject = {
             ...video,
             watched: state.userData.watched.includes(video.id)
           }
-          payload.data.videos.push(videoObject)
+
+          let date = new Date(video.published_at)
+          let hours = ((today.getTime() - date.getTime()) / (1000 * 60 * 60)).toFixed(1)
+          if (hours < 24) {
+            payload.data.videos.today.push(videoObject)
+          } else if (hours < 48 && hours >= 24) {
+            payload.data.videos.yesterday.push(videoObject)
+          } else if (hours >= 48) {
+            payload.data.videos.older.push(videoObject)
+          }
         }
       } catch (error) {
         console.log(error)

@@ -2,7 +2,7 @@
   <section class="row videos">
     <h2>{{ title }}</h2>
     <div class="videos__list">
-      <app-videos-item v-for="(video, index) in videos" :key="video.id" :video="video" :index="index"></app-videos-item>
+      <app-videos-item v-for="video in videos" :key="video.id" :video="video"></app-videos-item>
     </div>
   </section>
 </template>

@@ -23,6 +23,7 @@ export default new Vuex.Store({
     },
     loadingStreamers: true,
     loadingVideos: true,
+    loadingMore: false,
     streamers: {}
   },
   mutations: {
@@ -36,9 +37,13 @@ export default new Vuex.Store({
     loadingVideosStart (state) {
       state.loadingVideos = true
     },
+    loadingMoreStart (state) {
+      state.loadingMore = true
+    },
     updateVideos (state, payload) {
       state.streamers[payload.streamer].videos = payload.data
       state.loadingVideos = false
+      state.loadingMore = false
     },
     addToWatched (state, payload) {
       state.userData.watched.push(payload)

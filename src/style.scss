@@ -61,11 +61,17 @@ body {
   font-weight: 600;
   transition: all .2s ease;
   &:hover {
-    color: $body-bg;
+    color: $header-bg;
     background-color: $success
   }
+  &:disabled {
+    cursor: initial;
+    color: white;
+    border-color: $light;
+    background-color: $light;
+  }
   &--active {
-    color: $body-bg;
+    color: $header-bg;
     background-color: $success;
   }
 }
@@ -348,6 +354,16 @@ body {
 
 .filters {
   margin: 35px 0 0 0;
+}
+
+.load-more {
+  text-align: center;
+  margin: 10px 0 35px 0;
+  button {
+    width: 20%;
+    padding: 15px 0;
+    font-size: 16px;
+  }
 }
 
 .notification {

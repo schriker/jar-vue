@@ -37,9 +37,9 @@ export default {
     ...mapState([
       'userData'
     ]),
-     hide() {
-       return this.isWatched && this.userData.hideWatched
-     } 
+    hide () {
+      return this.isWatched && this.userData.hideWatched
+    }
   },
   methods: {
     ...mapMutations([

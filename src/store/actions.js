@@ -64,10 +64,10 @@ const actinos = {
     if (!state.streamers[actionPayload.streamerName]) {
       dispatch('displayNotification', { type: 'error', message: 'Podany streamer nie istnieje.' })
     } else {
-      if (!actionPayload.loadMore) {
-        commit('loadingVideosStart')
-      } else {
+      if (actionPayload.loadMore) {
         commit('loadingMoreStart')
+      } else {
+        commit('loadingVideosStart')
       }
 
       let payload = {

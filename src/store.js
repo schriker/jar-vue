@@ -15,29 +15,39 @@ export default new Vuex.Store({
       message: ''
     },
     userData: {
-      streamers: ['wonziu', 'dzejth', 'sovietwomble', 'nvidiageforcepl', 'urqueeen'],
+      streamers: ['wonziu', 'dzejth', 'nvidiageforcepl'],
       watched: [],
       bookmarks: []
     },
     loadingStreamers: true,
-    streamers: {},
     loadingVideos: true,
-    videos: {}
+    streamers: {}
   },
   mutations: {
     updateStreamers (state, payload) {
       state.streamers = payload
       state.loadingStreamers = false
     },
-    initVideos (state, payload) {
-      state.videos = payload
-    },
     loadingVideosStart (state) {
       state.loadingVideos = true
     },
     updateVideos (state, payload) {
-      state.videos[payload.streamer] = payload.data
+      state.streamers[payload.streamer].videos = payload.data
       state.loadingVideos = false
+    },
+    addToWatched (state, payload) {
+      state.userData.watched.push(payload)
+    },
+    removeFromWatched (state, payload) {
+      let filteredArr = state.userData.watched.filter((id) => id !== payload)
+      state.userData.watched = filteredArr
+    },
+    updateUserData (state, payload) {
+      state.userData = payload
+    },
+    updateLocalStorage (state) {
+      let userDataString = JSON.stringify(state.userData)
+      localStorage.setItem('userData', userDataString)
     },
     showNotification (state, payload) {
       state.notification.show = true
@@ -53,7 +63,6 @@ export default new Vuex.Store({
       let usersQueryString = ''
       let streamsQueryString = ''
       let streamers = {}
-      let videos = {}
 
       for (let streamer of state.userData.streamers) {
         usersQueryString += `&login=${streamer}`
@@ -70,14 +79,8 @@ export default new Vuex.Store({
               info: {
                 ...streamer
               },
-              status: {}
-            }
-          }
-          videos = {
-            ...videos,
-            [streamer.login]: {
-              videos: [],
-              pagination: {}
+              status: {},
+              videos: {}
             }
           }
         }
@@ -103,7 +106,6 @@ export default new Vuex.Store({
       }
 
       commit('updateStreamers', streamers)
-      commit('initVideos', videos)
       dispatch('fetchVideos', streamerName)
     },
     async fetchVideos ({ commit, state, dispatch }, streamerName) {
@@ -122,19 +124,31 @@ export default new Vuex.Store({
         try {
           const { data: { data: videosArr, pagination } } = await axios.get(`/videos?user_id=${state.streamers[streamerName].info.id}`)
 
-          payload.data = {
-            pagination: {
-              ...pagination
-            },
-            videos: [
-              ...videosArr
-            ]
+          payload.data.pagination = {
+            ...pagination
+          }
+          for (let video of videosArr) {
+            let videoObject = {
+              ...video,
+              watched: state.userData.watched.includes(video.id)
+            }
+            payload.data.videos.push(videoObject)
           }
         } catch (error) {
           console.log(error)
           dispatch('displayNotification', { type: 'error', message: 'Wystąpił bląd.' })
         }
         commit('updateVideos', payload)
+      }
+    },
+    initUser ({ state, commit }) {
+      let userDataString = JSON.stringify(state.userData)
+      let userDataObject = JSON.parse(localStorage.getItem('userData'))
+
+      if (localStorage.getItem('userData')) {
+        commit('updateUserData', userDataObject)
+      } else {
+        localStorage.setItem('userData', userDataString)
       }
     },
     displayNotification ({ commit }, payload) {

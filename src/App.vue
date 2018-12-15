@@ -7,6 +7,8 @@
 </template>
 
 <script>
+
+import { mapActions } from 'vuex'
 import './style.scss'
 import AppHeader from './components/header/Header'
 import AppNotification from './components/Notification'
@@ -16,11 +18,18 @@ export default {
     AppHeader,
     AppNotification
   },
+  methods: {
+    ...mapActions([
+      'initUser',
+      'fetchStreamers'
+    ])
+  },
   created () {
     if (!this.$route.params.id) {
       this.$router.push({ path: `/${this.$store.state.userData.streamers[0]}` })
     }
-    this.$store.dispatch('fetchStreamers', this.$route.params.id)
+    this.initUser()
+    this.fetchStreamers(this.$route.params.id)
   }
 }
 </script>

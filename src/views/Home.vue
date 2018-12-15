@@ -1,7 +1,7 @@
 <template>
   <div>
     <app-spinner v-if="loadingVideos"></app-spinner>
-    <app-videos-list v-else :videos="videos[streamerName].videos"></app-videos-list>
+    <app-videos-list v-else :videos="streamers[streamerName].videos.videos"></app-videos-list>
   </div>
 </template>
 <script>
@@ -17,7 +17,7 @@ export default {
   computed: {
     ...mapState({
       loadingVideos: 'loadingVideos',
-      videos: 'videos'
+      streamers: 'streamers'
     }),
     streamerName () {
       return this.$route.params.id

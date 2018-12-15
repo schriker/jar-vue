@@ -11,24 +11,46 @@
     <div class="videos__title">
       <h3>{{ title }}</h3>
       <span>{{ date }}</span>
-      <div class="videos__watched"><i class="fas fa-check"></i></div>
+      <div @click="toogleWatched" class="videos__watched" :class="{'videos__watched--active': isWatched}"><i class="fas fa-check"></i></div>
     </div>
   </div>
 </template>
 <script>
+import { mapMutations } from 'vuex'
+
 export default {
   data () {
     return {
+      isWatched: this.video.watched,
       thumbnail: '',
       title: '',
       date: ''
     }
   },
   props: {
-    video: Object
+    video: Object,
+    index: Number
+  },
+  methods: {
+    ...mapMutations([
+      'addToWatched',
+      'removeFromWatched',
+      'updateLocalStorage'
+    ]),
+    toogleWatched () {
+      if (this.isWatched) {
+        this.isWatched = false
+        this.removeFromWatched(this.video.id)
+        this.updateLocalStorage()
+      } else {
+        this.isWatched = true
+        this.addToWatched(this.video.id)
+        this.updateLocalStorage()
+      }
+    }
   },
   created () {
-    this.thumbnail = this.video.thumbnail_url.replace('%{width}', '275').replace('%{height}', '155')
+    this.thumbnail = this.video.thumbnail_url.replace('%{width}', '640').replace('%{height}', '360')
 
     if (this.video.title.length > 60) {
       this.title = this.video.title.substring(0, 60) + '...'

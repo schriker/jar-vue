@@ -51,6 +51,25 @@ body {
   padding: 0 25px;
 }
 
+.btn {
+  background: transparent;
+  border: 1px solid $success;
+  border-radius: 5px;
+  cursor: pointer;
+  color: white;
+  padding: 6px 12px;
+  font-weight: 600;
+  transition: all .2s ease;
+  &:hover {
+    color: $body-bg;
+    background-color: $success
+  }
+  &--active {
+    color: $body-bg;
+    background-color: $success;
+  }
+}
+
 .header {
   height: 75px;
   background-color: $header-bg;
@@ -319,13 +338,16 @@ body {
     right: 0;
     cursor: pointer;
     &:hover {
-      color: $success;
       transform: scale(1.5);
     }
     &--active {
       color: $success;
     }
   }
+}
+
+.filters {
+  margin: 35px 0 0 0;
 }
 
 .notification {

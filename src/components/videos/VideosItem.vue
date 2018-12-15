@@ -1,5 +1,5 @@
 <template>
-  <div class="videos__item">
+  <div v-show="!hide" class="videos__item">
     <a href=""></a>
     <div class="videos__thumbnail">
       <!-- <div class="videos__badge videos__badge--new">new</div> -->
@@ -16,7 +16,7 @@
   </div>
 </template>
 <script>
-import { mapMutations, mapActions } from 'vuex'
+import { mapMutations, mapActions, mapState } from 'vuex'
 import defaultThumbnail from '../../assets/default_thumbnail.jpg'
 
 export default {
@@ -32,6 +32,14 @@ export default {
   props: {
     video: Object,
     index: Number
+  },
+  computed: {
+    ...mapState([
+      'userData'
+    ]),
+     hide() {
+       return this.isWatched && this.userData.hideWatched
+     } 
   },
   methods: {
     ...mapMutations([

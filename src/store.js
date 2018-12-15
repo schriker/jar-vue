@@ -152,9 +152,17 @@ export default new Vuex.Store({
       }
     },
     displayNotification ({ commit }, payload) {
-      commit('hideNotification')
       commit('showNotification', payload)
-      setTimeout(() => commit('hideNotification'), 5000)
+
+      let notificationTimeOut = window.setTimeout(() => commit('hideNotification'), 4000)
+      while (notificationTimeOut--) {
+        window.clearTimeout(notificationTimeOut)
+      }
+
+      if (payload.close) {
+        clearTimeout(notificationTimeOut)
+        commit('hideNotification')
+      }
     }
   }
 })

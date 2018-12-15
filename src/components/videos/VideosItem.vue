@@ -6,7 +6,7 @@
       <div class="videos__badge videos__badge--bookmark"><i class="fas fa-bookmark"></i></div>
       <div class="videos__badge videos__badge--time"><i class="fas fa-play"></i>{{video.duration}}</div>
       <div class="videos__badge videos__badge--views"><i class="fas fa-eye"></i>{{ video.view_count }}</div>
-      <img :src="thumbnail" alt="">
+      <img :src="thumbnail !== '' ? thumbnail : defaultThumbnail" alt="">
     </div>
     <div class="videos__title">
       <h3>{{ title }}</h3>
@@ -16,12 +16,14 @@
   </div>
 </template>
 <script>
-import { mapMutations } from 'vuex'
+import { mapMutations, mapActions } from 'vuex'
+import defaultThumbnail from '../../assets/default_thumbnail.jpg'
 
 export default {
   data () {
     return {
       isWatched: this.video.watched,
+      defaultThumbnail,
       thumbnail: '',
       title: '',
       date: ''
@@ -37,15 +39,20 @@ export default {
       'removeFromWatched',
       'updateLocalStorage'
     ]),
+    ...mapActions([
+      'displayNotification'
+    ]),
     toogleWatched () {
       if (this.isWatched) {
         this.isWatched = false
         this.removeFromWatched(this.video.id)
         this.updateLocalStorage()
+        this.displayNotification({ type: 'success', message: 'Usunięto z obejrzanych.' })
       } else {
         this.isWatched = true
         this.addToWatched(this.video.id)
         this.updateLocalStorage()
+        this.displayNotification({ type: 'success', message: 'Oznaczono jako obejrzane.' })
       }
     }
   },

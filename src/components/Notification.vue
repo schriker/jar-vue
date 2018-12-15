@@ -2,7 +2,7 @@
     <transition name="slide-in" appear>
         <div v-if="notification.show" class="notification" :class="`notification--${notification.type}`">
             {{ notification.message }}
-        <div @click="$store.commit('hideNotification')" class="notification__close"><i class="far fa-times-circle"></i></div>
+        <div @click="$store.dispatch('displayNotification', { close: true })" class="notification__close"><i class="far fa-times-circle"></i></div>
         </div>
     </transition>
 </template>

@@ -15,7 +15,7 @@ export default new Vuex.Store({
       message: ''
     },
     userData: {
-      streamers: ['wonziu', 'dzejth', 'sovietwomble', 'nvidiageforcepl'],
+      streamers: ['wonziu', 'dzejth', 'sovietwomble', 'nvidiageforcepl', 'urqueeen'],
       watched: [],
       bookmarks: []
     },
@@ -29,6 +29,16 @@ export default new Vuex.Store({
       state.streamers = payload
       state.loadingStreamers = false
     },
+    initVideos (state, payload) {
+      state.videos = payload
+    },
+    loadingVideosStart (state) {
+      state.loadingVideos = true
+    },
+    updateVideos (state, payload) {
+      state.videos[payload.streamer] = payload.data
+      state.loadingVideos = false
+    },
     showNotification (state, payload) {
       state.notification.show = true
       state.notification.message = payload.message
@@ -39,61 +49,98 @@ export default new Vuex.Store({
     }
   },
   actions: {
-    fetchStreamers ({ commit, state, dispatch }, streamerName) {
+    async fetchStreamers ({ commit, state, dispatch }, streamerName) {
       let usersQueryString = ''
       let streamsQueryString = ''
       let streamers = {}
+      let videos = {}
 
       for (let streamer of state.userData.streamers) {
         usersQueryString += `&login=${streamer}`
         streamsQueryString += `&user_login=${streamer}`
       }
 
-      axios.get(`/users?${usersQueryString}`)
-        .then(({ data: { data } }) => {
-          for (let streamer of data) {
-            streamers = {
-              ...streamers,
-              [streamer.login]: {
-                info: {
-                  ...streamer
-                },
-                status: {}
+      try {
+        const { data: { data: users } } = await axios.get(`/users?${usersQueryString}`)
+
+        for (let streamer of users) {
+          streamers = {
+            ...streamers,
+            [streamer.login]: {
+              info: {
+                ...streamer
+              },
+              status: {}
+            }
+          }
+          videos = {
+            ...videos,
+            [streamer.login]: {
+              videos: [],
+              pagination: {}
+            }
+          }
+        }
+
+        const { data: { data: streams } } = await axios.get(`/streams?${streamsQueryString}`)
+
+        for (let streamer of streams) {
+          let streamerLogin = streamer.user_name.toLowerCase()
+
+          streamers = {
+            ...streamers,
+            [streamerLogin]: {
+              ...streamers[streamerLogin],
+              status: {
+                ...streamer
               }
             }
           }
-          axios.get(`/streams?${streamsQueryString}`)
-            .then(({ data: { data } }) => {
-              for (let streamer of data) {
-                let streamerLogin = streamer.user_name.toLowerCase()
+        }
+      } catch (error) {
+        console.log(error)
+        dispatch('displayNotification', { type: 'error', message: 'Wystąpił bląd.' })
+      }
 
-                streamers = {
-                  ...streamers,
-                  [streamerLogin]: {
-                    ...streamers[streamerLogin],
-                    status: {
-                      ...streamer
-                    }
-                  }
-                }
-              }
-              commit('updateStreamers', streamers)
-              dispatch('fetchVideos', streamerName)
-            })
-        })
+      commit('updateStreamers', streamers)
+      commit('initVideos', videos)
+      dispatch('fetchVideos', streamerName)
     },
-    fetchVideos ({ commit, state, dispatch }, streamerName) {
+    async fetchVideos ({ commit, state, dispatch }, streamerName) {
       if (!state.streamers[streamerName]) {
         dispatch('displayNotification', { type: 'error', message: 'Podany streamer nie istnieje.' })
       } else {
-        axios.get(`/videos?user_id=${state.streamers[streamerName].info.id}`)
-          .then((res) => console.log(res))
+        commit('loadingVideosStart')
+        let payload = {
+          streamer: streamerName,
+          data: {
+            // ...state.videos[streamerName].videos add that when loading more
+            videos: [],
+            pagination: {}
+          }
+        }
+        try {
+          const { data: { data: videosArr, pagination } } = await axios.get(`/videos?user_id=${state.streamers[streamerName].info.id}`)
+
+          payload.data = {
+            pagination: {
+              ...pagination
+            },
+            videos: [
+              ...videosArr
+            ]
+          }
+        } catch (error) {
+          console.log(error)
+          dispatch('displayNotification', { type: 'error', message: 'Wystąpił bląd.' })
+        }
+        commit('updateVideos', payload)
       }
     },
     displayNotification ({ commit }, payload) {
       commit('hideNotification')
       commit('showNotification', payload)
-      setTimeout(() => commit('hideNotification'), 4000)
+      setTimeout(() => commit('hideNotification'), 5000)
     }
   }
 })

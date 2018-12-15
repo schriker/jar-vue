@@ -247,9 +247,9 @@ body {
   &__thumbnail {
     position: relative;
     img {
-      border-radius: 8px;
       width: 100%;
       height: auto;
+      border-radius: 8px;
       transition: all .2s ease;
     }
   }
@@ -258,10 +258,11 @@ body {
     font-size: 16px;
     font-weight: 400; 
     color: white;
+    padding: 0 30px 0 0;
     margin: 15px 0 0 0;
     h3 {
     font-size: 16px;
-    font-weight: 400;
+    font-weight: 600;
       margin: 0 0 5px 0;
     }
     span {
@@ -274,8 +275,8 @@ body {
     border-radius: 3px;
     background-color: black;
     color: white;
-    font-size: 13px;
-    padding: 5px 8px;
+    font-size: 14px;
+    padding: 8px 10px;
     i {
       margin: 0 8px 0 0;
     }
@@ -291,7 +292,7 @@ body {
       right: 8px;
       padding: 0;
       z-index: 900;
-      font-size: 18px;
+      font-size: 20px;
       transition: all .2s ease;
       &:hover {
         color: $bookmarks;
@@ -368,4 +369,58 @@ body {
 
 .slide-in-leave-to {
   transform: translate(-50%, +130px);
+}
+
+.spring-spinner, .spring-spinner * {
+  box-sizing: border-box;
+}
+
+.spring-spinner {
+  height: 60px;
+  width: 60px;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.spring-spinner .spring-spinner-part {
+  overflow: hidden;
+  height: calc(60px / 2);
+  width: 60px;
+}
+
+.spring-spinner  .spring-spinner-part.bottom {
+   transform: rotate(180deg) scale(-1, 1);
+ }
+
+.spring-spinner .spring-spinner-rotator {
+  width: 60px;
+  height: 60px;
+  border: calc(60px / 7) solid transparent;
+  border-right-color: $light;
+  border-top-color: $light;
+  border-radius: 50%;
+  box-sizing: border-box;
+  animation: spring-spinner-animation 3s ease-in-out infinite;
+  transform: rotate(-200deg);
+}
+
+@keyframes spring-spinner-animation {
+  0% {
+    border-width: calc(60px / 7);
+  }
+  25% {
+    border-width: calc(60px / 23.33);
+  }
+  50% {
+    transform: rotate(115deg);
+    border-width: calc(60px / 7);
+  }
+  75% {
+    border-width: calc(60px / 23.33);
+  }
+  100% {
+    border-width: calc(60px / 7);
+  }
 }

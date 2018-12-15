@@ -6,7 +6,7 @@
             <app-streamer-placeholder></app-streamer-placeholder>
           </a>
         </li>
-        <li v-for="streamer of streamers" :key="streamer.info.id">
+        <li v-for="streamer in streamers" :key="streamer.info.id">
           <router-link :to="`/${streamer.info.login}`" active-class="active">
             <app-streamer :streamer="streamer"></app-streamer>
           </router-link>

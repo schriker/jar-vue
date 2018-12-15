@@ -2,21 +2,42 @@
   <div class="videos__item">
     <a href=""></a>
     <div class="videos__thumbnail">
-      <div class="videos__badge videos__badge--new">new</div>
+      <!-- <div class="videos__badge videos__badge--new">new</div> -->
       <div class="videos__badge videos__badge--bookmark"><i class="fas fa-bookmark"></i></div>
-      <div class="videos__badge videos__badge--time"><i class="fas fa-play"></i>1h10m41s</div>
-      <div class="videos__badge videos__badge--views"><i class="fas fa-eye"></i>281</div>
-      <img src="../../assets/thumbnail.jpg" alt="">
+      <div class="videos__badge videos__badge--time"><i class="fas fa-play"></i>{{video.duration}}</div>
+      <div class="videos__badge videos__badge--views"><i class="fas fa-eye"></i>{{ video.view_count }}</div>
+      <img :src="thumbnail" alt="">
     </div>
     <div class="videos__title">
-      <h3>Promujemy Destiny 2 #sponsor...</h3>
-      <span>2018-12-09</span>
+      <h3>{{ title }}</h3>
+      <span>{{ date }}</span>
       <div class="videos__watched"><i class="fas fa-check"></i></div>
     </div>
   </div>
 </template>
 <script>
 export default {
+  data () {
+    return {
+      thumbnail: '',
+      title: '',
+      date: ''
+    }
+  },
+  props: {
+    video: Object
+  },
+  created () {
+    this.thumbnail = this.video.thumbnail_url.replace('%{width}', '275').replace('%{height}', '155')
 
+    if (this.video.title.length > 60) {
+      this.title = this.video.title.substring(0, 60) + '...'
+    } else {
+      this.title = this.video.title
+    }
+
+    let date = new Date(this.video.published_at)
+    this.date = date.toLocaleString('nl-NL')
+  }
 }
 </script>

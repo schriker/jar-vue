@@ -1,7 +1,7 @@
 <template>
     <div class="center-flex">
         <div class="player">
-          <transition name="fade-in" appear>          
+          <transition name="fade-in" appear>
             <div v-if="singleVideo[0]" class="player__top">
               <i class="fas fa-play"></i>{{ singleVideo[0].duration }}
               <i class="fas fa-eye"></i>{{ singleVideo[0].view_count }}

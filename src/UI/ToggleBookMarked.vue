@@ -13,6 +13,11 @@ export default {
     video: Object,
     bookMarked: Boolean
   },
+  watch: {
+    'bookMarked' () {
+      this.isBookMarked = this.bookMarked
+    }
+  },
   methods: {
     ...mapMutations([
       'updateLocalStorage',

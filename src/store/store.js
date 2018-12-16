@@ -30,15 +30,6 @@ export default new Vuex.Store({
     loadingMore: false,
     streamers: {}
   },
-  getters: {
-    shortTitle: (state) => {
-      if (state.singleVideo[0].title && state.singleVideo[0].title.length > 60) {
-        return state.singleVideo[0].title.substring(0, 60) + '...'
-      } else {
-        return state.singleVideo[0].title
-      }
-    }
-  },
   mutations: {
     toggleWatched (state) {
       state.userData.hideWatched = !state.userData.hideWatched

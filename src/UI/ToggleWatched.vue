@@ -14,6 +14,11 @@ export default {
     videoId: String,
     watched: Boolean
   },
+  watch: {
+    'watched' () {
+      this.isWatched = this.watched
+    }
+  },
   methods: {
     ...mapMutations([
       'addToWatched',

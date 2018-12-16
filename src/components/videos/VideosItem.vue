@@ -1,7 +1,7 @@
 <template>
   <transition name="fade-in">
     <div v-show="!hide" class="videos__item">
-      <router-link :to="`/${$route.params.id}/${video.id}`" :video="isWatched"></router-link>
+      <router-link :to="`/${video.user_name.toLowerCase()}/${video.id}`" :video="isWatched"></router-link>
       <div class="videos__thumbnail">
         <!-- <div class="videos__badge videos__badge--new">new</div> -->
         <app-toggle-book-marked @toggleBookMarked="isBookMarked = !isBookMarked" :video="video" :bookMarked="isBookMarked"></app-toggle-book-marked>

@@ -20,8 +20,7 @@ export default {
   },
   methods: {
     ...mapActions([
-      'initUser',
-      'fetchStreamers'
+      'initUser'
     ])
   },
   created () {
@@ -29,7 +28,6 @@ export default {
       this.$router.push({ path: `/${this.$store.state.userData.streamers[0]}` })
     }
     this.initUser()
-    this.fetchStreamers(this.$route.params.id)
   }
 }
 </script>

@@ -60,6 +60,7 @@ const actinos = {
     commit('updateStreamers', streamers)
     dispatch('fetchVideos', { streamerName: streamerName, loadMore: false })
   },
+
   async fetchVideos ({ commit, state, dispatch }, actionPayload) {
     if (!state.streamers[actionPayload.streamerName]) {
       dispatch('displayNotification', { type: 'error', message: 'Podany streamer nie istnieje.' })
@@ -111,12 +112,13 @@ const actinos = {
       try {
         const { data: { data: videosArr, pagination } } = await axios.get(queryString)
 
-        payload.data.pagination = {
-          ...pagination
-        }
-
         if (!pagination.cursor) {
           dispatch('displayNotification', { type: 'error', message: 'Koniec listy :(' })
+          return
+        }
+
+        payload.data.pagination = {
+          ...pagination
         }
 
         let today = new Date()
@@ -124,7 +126,8 @@ const actinos = {
         for (let video of videosArr) {
           let videoObject = {
             ...video,
-            watched: state.userData.watched.includes(video.id)
+            watched: state.userData.watched.includes(video.id),
+            bookmarked: state.userData.bookmarksId.includes(video.id)
           }
 
           let date = new Date(video.published_at)
@@ -144,6 +147,7 @@ const actinos = {
       commit('updateVideos', payload)
     }
   },
+
   initUser ({ state, commit }) {
     let userDataString = JSON.stringify(state.userData)
     let userDataObject = JSON.parse(localStorage.getItem('userData'))
@@ -154,6 +158,7 @@ const actinos = {
       localStorage.setItem('userData', userDataString)
     }
   },
+
   displayNotification ({ commit }, payload) {
     commit('showNotification', payload)
 

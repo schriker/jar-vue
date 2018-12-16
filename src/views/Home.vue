@@ -26,7 +26,8 @@ export default {
       'updateLocalStorage'
     ]),
     ...mapActions([
-      'fetchVideos'
+      'fetchVideos',
+      'fetchStreamers'
     ]),
     setToggleWatched () {
       this.toggleWatched()
@@ -46,6 +47,13 @@ export default {
   },
   watch: {
     '$route' () {
+      this.$store.dispatch('fetchVideos', { streamerName: this.$route.params.id, loadMore: false })
+    }
+  },
+  created () {
+    if (!this.streamers[this.streamerName]) {
+      this.fetchStreamers(this.$route.params.id)
+    } else {
       this.$store.dispatch('fetchVideos', { streamerName: this.$route.params.id, loadMore: false })
     }
   }

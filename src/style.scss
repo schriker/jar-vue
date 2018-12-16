@@ -30,6 +30,7 @@ html {
 
 a {
   text-decoration: none;
+  outline: 0;
 }
 
 body {
@@ -57,6 +58,7 @@ body {
   border-radius: 5px;
   cursor: pointer;
   color: white;
+  outline: 0;
   padding: 6px 12px;
   font-weight: 600;
   transition: all .2s ease;
@@ -69,6 +71,9 @@ body {
     color: white;
     border-color: $light;
     background-color: $light;
+  }
+  &::-moz-focus-inner {
+    border: 0;
   }
   &--active {
     color: $header-bg;
@@ -95,7 +100,6 @@ body {
         padding: 0 20px;
         &:hover {
           background-color: #1D252F;
-
           .streamer__remove {
             opacity: 1;
           }
@@ -227,7 +231,7 @@ body {
       background-color: $bullet;
       transition: all .2s ease;
     }
-    &:hover {
+    &.active {
       &::after {
         background-color: white;
         width: 35px;
@@ -319,12 +323,16 @@ body {
       right: 8px;
       padding: 0;
       z-index: 900;
-      font-size: 20px;
+      font-size: 22px;
+      padding: 10px;
       transition: all .2s ease;
       &:hover {
-        color: $bookmarks;
+        transform: scale(1.6);
         cursor: pointer;
       }
+    }
+    &--active {
+      color: $bookmarks;
     }
     &--views {
       right: 8px;

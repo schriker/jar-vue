@@ -19,6 +19,7 @@ export default new Vuex.Store({
       hideWatched: false,
       streamers: ['wonziu', 'dzejth', 'nvidiageforcepl'],
       watched: [],
+      bookmarksId: [],
       bookmarks: []
     },
     loadingStreamers: true,
@@ -51,6 +52,16 @@ export default new Vuex.Store({
     removeFromWatched (state, payload) {
       let filteredArr = state.userData.watched.filter((id) => id !== payload)
       state.userData.watched = filteredArr
+    },
+    addToBookmarked (state, payload) {
+      state.userData.bookmarksId.unshift(payload.id)
+      state.userData.bookmarks.unshift(payload)
+    },
+    removeFromBookmarked (state, payload) {
+      let filteredArr = state.userData.bookmarksId.filter((id) => id !== payload)
+      let filteredObj = state.userData.bookmarks.filter((obj) => obj.id !== payload)
+      state.userData.bookmarksId = filteredArr
+      state.userData.bookmarks = filteredObj
     },
     updateUserData (state, payload) {
       state.userData = payload

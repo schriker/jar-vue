@@ -3,7 +3,7 @@
     <a href=""></a>
     <div class="videos__thumbnail">
       <!-- <div class="videos__badge videos__badge--new">new</div> -->
-      <div class="videos__badge videos__badge--bookmark"><i class="fas fa-bookmark"></i></div>
+      <div @click="toggleBookmarked" class="videos__badge videos__badge--bookmark"><i class="fas fa-bookmark" :class="{'videos__badge--active': isBookMarked}"></i></div>
       <div class="videos__badge videos__badge--time"><i class="fas fa-play"></i>{{video.duration}}</div>
       <div class="videos__badge videos__badge--views"><i class="fas fa-eye"></i>{{ video.view_count }}</div>
       <img :src="thumbnail !== '' ? thumbnail : defaultThumbnail" alt="">
@@ -11,7 +11,7 @@
     <div class="videos__title">
       <h3>{{ title }}</h3>
       <span>{{ date }}</span>
-      <div @click="toogleWatched" class="videos__watched" :class="{'videos__watched--active': isWatched}"><i class="fas fa-check"></i></div>
+      <div @click="toggleWatched" class="videos__watched" :class="{'videos__watched--active': isWatched}"><i class="fas fa-check"></i></div>
     </div>
   </div>
 </template>
@@ -23,6 +23,7 @@ export default {
   data () {
     return {
       isWatched: this.video.watched,
+      isBookMarked: this.video.bookmarked,
       defaultThumbnail,
       thumbnail: '',
       title: '',
@@ -30,8 +31,7 @@ export default {
     }
   },
   props: {
-    video: Object,
-    index: Number
+    video: Object
   },
   computed: {
     ...mapState([
@@ -45,12 +45,14 @@ export default {
     ...mapMutations([
       'addToWatched',
       'removeFromWatched',
-      'updateLocalStorage'
+      'updateLocalStorage',
+      'addToBookmarked',
+      'removeFromBookmarked'
     ]),
     ...mapActions([
       'displayNotification'
     ]),
-    toogleWatched () {
+    toggleWatched () {
       if (this.isWatched) {
         this.isWatched = false
         this.removeFromWatched(this.video.id)
@@ -61,6 +63,19 @@ export default {
         this.addToWatched(this.video.id)
         this.updateLocalStorage()
         this.displayNotification({ type: 'success', message: 'Oznaczono jako obejrzane.' })
+      }
+    },
+    toggleBookmarked () {
+      if (!this.isBookMarked) {
+        this.isBookMarked = true
+        this.addToBookmarked(this.video)
+        this.updateLocalStorage()
+        this.displayNotification({ type: 'bookmarks', message: 'Dodano do zapisanych.' })
+      } else {
+        this.isBookMarked = false
+        this.removeFromBookmarked(this.video.id)
+        this.updateLocalStorage()
+        this.displayNotification({ type: 'bookmarks', message: 'Usunięto z zapisanych.' })
       }
     }
   },

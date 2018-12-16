@@ -146,6 +146,54 @@ const actinos = {
     }
   },
 
+  async getSingleVideo ({ state, commit, dispatch }, payload) {
+    if (!state.streamers[payload.streamer]) {
+      await dispatch('fetchStreamers', payload.streamer)
+      await dispatch('fetchVideos', { streamerName: payload.streamer, loadMore: false })
+    }
+
+    let searchInStreamers = state.streamers[payload.streamer].videos.videos
+    let searchInBookmarked = state.userData.bookmarks
+    let searchResults = []
+
+    for (let array in searchInStreamers) {
+      let temp = searchInStreamers[array].filter((video) => video.id === payload.video)
+      searchResults = [
+        ...searchResults,
+        ...temp
+      ]
+    }
+
+    if (searchResults.length > 0) {
+      commit('setSingleVideo', searchResults)
+      return
+    }
+
+    let temp = searchInBookmarked.filter((video) => video.id === payload.video)
+    searchResults = [
+      ...searchResults,
+      ...temp
+    ]
+
+    if (searchResults.length > 0) {
+      commit('setSingleVideo', searchResults)
+      return
+    }
+
+    const singleVideoTwitch = await axios.get(`/videos?id=${payload.video}`)
+    searchResults = [
+      ...searchResults,
+      ...singleVideoTwitch.data.data
+    ]
+
+    for (let video of searchResults) {
+      video.watched = state.userData.watched.includes(video.id)
+      video.bookmarked = state.userData.bookmarksId.includes(video.id)
+    }
+
+    commit('setSingleVideo', searchResults)
+  },
+
   initUser ({ state, commit }) {
     let userDataString = JSON.stringify(state.userData)
     let userDataObject = JSON.parse(localStorage.getItem('userData'))

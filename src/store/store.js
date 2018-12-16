@@ -22,14 +22,29 @@ export default new Vuex.Store({
       bookmarksId: [],
       bookmarks: []
     },
+    singleVideo: [
+      {}
+    ],
     loadingStreamers: true,
     loadingVideos: true,
     loadingMore: false,
     streamers: {}
   },
+  getters: {
+    shortTitle: (state) => {
+      if (state.singleVideo[0].title && state.singleVideo[0].title.length > 60) {
+        return state.singleVideo[0].title.substring(0, 60) + '...'
+      } else {
+        return state.singleVideo[0].title
+      }
+    }
+  },
   mutations: {
     toggleWatched (state) {
       state.userData.hideWatched = !state.userData.hideWatched
+    },
+    setSingleVideo (state, payload) {
+      state.singleVideo = payload
     },
     updateStreamers (state, payload) {
       state.streamers = payload

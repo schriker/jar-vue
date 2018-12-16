@@ -46,9 +46,8 @@ body {
 
 .center-flex {
   flex: 1 1 auto;
-  justify-content: center;
-  align-items: center;
   display: flex;
+  height: 100%;
 }
 
 .container {
@@ -389,12 +388,13 @@ body {
 
 .content {
   display: flex;
+  width: 100%;
   &__box {
     text-align: center;
     margin: auto auto;
     color: white;
     font-size: 18px;
-    line-height: 35px;
+    line-height: 28px;
     padding: 40px 80px;
     background-color: $header-bg;
     border-radius: 8px;
@@ -403,10 +403,23 @@ body {
   } 
 }
 
-.poorchat {
-  flex: 1 0 350px;
-  width: 350px;
+.player {
+  flex: 1 0 auto;
   height: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  &__top {
+
+  }
+  &__iframe {
+    flex: 1 0 auto
+  }
+}
+
+.poorchat {
+  flex: 0 0 400px;
+  width: 400px;
   overflow: hidden;
 }
 
@@ -442,6 +455,24 @@ body {
   &--bookmarks {
     border-left: 3px solid $bookmarks;
   }
+}
+
+.fade-in-enter-active {
+  opacity: 0;
+}
+
+.fade-in-enter-to {
+  opacity: 1;
+  transition: all .2s ease;
+}
+
+.fade-in-leave-active {
+  topacity: 1;
+  transition: all .2s ease;;
+}
+
+.fade-in-leave-to {
+  opacity: 0;
 }
 
 .slide-in-enter-active {

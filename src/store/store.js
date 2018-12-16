@@ -22,9 +22,7 @@ export default new Vuex.Store({
       bookmarksId: [],
       bookmarks: []
     },
-    singleVideo: [
-      {}
-    ],
+    singleVideo: [{}],
     loadingStreamers: true,
     loadingVideos: true,
     loadingMore: false,
@@ -81,6 +79,9 @@ export default new Vuex.Store({
     removeFromBookmarked (state, payload) {
       state.userData.bookmarksId = state.userData.bookmarksId.filter((id) => id !== payload)
       state.userData.bookmarks = state.userData.bookmarks.filter((obj) => obj.id !== payload)
+    },
+    removeStreamer (state, payload) {
+      state.userData.streamers = state.userData.streamers.filter((streamer) => streamer !== payload)
     },
     updateUserData (state, payload) {
       state.userData = payload

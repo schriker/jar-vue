@@ -41,14 +41,22 @@ export default {
   methods: {
     ...mapActions([
       'getSingleVideo'
-    ])
+    ]),
+    getVideo () {
+      let videoData = {
+        streamer: this.$route.params.id,
+        video: this.$route.params.video
+      }
+      this.getSingleVideo(videoData)
+    }
+  },
+  watch: {
+    '$route' () {
+      this.getVideo()
+    }
   },
   created () {
-    let videoData = {
-      streamer: this.$route.params.id,
-      video: this.$route.params.video
-    }
-    this.getSingleVideo(videoData)
+    this.getVideo()
   }
 }
 </script>

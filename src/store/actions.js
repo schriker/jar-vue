@@ -5,6 +5,12 @@ axios.defaults.headers.common['Client-ID'] = 'w87bqmg0y9ckftb2aii2tdielbr1rx'
 
 const actinos = {
   async fetchStreamers ({ commit, state, dispatch }, streamerName) {
+    if (state.userData.streamers.length === 0) {
+      commit('updateStreamers', {})
+      commit('loadingVideosStart')
+      dispatch('displayNotification', { type: 'error', message: 'Brak stremerów do wyświetlenia.' })
+      return
+    }
     let usersQueryString = ''
     let streamsQueryString = ''
     let streamers = {}
@@ -146,6 +152,14 @@ const actinos = {
     }
   },
 
+  updateSingleVideo ({ state, commit }, payload) {
+    for (let video of payload) {
+      video.watched = state.userData.watched.includes(video.id)
+      video.bookmarked = state.userData.bookmarksId.includes(video.id)
+    }
+    commit('setSingleVideo', payload)
+  },
+
   async getSingleVideo ({ state, commit, dispatch }, payload) {
     if (!state.streamers[payload.streamer]) {
       await dispatch('fetchStreamers', payload.streamer)
@@ -165,7 +179,7 @@ const actinos = {
     }
 
     if (searchResults.length > 0) {
-      commit('setSingleVideo', searchResults)
+      dispatch('updateSingleVideo', searchResults)
       return
     }
 
@@ -176,7 +190,7 @@ const actinos = {
     ]
 
     if (searchResults.length > 0) {
-      commit('setSingleVideo', searchResults)
+      dispatch('updateSingleVideo', searchResults)
       return
     }
 
@@ -186,12 +200,7 @@ const actinos = {
       ...singleVideoTwitch.data.data
     ]
 
-    for (let video of searchResults) {
-      video.watched = state.userData.watched.includes(video.id)
-      video.bookmarked = state.userData.bookmarksId.includes(video.id)
-    }
-
-    commit('setSingleVideo', searchResults)
+    dispatch('updateSingleVideo', searchResults)
   },
 
   initUser ({ state, commit }) {

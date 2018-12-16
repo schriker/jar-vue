@@ -31,13 +31,15 @@ export default {
       'updateLocalStorage'
     ]),
     ...mapActions([
-      'fetchStreamers'
+      'fetchStreamers',
+      'displayNotification'
     ]),
     async atRemoveStreamer () {
       this.removeStreamer(this.streamer.info.display_name.toLowerCase())
       this.updateLocalStorage()
       await this.fetchStreamers(this.$store.state.userData.streamers[0])
       this.$router.push({ path: `/${this.$store.state.userData.streamers[0]}` })
+      this.displayNotification({ type: 'error', message: 'Streamer został usunięty.' })
     }
   }
 }

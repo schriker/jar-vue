@@ -17,7 +17,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapState, mapActions } from 'vuex'
 
 import AppStreamer from './Streamer'
 import AppStreamerPlaceholder from './StreamerPlacholder'
@@ -34,6 +34,23 @@ export default {
       'streamers',
       'loadingStreamers'
     ])
+  },
+  methods: {
+    ...mapActions([
+      'fetchStreamers'
+    ])
+  },
+  watch: {
+    '$route' () {
+      this.$store.dispatch('fetchVideos', { streamerName: this.$route.params.id, loadMore: false })
+    }
+  },
+  created () {
+    if (!this.streamers[this.streamerName]) {
+      this.fetchStreamers(this.$route.params.id)
+    } else {
+      this.$store.dispatch('fetchVideos', { streamerName: this.$route.params.id, loadMore: false })
+    }
   }
 }
 </script>

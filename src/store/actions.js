@@ -62,9 +62,7 @@ const actinos = {
   },
 
   async fetchVideos ({ commit, state, dispatch }, actionPayload) {
-    if (!state.streamers[actionPayload.streamerName]) {
-      dispatch('displayNotification', { type: 'error', message: 'Podany streamer nie istnieje.' })
-    } else {
+    if (state.streamers[actionPayload.streamerName]) {
       if (actionPayload.loadMore) {
         commit('loadingMoreStart')
       } else {

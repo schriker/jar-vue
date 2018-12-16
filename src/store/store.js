@@ -48,20 +48,33 @@ export default new Vuex.Store({
     },
     addToWatched (state, payload) {
       state.userData.watched.push(payload)
+      state.userData.bookmarks = state.userData.bookmarks.map((obj) => {
+        if (obj.id === payload) {
+          obj.watched = true
+        }
+        return obj
+      })
     },
     removeFromWatched (state, payload) {
-      let filteredArr = state.userData.watched.filter((id) => id !== payload)
-      state.userData.watched = filteredArr
+      state.userData.watched = state.userData.watched.filter((id) => id !== payload)
+      state.userData.bookmarks = state.userData.bookmarks.map((obj) => {
+        if (obj.id === payload) {
+          obj.watched = false
+        }
+        return obj
+      })
     },
     addToBookmarked (state, payload) {
+      payload.bookmarked = true
+      if (state.userData.watched.includes(payload.id)) {
+        payload.watched = true
+      }
       state.userData.bookmarksId.unshift(payload.id)
       state.userData.bookmarks.unshift(payload)
     },
     removeFromBookmarked (state, payload) {
-      let filteredArr = state.userData.bookmarksId.filter((id) => id !== payload)
-      let filteredObj = state.userData.bookmarks.filter((obj) => obj.id !== payload)
-      state.userData.bookmarksId = filteredArr
-      state.userData.bookmarks = filteredObj
+      state.userData.bookmarksId = state.userData.bookmarksId.filter((id) => id !== payload)
+      state.userData.bookmarks = state.userData.bookmarks.filter((obj) => obj.id !== payload)
     },
     updateUserData (state, payload) {
       state.userData = payload

@@ -1,6 +1,6 @@
 <template>
   <div v-show="!hide" class="videos__item">
-    <a href=""></a>
+    <router-link :to="`/${$route.params.id}/${video.id}`" :video="isWatched"></router-link>
     <div class="videos__thumbnail">
       <!-- <div class="videos__badge videos__badge--new">new</div> -->
       <div @click="toggleBookmarked" class="videos__badge videos__badge--bookmark"><i class="fas fa-bookmark" :class="{'videos__badge--active': isBookMarked}"></i></div>
@@ -70,12 +70,12 @@ export default {
         this.isBookMarked = true
         this.addToBookmarked(this.video)
         this.updateLocalStorage()
-        this.displayNotification({ type: 'bookmarks', message: 'Dodano do zapisanych.' })
+        this.displayNotification({ type: 'bookmarks', message: 'Dodano do ulubionych.' })
       } else {
         this.isBookMarked = false
         this.removeFromBookmarked(this.video.id)
         this.updateLocalStorage()
-        this.displayNotification({ type: 'bookmarks', message: 'Usunięto z zapisanych.' })
+        this.displayNotification({ type: 'bookmarks', message: 'Usunięto z ulubionych.' })
       }
     }
   },

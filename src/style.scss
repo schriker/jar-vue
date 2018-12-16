@@ -16,6 +16,7 @@ $box-shadow: 0px 3px 6px 0px rgba(0,0,0,0.2);
 
 html {
   box-sizing: border-box;
+  height: 100%;
 }
 *,
 *::before,
@@ -35,6 +36,7 @@ a {
 
 body {
   font-size: 16px;
+  height: 100%;
   background-color: $body-bg;
   font-family: 'Roboto', sans-serif;
   background: url('./assets/bg.jpg') no-repeat top right;
@@ -42,9 +44,19 @@ body {
   background-size: contain;
 }
 
+.center-flex {
+  flex: 1 1 auto;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+}
+
 .container {
   width: 100%;
+  height: 100%;
   margin: 0 auto;
+  display: flex;
+  flex-direction: column;
 }
 
 .row {
@@ -82,10 +94,11 @@ body {
 }
 
 .header {
-  height: 75px;
+  height: 60px;
   background-color: $header-bg;
   box-shadow: $box-shadow;
   display: flex;
+  flex: 0 0 60px;
   justify-content: space-between;
   ul {
     height: 100%;
@@ -122,15 +135,15 @@ body {
   &__icon {
     position: relative;
     img {
-      width: 50px;
-      height: 50px;
-      border-radius: 13px;
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
     }
     &::after {
       content: '';
       position: absolute;
       left: 50%;
-      bottom: -10px;
+      bottom: -8px;
       transform: translate(-50%, 0);
       border-top-left-radius: 5px;
       border-top-right-radius: 5px;
@@ -141,8 +154,8 @@ body {
     }
     &--placeholder {
       background-color: $bullet;
-      width: 50px;
-      height: 50px;
+      width: 40px;
+      height: 40px;
       border-radius: 13px;
       &::after {
         display: none;
@@ -372,6 +385,29 @@ body {
     padding: 15px 0;
     font-size: 16px;
   }
+}
+
+.content {
+  display: flex;
+  &__box {
+    text-align: center;
+    margin: auto auto;
+    color: white;
+    font-size: 18px;
+    line-height: 35px;
+    padding: 40px 80px;
+    background-color: $header-bg;
+    border-radius: 8px;
+    box-shadow: $box-shadow;
+    border-left: 3px solid $success;
+  } 
+}
+
+.poorchat {
+  flex: 1 0 350px;
+  width: 350px;
+  height: 100%;
+  overflow: hidden;
 }
 
 .notification {

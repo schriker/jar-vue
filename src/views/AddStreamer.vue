@@ -27,7 +27,7 @@ export default {
     ]),
     onSubmit () {
       if (this.streamerName === '') {
-        this.displayNotification({ type: 'error', message: 'Podaj nazwę uzytkownika.' })
+        this.displayNotification({ type: 'error', message: 'Podaj nazwę streamera.' })
       } else {
         this.addStreamer(this.streamerName)
       }

@@ -211,7 +211,7 @@ const actinos = {
     try {
       const { data: { data } } = await axios.get(`/users?&login=${payload}`)
       if (data.length === 0) {
-        dispatch('displayNotification', { type: 'error', message: 'Podany uzytkownik nie istnieje.' })
+        dispatch('displayNotification', { type: 'error', message: 'Podany streamer nie istnieje.' })
         return
       }
     } catch (error) {
@@ -220,7 +220,7 @@ const actinos = {
     commit('addStreamer', payload)
     await dispatch('fetchStreamers', state.userData.streamers[0])
     commit('updateLocalStorage')
-    dispatch('displayNotification', { type: 'success', message: 'Dodano uzytkownika.' })
+    dispatch('displayNotification', { type: 'success', message: 'Dodano streamera.' })
   },
 
   initUser ({ state, commit }) {

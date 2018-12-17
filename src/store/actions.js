@@ -68,6 +68,8 @@ const actinos = {
   },
 
   async fetchVideos ({ commit, state, dispatch }, actionPayload) {
+    let today = new Date()
+
     if (state.streamers[actionPayload.streamerName]) {
       if (actionPayload.loadMore) {
         commit('loadingMoreStart')
@@ -125,16 +127,16 @@ const actinos = {
           ...pagination
         }
 
-        let today = new Date()
-
         for (let video of videosArr) {
+          let date = new Date(video.published_at)
+          let lastVisited = new Date(state.userData.lastVisited[actionPayload.streamerName].date)
           let videoObject = {
             ...video,
             watched: state.userData.watched.includes(video.id),
-            bookmarked: state.userData.bookmarksId.includes(video.id)
+            bookmarked: state.userData.bookmarksId.includes(video.id),
+            isNew: lastVisited < date
           }
 
-          let date = new Date(video.published_at)
           let hours = ((today.getTime() - date.getTime()) / (1000 * 60 * 60)).toFixed(1)
           if (hours < 24) {
             payload.data.videos.today.push(videoObject)
@@ -149,6 +151,8 @@ const actinos = {
         dispatch('displayNotification', { type: 'error', message: 'Wystąpił bląd.' })
       }
       commit('updateVideos', payload)
+      commit('updateLastVisited', { streamer: actionPayload.streamerName, date: today.toISOString() })
+      commit('updateLocalStorage')
     }
   },
 

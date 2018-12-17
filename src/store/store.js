@@ -17,10 +17,24 @@ export default new Vuex.Store({
     },
     userData: {
       hideWatched: false,
-      streamers: ['wonziu', 'dzejth', 'nvidiageforcepl'],
+      streamers: ['wonziu', 'dzejth', 'nvidiageforcepl', 'urqueeen'],
       watched: [],
       bookmarksId: [],
-      bookmarks: []
+      bookmarks: [],
+      lastVisited: {
+        wonziu: {
+          date: ''
+        },
+        dzejth: {
+          date: ''
+        },
+        nvidiageforcepl: {
+          date: ''
+        },
+        urqueeen: {
+          date: ''
+        }
+      }
     },
     singleVideo: [{}],
     loadingStreamers: true,
@@ -70,6 +84,7 @@ export default new Vuex.Store({
     },
     addToBookmarked (state, payload) {
       payload.bookmarked = true
+      payload.isNew = false
       if (state.userData.watched.includes(payload.id)) {
         payload.watched = true
       }
@@ -82,6 +97,9 @@ export default new Vuex.Store({
     },
     removeStreamer (state, payload) {
       state.userData.streamers = state.userData.streamers.filter((streamer) => streamer !== payload)
+    },
+    updateLastVisited (state, payload) {
+      state.userData.lastVisited[payload.streamer].date = payload.date
     },
     updateUserData (state, payload) {
       state.userData = payload

@@ -44,6 +44,12 @@ body {
   background-size: contain;
 }
 
+input[type="text"] {
+  color: #C2C2C2;
+  border: none;
+  border-radius: 5px;
+}
+
 .center-flex {
   flex: 1 1 auto;
   display: flex;
@@ -321,6 +327,7 @@ body {
     color: white;
     font-size: 14px;
     padding: 8px 10px;
+    line-height: 14px;
     i {
       margin: 0 8px 0 0;
     }

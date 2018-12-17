@@ -3,7 +3,7 @@
     <div v-show="!hide" class="videos__item">
       <router-link :to="`/${video.user_name.toLowerCase()}/${video.id}`" :video="isWatched"></router-link>
       <div class="videos__thumbnail">
-        <!-- <div class="videos__badge videos__badge--new">new</div> -->
+        <div v-if="video.isNew" class="videos__badge videos__badge--new">new</div>
         <app-toggle-book-marked @toggleBookMarked="isBookMarked = !isBookMarked" :video="video" :bookMarked="isBookMarked"></app-toggle-book-marked>
         <div class="videos__badge videos__badge--time"><i class="fas fa-play"></i>{{video.duration}}</div>
         <div class="videos__badge videos__badge--views"><i class="fas fa-eye"></i>{{ video.view_count }}</div>

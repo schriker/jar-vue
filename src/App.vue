@@ -24,10 +24,10 @@ export default {
     ])
   },
   created () {
+    this.initUser()
     if (!this.$route.params.id) {
       this.$router.push({ path: `/${this.$store.state.userData.streamers[0]}` })
     }
-    this.initUser()
   }
 }
 </script>

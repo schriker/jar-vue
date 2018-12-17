@@ -17,7 +17,7 @@ export default new Vuex.Store({
     },
     userData: {
       hideWatched: false,
-      streamers: ['wonziu', 'dzejth', 'nvidiageforcepl', 'urqueeen'],
+      streamers: ['wonziu', 'dzejth'],
       watched: [],
       bookmarksId: [],
       bookmarks: [],
@@ -26,12 +26,6 @@ export default new Vuex.Store({
           date: ''
         },
         dzejth: {
-          date: ''
-        },
-        nvidiageforcepl: {
-          date: ''
-        },
-        urqueeen: {
           date: ''
         }
       }
@@ -43,6 +37,15 @@ export default new Vuex.Store({
     streamers: {}
   },
   mutations: {
+    addStreamer (state, payload) {
+      state.userData.streamers.push(payload)
+      state.userData.lastVisited = {
+        ...state.userData.lastVisited,
+        [payload]: {
+          date: ''
+        }
+      }
+    },
     toggleWatched (state) {
       state.userData.hideWatched = !state.userData.hideWatched
     },
@@ -106,7 +109,7 @@ export default new Vuex.Store({
     },
     updateLocalStorage (state) {
       let userDataString = JSON.stringify(state.userData)
-      localStorage.setItem('userData', userDataString)
+      localStorage.setItem('jarchiwumData', userDataString)
     },
     showNotification (state, payload) {
       state.notification.show = true

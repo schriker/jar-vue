@@ -207,14 +207,30 @@ const actinos = {
     dispatch('updateSingleVideo', searchResults)
   },
 
+  async addStreamer ({ commit, dispatch, state }, payload) {
+    try {
+      const { data: { data } } = await axios.get(`/users?&login=${payload}`)
+      if (data.length === 0) {
+        dispatch('displayNotification', { type: 'error', message: 'Podany uzytkownik nie istnieje.' })
+        return
+      }
+    } catch (error) {
+      console.log(error)
+    }
+    commit('addStreamer', payload)
+    await dispatch('fetchStreamers', state.userData.streamers[0])
+    commit('updateLocalStorage')
+    dispatch('displayNotification', { type: 'success', message: 'Dodano uzytkownika.' })
+  },
+
   initUser ({ state, commit }) {
     let userDataString = JSON.stringify(state.userData)
-    let userDataObject = JSON.parse(localStorage.getItem('userData'))
+    let userDataObject = JSON.parse(localStorage.getItem('jarchiwumData'))
 
-    if (localStorage.getItem('userData')) {
+    if (localStorage.getItem('jarchiwumData')) {
       commit('updateUserData', userDataObject)
     } else {
-      localStorage.setItem('userData', userDataString)
+      localStorage.setItem('jarchiwumData', userDataString)
     }
   },
 

@@ -4,7 +4,7 @@
             <div class="content__box">
                 Podaj nazwę Twitch użytkownika, którego chcesz <br> dodać do listy obserwowanych.
                 <form @submit.prevent="onSubmit">
-                    <input v-model="streamerName" placeholder="Wonziu" type="text" name="user" id="user">
+                    <input @keyup.enter="onSubmit" v-model="streamerName" placeholder="Wonziu" type="text" name="user" id="user">
                     <button class="submit-btn" type="submit"><i class="fas fa-plus"></i></button>
                 </form>
             </div>
@@ -30,6 +30,7 @@ export default {
         this.displayNotification({ type: 'error', message: 'Podaj nazwę streamera.' })
       } else {
         this.addStreamer(this.streamerName)
+        this.streamerName = ''
       }
     }
   }

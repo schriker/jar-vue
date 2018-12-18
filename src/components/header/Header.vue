@@ -1,18 +1,17 @@
 <template>
     <header class="header row">
       <ul class="streamers-wraper">
-            <li v-if="loadingStreamers">
-              <a>
-                <app-streamer-placeholder></app-streamer-placeholder>
-              </a>
-            </li>
+          <li v-if="loadingStreamers">
+            <a>
+              <app-streamer-placeholder></app-streamer-placeholder>
+            </a>
+          </li>
         <app-simplebar v-if="!loadingStreamers" class="simplebar" data-simplebar-auto-hide="true">
-
-              <li v-for="streamer in streamers" :key="streamer.info.id">
-                <router-link :to="`/${streamer.info.login}`" active-class="active">
-                  <app-streamer :streamer="streamer"></app-streamer>
-                </router-link>
-              </li>
+          <li v-for="streamer in streamers" :key="streamer.info.id">
+            <router-link :to="`/${streamer.info.login}`" active-class="active">
+              <app-streamer :streamer="streamer"></app-streamer>
+            </router-link>
+          </li>
         </app-simplebar>
       </ul>
       <app-user-menu></app-user-menu>

@@ -239,6 +239,7 @@ form {
   &__status {
     font-size: 14px;
     color: $dark;
+    white-space: nowrap;
     span {
       color: $success;
     }

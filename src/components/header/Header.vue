@@ -1,16 +1,19 @@
 <template>
     <header class="header row">
-      <ul>
-        <li v-if="loadingStreamers">
-          <a>
-            <app-streamer-placeholder></app-streamer-placeholder>
-          </a>
-        </li>
-        <li v-for="streamer in streamers" :key="streamer.info.id">
-          <router-link :to="`/${streamer.info.login}`" active-class="active">
-            <app-streamer :streamer="streamer"></app-streamer>
-          </router-link>
-        </li>
+      <ul class="streamers-wraper">
+            <li v-if="loadingStreamers">
+              <a>
+                <app-streamer-placeholder></app-streamer-placeholder>
+              </a>
+            </li>
+        <app-simplebar v-if="!loadingStreamers" class="simplebar" data-simplebar-auto-hide="true">
+
+              <li v-for="streamer in streamers" :key="streamer.info.id">
+                <router-link :to="`/${streamer.info.login}`" active-class="active">
+                  <app-streamer :streamer="streamer"></app-streamer>
+                </router-link>
+              </li>
+        </app-simplebar>
       </ul>
       <app-user-menu></app-user-menu>
     </header>
@@ -22,12 +25,15 @@ import { mapState, mapActions } from 'vuex'
 import AppStreamer from './Streamer'
 import AppStreamerPlaceholder from './StreamerPlacholder'
 import AppUserMenu from './UserMenu'
+import AppSimplebar from 'simplebar-vue'
+import 'simplebar/dist/simplebar.min.css'
 
 export default {
   components: {
     AppStreamerPlaceholder,
     AppStreamer,
-    AppUserMenu
+    AppUserMenu,
+    AppSimplebar
   },
   computed: {
     ...mapState([
@@ -54,3 +60,19 @@ export default {
   }
 }
 </script>
+
+<style>
+  .simplebar {
+    height: 60px;
+    width: 100%;
+    flex: 1 1 auto;
+  }
+  .simplebar-content {
+    display: flex;
+  }
+
+  .streamers-wraper {
+    overflow: auto;
+    overflow-y: hidden;
+  }
+</style>

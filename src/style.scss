@@ -603,3 +603,72 @@ form {
     border-width: calc(60px / 7);
   }
 }
+
+@media (max-width: 1199.98px) {
+  .videos {
+    &__item {
+      flex: 0 1 33.3%;
+      max-width: 33.3%;
+    }
+  }
+}
+@media (max-width: 767.98px) {
+
+  input[type="text"] {
+    flex: 0 1 70%;
+    min-width: 0;
+  }
+
+  form {
+    display: flex;
+    justify-content: center;
+  }
+
+  .notification {
+    width: 80%;
+    padding: 15px;
+  }
+
+  .content {
+    justify-content: center;
+    padding: 0 10px;
+  }
+
+  .content__box {
+    font-size: 14px;
+    margin-top: 40px;
+    padding: 20px;
+  }
+
+  .load-more button {
+    width: 50%;
+  }
+  .videos {
+    &__item {
+      flex: 0 1 50%;
+      max-width: 50%;
+    }
+  }
+  .center-flex {
+    flex-direction: column;
+  }
+
+  .player {
+    height: 400px;
+    flex: 1 0 400px;
+  }
+
+  .poorchat {
+    width: auto;
+    flex: 1 0 400px;
+    height: 400px;
+  }
+}
+@media (max-width: 575.98px) {
+.videos {
+  &__item {
+    flex: 0 1 100%;
+    max-width: 100%;
+  }
+}
+}

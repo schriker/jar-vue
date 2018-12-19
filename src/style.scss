@@ -30,8 +30,14 @@ html {
 }
 
 a {
+  color: white;
   text-decoration: none;
   outline: 0;
+  transition: all .2s ease;
+  &:hover {
+    color: $success;
+    text-decoration: none;
+  }
 }
 
 body {
@@ -446,6 +452,12 @@ form {
     padding: 8px 25px;
     border-top: 1px solid #252E3A;
     background-color: #1D252F;
+    &--left-border {
+      border-left: 1px solid #252E3A;
+      i {
+        margin: 0;
+      }
+    }
     i {
       margin: 0 8px 0 0;
       &:nth-of-type(2) {
@@ -476,9 +488,14 @@ form {
 }
 
 .poorchat {
+  display: flex;
+  flex-direction: column;
   flex: 0 0 400px;
   width: 400px;
   overflow: hidden;
+  &__container {
+    flex:  1 0 auto;
+  }
 }
 
 .notification {

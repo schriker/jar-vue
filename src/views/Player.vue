@@ -19,7 +19,10 @@
           </iframe>
         </div>
         <div class="poorchat">
-            <iframe frameborder="0" height="100%" width="100%"  id="jd-chat" src="https://client.poorchat.net/jadisco"></iframe>
+          <div class="player__top player__top--left-border">
+            <a target="_blank" href="https://www.poorchat.net/subscriptions/jadisco"><i class="fas fa-heart"></i>Subskrybuj czatek</a>
+          </div>
+            <iframe class="poorchat__container" frameborder="0" width="100%" id="jd-chat" src="https://client.poorchat.net/jadisco"></iframe>
         </div>
     </div>
 </template>

@@ -149,6 +149,7 @@ const actinos = {
       } catch (error) {
         console.log(error)
         dispatch('displayNotification', { type: 'error', message: 'Wystąpił bląd.' })
+        return
       }
       commit('updateVideos', payload)
       commit('updateLastVisited', { streamer: actionPayload.streamerName, date: today.toISOString() })
@@ -216,6 +217,8 @@ const actinos = {
       }
     } catch (error) {
       console.log(error)
+      dispatch('displayNotification', { type: 'error', message: 'Wystąpił bląd.' })
+      return
     }
     commit('addStreamer', payload)
     await dispatch('fetchStreamers', state.userData.streamers[0])

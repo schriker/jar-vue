@@ -2,9 +2,10 @@
   <div>
     <div v-if="!loadingVideos" class="row filters">
       <app-watched-button></app-watched-button>
+      <input class="input input--dark" placeholder="Szukana fraza..." v-model="searchValue" type="text">
     </div>
     <app-spinner v-if="loadingVideos"></app-spinner>
-    <app-videos-list v-else :videos="streamers[streamerName].videos.videos"></app-videos-list>
+    <app-videos-list v-else :searchValue="searchValue" :videos="videos"></app-videos-list>
     <div v-if="!loadingVideos" class="row load-more">
       <button :disabled="loadingMore" @click="fetchVideos({ streamerName: streamerName, loadMore: true })" class="btn">{{ loadingMore ? 'Pobieram...' : 'Załaduj więcej' }}</button>
     </div>
@@ -17,6 +18,11 @@ import AppVideosList from '../components/videos/VideosList'
 import AppWatchedButton from '../UI/WatchedButton'
 
 export default {
+  data () {
+    return {
+      searchValue: ''
+    }
+  },
   components: {
     AppSpinner,
     AppVideosList,
@@ -33,6 +39,9 @@ export default {
       'loadingMore',
       'streamers'
     ]),
+    videos () {
+      return this.streamers[this.streamerName].videos.videos
+    },
     streamerName () {
       return this.$route.params.id
     }

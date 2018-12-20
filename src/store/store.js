@@ -17,7 +17,7 @@ export default new Vuex.Store({
     },
     userData: {
       hideWatched: false,
-      streamers: ['wonziu', 'dzejth'],
+      streamers: ['wonziu', 'dzejth', 'nvidiageforcepl'],
       watched: [],
       bookmarksId: [],
       bookmarks: [],
@@ -26,6 +26,9 @@ export default new Vuex.Store({
           date: ''
         },
         dzejth: {
+          date: ''
+        },
+        nvidiageforcepl: {
           date: ''
         }
       }

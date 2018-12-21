@@ -156,7 +156,24 @@ const actinos = {
       commit('updateLocalStorage')
     }
   },
-
+  async refreshBookMark ({ commit, dispatch, state }, payload) {
+    commit('onRefreshBookMarkStart')
+    try {
+      const { data: { data } } = await axios.get(`videos?id=${payload.video.id}`)
+      let refreshed = {
+        ...data[0],
+        watched: state.userData.watched.includes(payload.video.id),
+        bookmarked: state.userData.bookmarksId.includes(payload.video.id)
+      }
+      console.log(data)
+      commit('onRefreshBookMark', { newVideo: refreshed, index: payload.index })
+      commit('updateLocalStorage')
+      dispatch('displayNotification', { type: 'success', message: 'Odświeżono.' })
+    } catch (error) {
+      console.log(error)
+      dispatch('displayNotification', { type: 'error', message: 'Wystąpił bląd.' })
+    }
+  },
   updateSingleVideo ({ state, commit }, payload) {
     for (let video of payload) {
       video.watched = state.userData.watched.includes(video.id)

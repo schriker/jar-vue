@@ -4,6 +4,7 @@
       <router-link :to="`/${video.user_name.toLowerCase()}/${video.id}`" :video="isWatched"></router-link>
       <div class="videos__thumbnail">
         <div v-if="video.isNew" class="videos__badge videos__badge--new">new</div>
+        <div class="videos__badge videos__badge--refresh" @click="refreshBookMark({index: index, video: video})" v-if="$route.path === '/bookmarks' "><i class="fas fa-sync-alt"></i></div>
         <app-toggle-book-marked @toggleBookMarked="isBookMarked = !isBookMarked" :video="video" :bookMarked="isBookMarked"></app-toggle-book-marked>
         <div class="videos__badge videos__badge--time"><i class="fas fa-play"></i>{{video.duration}}</div>
         <div class="videos__badge videos__badge--views"><i class="fas fa-eye"></i>{{ video.view_count }}</div>
@@ -20,7 +21,7 @@
 <script>
 import AppToggleWatched from '../../UI/ToggleWatched'
 import AppToggleBookMarked from '../../UI/ToggleBookMarked'
-import { mapState } from 'vuex'
+import { mapState, mapActions } from 'vuex'
 import defaultThumbnail from '../../assets/default_thumbnail.jpg'
 
 export default {
@@ -39,7 +40,8 @@ export default {
     AppToggleBookMarked
   },
   props: {
-    video: Object
+    video: Object,
+    index: Number
   },
   computed: {
     ...mapState([
@@ -48,6 +50,11 @@ export default {
     hide () {
       return this.isWatched && this.userData.hideWatched
     }
+  },
+  methods: {
+    ...mapActions([
+      'refreshBookMark'
+    ])
   },
   created () {
     this.thumbnail = this.video.thumbnail_url.replace('%{width}', '640').replace('%{height}', '360')

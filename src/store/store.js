@@ -88,6 +88,9 @@ export default new Vuex.Store({
         return obj
       })
     },
+    onRefreshBookMark (state, payload) {
+      Vue.set(state.userData.bookmarks, payload.index, payload.newVideo)
+    },
     addToBookmarked (state, payload) {
       payload.bookmarked = true
       payload.isNew = false

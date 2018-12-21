@@ -388,6 +388,15 @@ form {
         cursor: pointer;
       }
     }
+    &--refresh {
+      z-index: 900;
+      top: 12px;
+      left: 8px;
+      cursor: pointer;
+      i {
+        margin: 0;
+      }
+    }
     &--active {
       color: $bookmarks;
     }
@@ -415,6 +424,10 @@ form {
       color: $success;
     }
   }
+}
+
+.refresh-animation {
+  animation:spin 4s linear infinite;
 }
 
 .filters {
@@ -612,6 +625,12 @@ form {
   box-sizing: border-box;
   animation: spring-spinner-animation 3s ease-in-out infinite;
   transform: rotate(-200deg);
+}
+
+@keyframes spin { 
+  100% { 
+  transform:rotate(360deg); 
+  } 
 }
 
 @keyframes spring-spinner-animation {

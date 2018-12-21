@@ -426,10 +426,6 @@ form {
   }
 }
 
-.refresh-animation {
-  animation:spin 4s linear infinite;
-}
-
 .filters {
   margin: 35px 0 0 0;
   display: flex;
@@ -625,12 +621,6 @@ form {
   box-sizing: border-box;
   animation: spring-spinner-animation 3s ease-in-out infinite;
   transform: rotate(-200deg);
-}
-
-@keyframes spin { 
-  100% { 
-  transform:rotate(360deg); 
-  } 
 }
 
 @keyframes spring-spinner-animation {

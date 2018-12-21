@@ -157,7 +157,6 @@ const actinos = {
     }
   },
   async refreshBookMark ({ commit, dispatch, state }, payload) {
-    commit('onRefreshBookMarkStart')
     try {
       const { data: { data } } = await axios.get(`videos?id=${payload.video.id}`)
       let refreshed = {
@@ -165,7 +164,6 @@ const actinos = {
         watched: state.userData.watched.includes(payload.video.id),
         bookmarked: state.userData.bookmarksId.includes(payload.video.id)
       }
-      console.log(data)
       commit('onRefreshBookMark', { newVideo: refreshed, index: payload.index })
       commit('updateLocalStorage')
       dispatch('displayNotification', { type: 'success', message: 'Odświeżono.' })

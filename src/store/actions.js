@@ -172,7 +172,6 @@ const actinos = {
     }
 
     let searchInStreamers = state.streamers[payload.streamer].videos.videos
-    let searchInBookmarked = state.userData.bookmarks
     let searchResults = []
 
     for (let array in searchInStreamers) {
@@ -182,17 +181,6 @@ const actinos = {
         ...temp
       ]
     }
-
-    if (searchResults.length > 0) {
-      dispatch('updateSingleVideo', searchResults)
-      return
-    }
-
-    let temp = searchInBookmarked.filter((video) => video.id === payload.video)
-    searchResults = [
-      ...searchResults,
-      ...temp
-    ]
 
     if (searchResults.length > 0) {
       dispatch('updateSingleVideo', searchResults)

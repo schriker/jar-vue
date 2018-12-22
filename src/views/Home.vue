@@ -1,5 +1,12 @@
 <template>
   <div>
+    <div class="player__top player__top--videos" v-if="!loadingVideos && this.streamers.data[this.streamerName].status.type">
+      <div class="live">
+        <div class="live__outer"></div>
+        <div class="live__icon"></div>
+      </div>
+      <a target="_blank" :href="`https://pancernik.info/twitch/${this.streamerName}`">Live - Oglądaj na pancerniku!</a>
+    </div>
     <div v-if="!loadingVideos" class="row filters">
       <app-watched-button></app-watched-button>
       <div class="search">

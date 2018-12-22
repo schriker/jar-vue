@@ -489,6 +489,8 @@ form {
   display: flex;
   flex-direction: column;
   &__top {
+    display: flex;
+    color: white;
     font-size: 14px;
     position: relative;
     padding: 8px 25px;
@@ -499,6 +501,9 @@ form {
       i {
         margin: 0;
       }
+    }
+    &--videos{
+      align-items: center;
     }
     i {
       margin: 0 8px 0 0;
@@ -642,6 +647,46 @@ form {
   box-sizing: border-box;
   animation: spring-spinner-animation 3s ease-in-out infinite;
   transform: rotate(-200deg);
+}
+
+.live {
+  position: relative;
+  flex: 0 1 auto;
+  width: 8px;
+  height: 8px;
+  margin: 0 10px 0 0;
+  &__icon {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background-color: $error;
+    border-radius: 50%;
+  }
+  &__outer {
+    border-radius: 50%;
+    border: 2px solid $error;
+    height: 16px;
+    width: 16px;
+    position: absolute;
+    left: -4px;
+    top: -4px;
+    animation: pulsate 1s ease-out infinite;
+    opacity: 1
+  }
+}
+
+@keyframes pulsate {
+  0% {
+    transform: scale(0.1, 0.1); 
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.2, 1.2); 
+    opacity: 0;
+  }
 }
 
 @keyframes spring-spinner-animation {

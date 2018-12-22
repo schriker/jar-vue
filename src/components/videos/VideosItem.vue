@@ -8,7 +8,7 @@
         <app-toggle-book-marked @toggleBookMarked="isBookMarked = !isBookMarked" :video="video" :bookMarked="isBookMarked"></app-toggle-book-marked>
         <div class="videos__badge videos__badge--time"><i class="fas fa-play"></i>{{video.duration}}</div>
         <div class="videos__badge videos__badge--views"><i class="fas fa-eye"></i>{{ video.view_count }}</div>
-        <img :src="thumbnail !== '' ? thumbnail : defaultThumbnail" alt="">
+        <img :src="video.thumbnail_url !== '' ? thumbnail : defaultThumbnail" alt="">
       </div>
       <div class="videos__title">
         <h3>{{ title }}</h3>
@@ -30,7 +30,6 @@ export default {
       isWatched: this.video.watched,
       isBookMarked: this.video.bookmarked,
       defaultThumbnail,
-      thumbnail: '',
       title: '',
       date: ''
     }
@@ -49,6 +48,9 @@ export default {
     ]),
     hide () {
       return this.isWatched && this.userData.hideWatched
+    },
+    thumbnail () {
+      return this.video.thumbnail_url.replace('%{width}', '640').replace('%{height}', '360')
     }
   },
   methods: {
@@ -57,8 +59,6 @@ export default {
     ])
   },
   created () {
-    this.thumbnail = this.video.thumbnail_url.replace('%{width}', '640').replace('%{height}', '360')
-
     if (this.video.title.length > 60) {
       this.title = this.video.title.substring(0, 60) + '...'
     } else {

@@ -57,11 +57,6 @@ body {
   outline: 0;
   border-radius: 5px;
   padding: 10px 25px;
-  &--dark {
-    color: $light;
-    background-color: $header-bg;
-    border-left: 3px solid $success;
-  }
 }
 
 form {
@@ -140,7 +135,6 @@ form {
   box-shadow: $box-shadow;
   display: flex;
   flex: 0 0 60px;
-  justify-content: space-between;
   ul {
     height: 100%;
     display: flex;
@@ -268,12 +262,12 @@ form {
 
 .user-menu {
   img {
-    width: 36px;
+    width: 32px;
   }
   a {
-    font-size: 28px;
-    color: $bookmarks;
+    font-size: 22px;
     position: relative;
+    color: $light;
     &::after {
       content: '';
       position: absolute;
@@ -287,12 +281,39 @@ form {
       background-color: $bullet;
       transition: all .2s ease;
     }
+    &:hover {
+      color: $success
+    }
     &.active {
+      color: $success;
       &::after {
         background-color: white;
         width: 35px;
       }
     }
+  }
+  &--links {
+    margin: 0 0 0 auto;
+  }
+}
+
+.search {
+  position: relative;
+  text-align: right;
+  input {
+    transition: all .2s ease;
+    width: 90%;
+    &:focus {
+      width: 100%;
+    }
+  }
+  label {
+    position: absolute;
+    color: $light;
+    right: 10px;
+    top: 50%;
+    transform: translate(0, -50%);
+    cursor: pointer;
   }
 }
 
@@ -653,9 +674,8 @@ form {
 @media (max-width: 767.98px) {
 
   input[type="text"] {
-    flex: 0 1 70%;
+    flex: 0 1 90%;
     min-width: 0;
-    max-width: 70%;
   }
 
   form {
@@ -705,6 +725,12 @@ form {
   }
 }
 @media (max-width: 575.98px) {
+  .search {
+    text-align: center;
+    input {
+      width: 100%;
+    }
+  }
   .filters {
     flex-direction: column;
     .btn {

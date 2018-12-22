@@ -2,7 +2,10 @@
   <div>
     <div v-if="!loadingVideos" class="row filters">
       <app-watched-button></app-watched-button>
-      <input class="input input--dark" placeholder="Szukana fraza..." v-model="searchValue" type="text">
+      <div class="search">
+        <input name="search" id="search" class="input" placeholder="Filtruj wyniki..." v-model="searchValue" type="text">
+        <label for="search"><i class="fas fa-search"></i></label>
+      </div>
     </div>
     <app-spinner v-if="loadingVideos"></app-spinner>
     <app-videos-list v-else :searchValue="searchValue" :videos="videos"></app-videos-list>

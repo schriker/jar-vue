@@ -1,6 +1,5 @@
 <template>
   <div>
-    <p>{{filtered.search}}</p>
     <app-videos-row v-if="videos.today.length > 0" :videos="filtered.today" :title="'Ostatnie 24h'"></app-videos-row>
     <app-videos-row v-if="videos.yesterday.length > 0" :videos="filtered.yesterday" :title="'Ostatnie 48h'"></app-videos-row>
     <app-videos-row v-if="videos.older.length > 0" :videos="filtered.older" :title="'Starsze'"></app-videos-row>

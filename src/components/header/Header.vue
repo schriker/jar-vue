@@ -14,6 +14,9 @@
           </li>
         </app-simplebar>
       </ul>
+      <ul class="user-menu">
+        <li><router-link to="/add" active-class="active"><img :src="addIcon" alt=""></router-link></li>
+      </ul>
       <app-user-menu></app-user-menu>
     </header>
 </template>
@@ -25,9 +28,15 @@ import AppStreamer from './Streamer'
 import AppStreamerPlaceholder from './StreamerPlacholder'
 import AppUserMenu from './UserMenu'
 import AppSimplebar from 'simplebar-vue'
+import addIcon from '../../assets/add_new.svg'
 import 'simplebar/dist/simplebar.min.css'
 
 export default {
+  data () {
+    return {
+      addIcon
+    }
+  },
   components: {
     AppStreamerPlaceholder,
     AppStreamer,

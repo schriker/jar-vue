@@ -1,6 +1,8 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import actions from './actions'
+import notification from './modules/notification'
+import streamers from './modules/streamers'
 import axios from 'axios'
 
 axios.defaults.baseURL = 'https://api.twitch.tv/helix'
@@ -10,11 +12,6 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    notification: {
-      type: '',
-      show: false,
-      message: ''
-    },
     userData: {
       hideWatched: false,
       streamers: ['wonziu', 'dzejth', 'nvidiageforcepl'],
@@ -34,10 +31,8 @@ export default new Vuex.Store({
       }
     },
     singleVideo: [{}],
-    loadingStreamers: true,
     loadingVideos: true,
-    loadingMore: false,
-    streamers: {}
+    loadingMore: false
   },
   mutations: {
     addStreamer (state, payload) {
@@ -55,10 +50,6 @@ export default new Vuex.Store({
     setSingleVideo (state, payload) {
       state.singleVideo = payload
     },
-    updateStreamers (state, payload) {
-      state.streamers = payload
-      state.loadingStreamers = false
-    },
     loadingVideosStart (state) {
       state.loadingVideos = true
     },
@@ -66,7 +57,7 @@ export default new Vuex.Store({
       state.loadingMore = true
     },
     updateVideos (state, payload) {
-      state.streamers[payload.streamer].videos = payload.data
+      state.streamers.data[payload.streamer].videos = payload.data
       state.loadingVideos = false
       state.loadingMore = false
     },
@@ -116,17 +107,13 @@ export default new Vuex.Store({
     updateLocalStorage (state) {
       let userDataString = JSON.stringify(state.userData)
       localStorage.setItem('jarchiwumData', userDataString)
-    },
-    showNotification (state, payload) {
-      state.notification.show = true
-      state.notification.message = payload.message
-      state.notification.type = payload.type
-    },
-    hideNotification (state) {
-      state.notification.show = false
     }
   },
   actions: {
     ...actions
+  },
+  modules: {
+    notification,
+    streamers
   }
 })

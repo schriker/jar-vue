@@ -1,13 +1,13 @@
 <template>
     <header class="header row">
       <ul class="streamers-wraper">
-          <li v-if="loadingStreamers">
+          <li v-if="streamers.loading">
             <a>
               <app-streamer-placeholder></app-streamer-placeholder>
             </a>
           </li>
-        <app-simplebar v-if="!loadingStreamers" class="simplebar" data-simplebar-auto-hide="true">
-          <li v-for="streamer in streamers" :key="streamer.info.id">
+        <app-simplebar v-if="!streamers.loading" class="simplebar" data-simplebar-auto-hide="true">
+          <li v-for="streamer in streamers.data" :key="streamer.info.id">
             <router-link :to="`/${streamer.info.login}`" active-class="active">
               <app-streamer :streamer="streamer"></app-streamer>
             </router-link>
@@ -36,8 +36,7 @@ export default {
   },
   computed: {
     ...mapState([
-      'streamers',
-      'loadingStreamers'
+      'streamers'
     ])
   },
   methods: {
@@ -51,7 +50,7 @@ export default {
     }
   },
   created () {
-    if (!this.streamers[this.streamerName]) {
+    if (!this.streamers.data[this.streamerName]) {
       this.fetchStreamers(this.$route.params.id)
     } else {
       this.$store.dispatch('fetchVideos', { streamerName: this.$route.params.id, loadMore: false })

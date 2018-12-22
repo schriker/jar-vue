@@ -40,7 +40,7 @@ export default {
       'streamers'
     ]),
     videos () {
-      return this.streamers[this.streamerName].videos.videos
+      return this.streamers.data[this.streamerName].videos.videos
     },
     streamerName () {
       return this.$route.params.id

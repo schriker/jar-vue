@@ -32,6 +32,11 @@ import AppToggleBookMarked from '../UI/ToggleBookMarked'
 import { mapActions, mapState } from 'vuex'
 
 export default {
+  metaInfo () {
+    return {
+      title: !(this.streamerName in this.streamers.data) ? 'Jarchiwum' : `Jarchiwum - ${this.streamers.data[this.streamerName].info.display_name}`
+    }
+  },
   components: {
     AppToggleWatched,
     AppToggleBookMarked

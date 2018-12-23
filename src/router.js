@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
+import Meta from 'vue-meta'
 
 import AppHome from './views/Home'
 import AppPlayer from './views/Player'
@@ -7,6 +8,7 @@ import AppBookmarks from './views/Bookmarks'
 import AppAddStreamer from './views/AddStreamer'
 
 Vue.use(Router)
+Vue.use(Meta)
 
 export default new Router({
   mode: 'history',

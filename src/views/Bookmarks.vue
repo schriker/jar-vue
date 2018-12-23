@@ -19,6 +19,9 @@ import AppWatchedButton from '../UI/WatchedButton'
 import { mapState } from 'vuex'
 
 export default {
+  metaInfo: {
+    title: 'Jarchwium - Ulubione'
+  },
   computed: {
     ...mapState([
       'userData'

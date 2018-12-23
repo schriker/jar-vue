@@ -20,6 +20,9 @@ export default {
       streamerName: ''
     }
   },
+  metaInfo: {
+    title: 'Jarchiwum - Dodaj streamera'
+  },
   methods: {
     ...mapActions([
       'displayNotification',

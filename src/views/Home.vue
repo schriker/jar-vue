@@ -35,7 +35,7 @@ export default {
   },
   metaInfo () {
     return {
-      title: this.streamers.loading ? 'Jarchiwum' : `Jarchiwum - ${this.streamers.data[this.streamerName].info.display_name}`
+      title: !(this.streamerName in this.streamers.data) ? 'Jarchiwum' : `Jarchiwum - ${this.streamers.data[this.streamerName].info.display_name}`
     }
   },
   components: {
@@ -45,11 +45,13 @@ export default {
   },
   methods: {
     ...mapActions([
-      'fetchVideos'
+      'fetchVideos',
+      'addStreamer'
     ])
   },
   computed: {
     ...mapState([
+      'userData',
       'loadingVideos',
       'loadingMore',
       'streamers'
@@ -59,6 +61,12 @@ export default {
     },
     streamerName () {
       return this.$route.params.id
+    }
+  },
+  async created () {
+    if (!this.userData.streamers.includes(this.streamerName)) {
+      await this.addStreamer(this.streamerName)
+      this.fetchVideos({ streamerName: this.streamerName, loadMore: false })
     }
   }
 }

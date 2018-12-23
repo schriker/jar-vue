@@ -50,7 +50,7 @@ export default {
       let id = this.$route.params.id
       let userName = this.singleVideo[0].user_name
       if (userName && (userName.toLowerCase() !== id)) {
-        this.$router.replace({ params: { id: userName, video: this.$route.params.video } })
+        this.$router.replace({ params: { id: userName.toLowerCase(), video: this.$route.params.video } })
       }
       return this.singleVideo
     },

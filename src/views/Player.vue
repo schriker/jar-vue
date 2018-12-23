@@ -2,11 +2,11 @@
     <div class="center-flex">
         <div class="player">
           <transition name="fade-in" appear>
-            <div v-if="singleVideo[0]" class="player__top">
-              <i class="fas fa-play"></i>{{ singleVideo[0].duration }}
-              <i class="fas fa-eye"></i>{{ singleVideo[0].view_count }}
-              <app-toggle-watched :videoId="singleVideo[0].id" :watched="singleVideo[0].watched"></app-toggle-watched>
-              <app-toggle-book-marked :video="singleVideo[0]" :bookMarked="singleVideo[0].bookmarked"></app-toggle-book-marked>
+            <div v-if="video[0]" class="player__top">
+              <i class="fas fa-play"></i>{{ video[0].duration }}
+              <i class="fas fa-eye"></i>{{ video[0].view_count }}
+              <app-toggle-watched :videoId="video[0].id" :watched="video[0].watched"></app-toggle-watched>
+              <app-toggle-book-marked :video="video[0]" :bookMarked="video[0].bookmarked"></app-toggle-book-marked>
             </div>
           </transition>
           <iframe
@@ -39,7 +39,15 @@ export default {
   computed: {
     ...mapState([
       'singleVideo'
-    ])
+    ]),
+    video () {
+      let id = this.$route.params.id
+      let userName = this.singleVideo[0].user_name
+      if (userName && (userName.toLowerCase() !== id)) {
+        this.$router.replace({ params: { id: userName, video: this.$route.params.video } })
+      }
+      return this.singleVideo
+    }
   },
   methods: {
     ...mapActions([

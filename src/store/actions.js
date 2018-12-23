@@ -123,15 +123,18 @@ const actinos = {
       await dispatch('fetchVideos', { streamerName: payload.streamer, loadMore: false })
     }
 
-    let searchInStreamers = state.streamers.data[payload.streamer].videos.videos
     let searchResults = []
 
-    for (let array in searchInStreamers) {
-      let temp = searchInStreamers[array].filter((video) => video.id === payload.video)
-      searchResults = [
-        ...searchResults,
-        ...temp
-      ]
+    if (state.streamers.data[payload.streamer]) {
+      let searchInStreamers = state.streamers.data[payload.streamer].videos.videos
+
+      for (let array in searchInStreamers) {
+        let temp = searchInStreamers[array].filter((video) => video.id === payload.video)
+        searchResults = [
+          ...searchResults,
+          ...temp
+        ]
+      }
     }
 
     if (searchResults.length > 0) {

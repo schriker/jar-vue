@@ -43,7 +43,8 @@ export default {
   },
   computed: {
     ...mapState([
-      'singleVideo'
+      'singleVideo',
+      'streamers'
     ]),
     video () {
       let id = this.$route.params.id
@@ -52,6 +53,9 @@ export default {
         this.$router.replace({ params: { id: userName, video: this.$route.params.video } })
       }
       return this.singleVideo
+    },
+    streamerName () {
+      return this.$route.params.id
     }
   },
   methods: {

@@ -141,22 +141,29 @@ form {
     li {
       list-style: none;
       height: 100%;
+      position: relative;
       a {
-        display: flex;
-        align-items: center;
+        left: 0;
+        z-index: 800;
+        position: absolute;
+        display: block;
+        width: 100%;
         height: 100%;
-        padding: 0 20px;
         &:hover {
-          background-color: #1D252F;
+          +.streamer {
+            background-color: #1D252F;
+          }
         }
         &.active {
-          background-color: #1D252F;
-          .streamer__remove {
-            opacity: 1;
-          }
-          .streamer__icon::after {
-            background-color: white;
-            width: 35px;
+          +.streamer {
+            background-color: #1D252F;
+            .streamer__icon .streamer__remove {
+              opacity: 1;
+            }
+            .streamer__icon::after {
+              background-color: white;
+              width: 35px;
+            }
           }
         }
       }
@@ -165,8 +172,15 @@ form {
 }
 
 .streamer {
+  position: relative;
   display: flex;
   align-items: center;
+  padding: 0 20px;
+  height: 100%;
+  transition: all .2s ease; 
+  &:hover {
+    background-color: #1D252F;
+  }
   &__icon {
     position: relative;
     img {
@@ -265,6 +279,10 @@ form {
     width: 32px;
   }
   a {
+    padding: 0 20px;
+    position: initial !important;
+    display: flex !important;
+    align-items: center;
     font-size: 22px;
     position: relative;
     color: $light;
@@ -282,10 +300,12 @@ form {
       transition: all .2s ease;
     }
     &:hover {
-      color: $success
+      color: $success;
+      background-color: #1D252F;
     }
     &.active {
       color: $success;
+      background-color: #1D252F;
       &::after {
         background-color: white;
         width: 35px;

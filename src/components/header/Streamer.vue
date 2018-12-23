@@ -1,4 +1,6 @@
 <template>
+<li>
+        <router-link :to="`/${streamer.info.login}`" active-class="active"></router-link>
     <div class="streamer">
         <div class="streamer__icon">
             <!-- <div class="streamer__badge">4</div> -->
@@ -17,6 +19,8 @@
             </div>
         </div>
     </div>
+</li>
+
 </template>
 <script>
 import { mapMutations, mapActions } from 'vuex'

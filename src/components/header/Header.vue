@@ -7,11 +7,9 @@
             </a>
           </li>
         <app-simplebar v-if="!streamers.loading" class="simplebar" data-simplebar-auto-hide="true">
-          <li v-for="streamer in streamers.data" :key="streamer.info.id">
-            <router-link :to="`/${streamer.info.login}`" active-class="active">
-              <app-streamer :streamer="streamer"></app-streamer>
-            </router-link>
-          </li>
+
+              <app-streamer v-for="streamer in streamers.data" :key="streamer.info.id" :streamer="streamer"></app-streamer>
+
         </app-simplebar>
       </ul>
       <ul class="user-menu">

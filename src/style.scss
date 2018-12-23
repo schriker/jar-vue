@@ -181,6 +181,11 @@ form {
   &:hover {
     background-color: #1D252F;
   }
+  &__placeholder {
+    a {
+      position: initial !important;
+    }
+  }
   &__icon {
     position: relative;
     img {
@@ -737,7 +742,6 @@ form {
   }
 }
 @media (max-width: 767.98px) {
-
   input[type="text"] {
     flex: 0 1 90%;
     min-width: 0;

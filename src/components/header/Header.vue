@@ -1,19 +1,16 @@
 <template>
     <header class="header row">
       <ul class="streamers-wraper">
-          <li v-if="streamers.loading">
+          <li class="streamer__placeholder" v-if="streamers.loading">
             <a>
               <app-streamer-placeholder></app-streamer-placeholder>
             </a>
           </li>
-        <app-simplebar v-if="!streamers.loading" class="simplebar" data-simplebar-auto-hide="true">
-
+        <app-simplebar v-if="!streamers.loading" class="simplebar hide-mobile" data-simplebar-auto-hide="true">
+          <app-draggable v-model="streamersList" :options="{ disabled: sortable }">
               <app-streamer v-for="streamer in streamers.data" :key="streamer.info.id" :streamer="streamer"></app-streamer>
-
+          </app-draggable>
         </app-simplebar>
-      </ul>
-      <ul class="user-menu">
-        <li><router-link to="/add" active-class="active"><img :src="addIcon" alt=""></router-link></li>
       </ul>
       <app-user-menu></app-user-menu>
     </header>
@@ -26,25 +23,35 @@ import AppStreamer from './Streamer'
 import AppStreamerPlaceholder from './StreamerPlacholder'
 import AppUserMenu from './UserMenu'
 import AppSimplebar from 'simplebar-vue'
-import addIcon from '../../assets/add_new.svg'
+import AppDraggable from 'vuedraggable'
 import 'simplebar/dist/simplebar.min.css'
 
 export default {
   data () {
     return {
-      addIcon
+      sortable: false
     }
   },
   components: {
     AppStreamerPlaceholder,
     AppStreamer,
     AppUserMenu,
-    AppSimplebar
+    AppSimplebar,
+    AppDraggable
   },
   computed: {
     ...mapState([
       'streamers'
-    ])
+    ]),
+    streamersList: {
+      get () {
+        return this.$store.state.userData.streamers
+      },
+      set (value) {
+        this.$store.commit('updateStreamersList', value)
+        this.fetchStreamers(this.$route.params.id)
+      }
+    }
   },
   methods: {
     ...mapActions([
@@ -57,6 +64,7 @@ export default {
     }
   },
   created () {
+    this.sortable = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
     if (!this.streamers.data[this.streamerName]) {
       this.fetchStreamers(this.$route.params.id)
     } else {
@@ -72,8 +80,9 @@ export default {
     width: 100%;
     flex: 1 1 auto;
   }
-  .simplebar-content {
+  .simplebar-content > div {
     display: flex;
+    height: 100%;
   }
 
   .streamers-wraper {

@@ -6,6 +6,9 @@ const state = {
 }
 
 const mutations = {
+  fetchingStart () {
+    state.loading = true
+  },
   updateStreamers (state, payload) {
     state.data = payload
     state.loading = false
@@ -14,6 +17,7 @@ const mutations = {
 
 const actions = {
   async fetchStreamers ({ commit, dispatch, rootState }, streamerName) {
+    commit('fetchingStart')
     if (rootState.userData.streamers.length === 0) {
       commit('updateStreamers', {})
       commit('loadingVideosStart', null, { root: true })

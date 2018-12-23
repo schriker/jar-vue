@@ -44,6 +44,11 @@ export default new Vuex.Store({
         }
       }
     },
+    updateStreamersList (state, payload) {
+      state.userData.streamers = [
+        ...payload
+      ]
+    },
     toggleWatched (state) {
       state.userData.hideWatched = !state.userData.hideWatched
     },

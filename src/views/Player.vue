@@ -5,6 +5,7 @@
             <div v-if="video[0]" class="player__top">
               <i class="fas fa-play"></i>{{ video[0].duration }}
               <i class="fas fa-eye"></i>{{ video[0].view_count }}
+              <i class="fas fa-calendar"></i>{{ date }}
               <app-toggle-watched :videoId="video[0].id" :watched="video[0].watched"></app-toggle-watched>
               <app-toggle-book-marked :video="video[0]" :bookMarked="video[0].bookmarked"></app-toggle-book-marked>
             </div>
@@ -53,6 +54,10 @@ export default {
         this.$router.replace({ params: { id: userName.toLowerCase(), video: this.$route.params.video } })
       }
       return this.singleVideo
+    },
+    date () {
+      let date = new Date(this.video[0].published_at)
+      return date.toLocaleString('nl-NL')
     },
     streamerName () {
       return this.$route.params.id

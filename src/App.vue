@@ -25,7 +25,7 @@ export default {
   },
   created () {
     this.initUser()
-    if (!this.$route.params.id) {
+    if (!this.$route.params.id && !(this.$store.state.userData.streamers.length === 0)) {
       this.$router.push({ path: `/${this.$store.state.userData.streamers[0]}` })
     }
   }

@@ -20,7 +20,6 @@ const actions = {
     commit('fetchingStart')
     if (rootState.userData.streamers.length === 0) {
       commit('updateStreamers', {})
-      commit('loadingVideosStart', null, { root: true })
       dispatch('displayNotification', { type: 'error', message: 'Brak stremerów do wyświetlenia.' }, { root: true })
       return
     }

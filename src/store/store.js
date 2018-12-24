@@ -58,6 +58,9 @@ export default new Vuex.Store({
     loadingVideosStart (state) {
       state.loadingVideos = true
     },
+    loadingVideosStop (state) {
+      state.loadingVideos = false
+    },
     loadingMoreStart (state) {
       state.loadingMore = true
     },

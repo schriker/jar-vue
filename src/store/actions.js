@@ -57,6 +57,7 @@ const actinos = {
 
         if (!pagination.cursor) {
           dispatch('displayNotification', { type: 'error', message: 'Koniec listy :(' })
+          commit('loadingVideosStop')
           return
         }
 
@@ -86,6 +87,7 @@ const actinos = {
       } catch (error) {
         console.log(error)
         dispatch('displayNotification', { type: 'error', message: 'Wystąpił bląd.' })
+        commit('loadingVideosStop')
         return
       }
       commit('updateVideos', payload)

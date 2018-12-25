@@ -7,13 +7,15 @@
       </div>
       <a target="_blank" :href="`https://pancernik.info/twitch/${streamerName}`">Live - Oglądaj na pancerniku!</a>
     </div>
-    <div v-if="!loadingVideos" class="row filters">
-      <app-watched-button></app-watched-button>
-      <div class="search">
-        <input name="search" id="search" class="input" placeholder="Filtruj wyniki..." v-model="searchValue" type="text">
-        <label for="search"><i class="fas fa-search"></i></label>
+    <transition name="fade-in">
+      <div v-if="!loadingVideos" class="row filters">
+        <app-watched-button></app-watched-button>
+        <div class="search">
+          <input name="search" id="search" class="input" placeholder="Filtruj wyniki..." v-model="searchValue" type="text">
+          <label for="search"><i class="fas fa-search"></i></label>
+        </div>
       </div>
-    </div>
+    </transition>
     <app-spinner v-if="loadingVideos"></app-spinner>
     <app-videos-list v-else :searchValue="searchValue" :videos="videos"></app-videos-list>
     <div v-if="!loadingVideos" class="row load-more">

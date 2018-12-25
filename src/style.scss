@@ -522,6 +522,9 @@ form {
     padding: 8px 25px;
     border-top: 1px solid #252E3A;
     background-color: #1D252F;
+    & > span {
+      margin: 0 15px 0 0;
+    }
     &--left-border {
       border-left: 1px solid #252E3A;
       i {
@@ -800,6 +803,9 @@ form {
     input {
       width: 100%;
     }
+  }
+  .hide-mobile {
+    display: none;
   }
   .filters {
     flex-direction: column;

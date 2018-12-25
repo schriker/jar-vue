@@ -3,7 +3,7 @@
         <div class="player">
           <transition name="fade-in" appear>
             <div v-if="video[0]" class="player__top">
-              <i class="fas fa-play"></i>{{ video[0].duration }}
+              <span class="hide-mobile"><i class="fas fa-play"></i>{{ video[0].duration }}</span>
               <i class="fas fa-eye"></i>{{ video[0].view_count }}
               <i class="fas fa-calendar"></i>{{ date }}
               <app-toggle-watched :videoId="video[0].id" :watched="video[0].watched"></app-toggle-watched>

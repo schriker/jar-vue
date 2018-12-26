@@ -93,7 +93,7 @@ form {
   display: flex;
   height: 100%;
   &--overlow-hide {
-    overflow: hidden;
+    overflow-x: hidden;
   }
 }
 
@@ -895,6 +895,7 @@ form {
   }
   .center-flex {
     flex-direction: column;
+    overflow-x: initial;
   }
 
   .player {

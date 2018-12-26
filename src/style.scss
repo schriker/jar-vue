@@ -493,7 +493,9 @@ form {
 .content {
   display: flex;
   width: 100%;
+  height: 100%;
   &__box {
+    position: relative;
     text-align: center;
     margin: auto auto;
     color: white;
@@ -596,6 +598,9 @@ form {
       cursor: pointer;
       color: $light;
     }
+    &--modal {
+      top: 20px
+    }
   }
   &--success {
     border-left: 3px solid $success;
@@ -606,6 +611,24 @@ form {
   &--bookmarks {
     border-left: 3px solid $bookmarks;
   }
+}
+
+.user-modal {
+  position: fixed;
+  z-index: 9999;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.6)
+}
+
+.modal-backdrop {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
 }
 
 .fade-in-enter-active {

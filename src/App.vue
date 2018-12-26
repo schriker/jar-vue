@@ -3,7 +3,9 @@
     <app-header></app-header>
     <router-view></router-view>
     <app-notification></app-notification>
-    <app-user-login v-if="$store.state.user.showUserModal"></app-user-login>
+    <transition name="fade-in">
+      <app-user-login v-if="$store.state.user.showUserModal"></app-user-login>
+    </transition>
   </div>
 </template>
 

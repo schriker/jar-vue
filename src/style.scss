@@ -632,6 +632,7 @@ form {
   height: 100%;
   background-color: rgba(0,0,0,0.6);
   p {
+    max-width: 700px;
     color: #556378;
     font-size: 14px;
     line-height: 22px;
@@ -645,7 +646,7 @@ form {
     margin: 0 0 50px 0;
     li {
       flex: 1 1 auto;
-      padding: 20px 100px;
+      padding: 20px 0;
       transition: all .2s ease;
       cursor: pointer;
       border-bottom: 1px solid #252E3A;
@@ -849,6 +850,9 @@ form {
     font-size: 14px;
     margin-top: 40px;
     padding: 20px;
+    &--no-padding {
+      padding: 0;
+    }
   }
 
   .load-more button {
@@ -895,6 +899,13 @@ form {
     &__item {
       flex: 0 1 100%;
       max-width: 100%;
+    }
+  }
+  .user-modal {
+    &__switches {
+      li:first-child {
+        border-right: 0;
+      }
     }
   }
 }

@@ -24,7 +24,7 @@
           </form>
         </div>
         <div>
-          <p>Konto wymagane jest jeśli chcesz aby stan aplikacji tj. lista streamerów, zapisane video itd. były <br> synchronizowane pomiędzy resztą urządzeń i przeglądarek z których korzystasz.</p>
+          <p>Konto wymagane jest jeśli chcesz aby stan aplikacji tj. lista streamerów, zapisane video itd. były  synchronizowane pomiędzy resztą urządzeń i przeglądarek z których korzystasz.</p>
         </div>
       </div>
     </div>

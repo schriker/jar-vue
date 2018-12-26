@@ -3,6 +3,7 @@ import Vuex from 'vuex'
 import actions from './actions'
 import notification from './modules/notification'
 import streamers from './modules/streamers'
+import user from './modules/user'
 import axios from 'axios'
 
 axios.defaults.baseURL = 'https://api.twitch.tv/helix'
@@ -122,6 +123,7 @@ export default new Vuex.Store({
   },
   modules: {
     notification,
-    streamers
+    streamers,
+    user
   }
 })

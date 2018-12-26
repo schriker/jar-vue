@@ -3,6 +3,7 @@
     <app-header></app-header>
     <router-view></router-view>
     <app-notification></app-notification>
+    <app-user-login v-if="$store.state.user.showUserModal"></app-user-login>
   </div>
 </template>
 
@@ -12,11 +13,13 @@ import { mapActions } from 'vuex'
 import './style.scss'
 import AppHeader from './components/header/Header'
 import AppNotification from './components/Notification'
+import AppUserLogin from './components/user/UserLogin'
 
 export default {
   components: {
     AppHeader,
-    AppNotification
+    AppNotification,
+    AppUserLogin
   },
   methods: {
     ...mapActions([

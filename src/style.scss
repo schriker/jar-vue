@@ -34,6 +34,7 @@ a {
   text-decoration: none;
   outline: 0;
   transition: all .2s ease;
+  cursor: pointer;
   &:hover {
     color: $success;
     text-decoration: none;
@@ -91,6 +92,9 @@ form {
   flex: 1 1 auto;
   display: flex;
   height: 100%;
+  &--overlow-hide {
+    overflow: hidden;
+  }
 }
 
 .container {
@@ -540,6 +544,7 @@ form {
     }
     &--left-border {
       border-left: 1px solid #252E3A;
+      justify-content: space-between;
       i {
         margin: 0;
       }
@@ -577,13 +582,36 @@ form {
 }
 
 .poorchat {
+  position: relative;
   display: flex;
   flex-direction: column;
   flex: 0 0 400px;
   width: 400px;
-  overflow: hidden;
+  background-color: $header-bg;
   &__container {
     flex:  1 0 auto;
+  }
+  &__hide {
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    background-color: $header-bg;
+    cursor: pointer;
+    transition: all .2s ease;
+    left: -30px;
+    top: 60px;
+    text-align: center;
+    line-height: 30px;
+    color: $dark;
+    border: 1px solid #252E3A;
+    border-right: 0;
+    &:hover {
+      color: $light;
+      background-color: #1D252F;
+    }
+  }
+  &--close {
+    margin-right: -400px;
   }
 }
 

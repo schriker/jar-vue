@@ -1,5 +1,5 @@
 <template>
-    <div class="center-flex">
+    <div class="center-flex center-flex--overlow-hide">
         <div class="player">
           <transition name="fade-in" appear>
             <div v-if="video[0]" class="player__top">
@@ -19,11 +19,12 @@
             allowfullscreen="true">
           </iframe>
         </div>
-        <div class="poorchat">
+        <div class="poorchat" :class="{ 'poorchat--close' : !showChat }">
+          <div @click="showChat = !showChat" class="poorchat__hide"><i :class="{'fas fa-eye-slash': showChat, 'fas fa-eye': !showChat}"></i></div>
           <div class="player__top player__top--left-border">
             <a target="_blank" href="https://www.poorchat.net/subscriptions/jadisco"><i class="fas fa-heart"></i>Subskrybuj czatek</a>
           </div>
-            <iframe class="poorchat__container" frameborder="0" width="100%" id="jd-chat" src="https://client.poorchat.net/jadisco"></iframe>
+            <iframe v-if="showChat" class="poorchat__container" frameborder="0" width="100%" id="jd-chat" src="https://client.poorchat.net/jadisco"></iframe>
         </div>
     </div>
 </template>
@@ -33,6 +34,11 @@ import AppToggleBookMarked from '../UI/ToggleBookMarked'
 import { mapActions, mapState } from 'vuex'
 
 export default {
+  data () {
+    return {
+      showChat: true
+    }
+  },
   metaInfo () {
     return {
       title: !(this.streamerName in this.streamers.data) ? 'Jarchiwum' : `Jarchiwum - ${this.streamers.data[this.streamerName].info.display_name}`

@@ -512,7 +512,8 @@ form {
     border-radius: 8px;
     box-shadow: $box-shadow;
     border-left: 3px solid $success;
-    overflow: hidden;
+    overflow: auto;
+    max-height: 100vh;
     &--no-padding {
       padding: 0;
     }

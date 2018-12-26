@@ -9,7 +9,7 @@
           <li>Rejestracja</li>
         </ul>
         <div>
-          <form class="form">
+          <form @submit.prevent="" class="form">
             <div class="form__row">
               <label for="email"><i class="fas fa-user"></i></label>
               <input placeholder="E-Mail" class="input input--large-padding" type="text" name="email" id="email">

@@ -56,7 +56,10 @@ body {
   border: none;
   outline: 0;
   border-radius: 5px;
-  padding: 10px 25px;
+  padding: 13px 20px;
+  &--large-padding {
+    padding: 13px 20px 13px 45px;
+  }
 }
 
 form {
@@ -73,11 +76,14 @@ form {
   border: none;
   color: white;
   font-size: 18px;
-  padding: 10px 15px;
+  padding: 14px 20px;
   cursor: pointer;
   transition: all .2s ease;
   &:hover {
     background-color: $success;    
+  }
+  &--large-padding {
+    padding: 15px 30px;
   }
 }
 
@@ -506,6 +512,10 @@ form {
     border-radius: 8px;
     box-shadow: $box-shadow;
     border-left: 3px solid $success;
+    overflow: hidden;
+    &--no-padding {
+      padding: 0;
+    }
   } 
 }
 
@@ -620,7 +630,52 @@ form {
   top: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0,0,0,0.6)
+  background-color: rgba(0,0,0,0.6);
+  p {
+    color: #556378;
+    font-size: 14px;
+    line-height: 22px;
+    padding: 0 30px;
+    margin: 0 0 40px 0;
+  }
+  &__switches {
+    display: flex;
+    list-style: none;
+    width: 100%;
+    margin: 0 0 50px 0;
+    li {
+      flex: 1 1 auto;
+      padding: 20px 100px;
+      transition: all .2s ease;
+      cursor: pointer;
+      border-bottom: 1px solid #252E3A;
+      &:hover,
+      &.active {
+        background-color: #1D252F;
+      }
+      &:first-child {
+        border-right: 1px solid #252E3A;
+      }
+    }
+  }
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  &__row {
+    position: relative;
+    margin: 0 0 25px 0;
+  }
+  label {
+    color: #C2C2C2;
+    position: absolute;
+    top: 50%;
+    left: 15px;
+    transform: translate(0, -50%);
+  }
+  
 }
 
 .modal-backdrop {

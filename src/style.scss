@@ -55,12 +55,16 @@ body {
   color: $dark;
   font-size: 18px;
   border: none;
-  outline: 0;
+  outline: none;
   border-radius: 5px;
   padding: 13px 20px;
   &--large-padding {
     padding: 13px 20px 13px 45px;
   }
+}
+
+input[type="submit"] {
+  outline: none;
 }
 
 form {
@@ -82,6 +86,12 @@ form {
   transition: all .2s ease;
   &:hover {
     background-color: $success;    
+  }
+  &:disabled {
+    cursor: initial;
+    color: white;
+    border-color: $light;
+    background-color: $light;
   }
   &--large-padding {
     padding: 15px 30px;
@@ -618,7 +628,7 @@ form {
 .notification {
   color: white;
   position: fixed;
-  z-index: 999;
+  z-index: 99999;
   left: 50%;
   bottom: 150px;
   transform: translate(-50%, 0);

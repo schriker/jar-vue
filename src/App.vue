@@ -25,11 +25,13 @@ export default {
   },
   methods: {
     ...mapActions([
-      'initUser'
+      'initUser',
+      'onAuthStateChange'
     ])
   },
   created () {
     this.initUser()
+    this.onAuthStateChange()
     if (!this.$route.params.id && !(this.$store.state.userData.streamers.length === 0)) {
       this.$router.push({ path: `/${this.$store.state.userData.streamers[0]}` })
     }

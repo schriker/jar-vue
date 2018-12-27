@@ -10,21 +10,21 @@
               <app-toggle-book-marked :video="video[0]" :bookMarked="video[0].bookmarked"></app-toggle-book-marked>
             </div>
           </transition>
-          <iframe
+          <!-- <iframe
             class="player__iframe"
             :src="`https://player.twitch.tv/?video=v${$route.params.video}&autoplay=false`"
             width="100%"
             frameborder="0"
             scrolling="false"
             allowfullscreen="true">
-          </iframe>
+          </iframe> -->
         </div>
         <div class="poorchat" :class="{ 'poorchat--close' : !showChat }">
           <div @click="showChat = !showChat" class="poorchat__hide"><i :class="{'fas fa-eye-slash': showChat, 'fas fa-eye': !showChat}"></i></div>
           <div class="player__top player__top--left-border">
             <a target="_blank" href="https://www.poorchat.net/subscriptions/jadisco"><i class="fas fa-heart"></i>Subskrybuj czatek</a>
           </div>
-            <iframe v-if="showChat" class="poorchat__container" frameborder="0" width="100%" id="jd-chat" src="https://client.poorchat.net/jadisco"></iframe>
+            <!-- <iframe v-if="showChat" class="poorchat__container" frameborder="0" width="100%" id="jd-chat" src="https://client.poorchat.net/jadisco"></iframe> -->
         </div>
     </div>
 </template>

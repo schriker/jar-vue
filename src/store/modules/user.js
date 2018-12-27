@@ -1,7 +1,9 @@
 import firebase from '../../firebase'
 import errorHandler from '../../helpers/errorHandler'
 
-let database = firebase.database()
+let db = firebase.firestore()
+const settings = { timestampsInSnapshots: true }
+db.settings(settings)
 
 const state = {
   data: null,
@@ -76,11 +78,9 @@ const actions = {
       .catch(() => dispatch('displayNotification', { type: 'error', message: 'Wystąpił błąd.' }, { root: true }))
   },
   syncUserData ({ state, rootState, dispatch }) {
-    database.ref(`users/${state.data.uid}`).set({ userData: rootState.userData }, (error) => {
-      if (error) {
-        dispatch('displayNotification', { type: 'error', message: 'Wystąpił błąd.' }, { root: true })
-      }
-    })
+    db.collection('users').doc(state.data.uid).set(rootState.userData)
+      .then(() => console.log('Dodano'))
+      .catch(() => console.log('Err'))
   }
 }
 

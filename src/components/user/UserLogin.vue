@@ -46,7 +46,7 @@ export default {
       'user'
     ]),
     mode () {
-      return this.user.isRegistration ? 'Zarejestruj' : this.user.isSending ? 'Czekaj...' : 'Zaloguj'
+      return this.user.isSending ? 'Czekaj...' : this.user.isRegistration ? 'Zarejestruj' : 'Zaloguj'
     }
   },
   methods: {

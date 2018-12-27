@@ -1,6 +1,8 @@
 import firebase from '../../firebase'
 import errorHandler from '../../helpers/errorHandler'
 
+let database = firebase.database()
+
 const state = {
   data: null,
   isSending: false,
@@ -35,7 +37,10 @@ const actions = {
 
     if (state.isRegistration) {
       firebase.auth().createUserWithEmailAndPassword(payload.userName, payload.password)
-        .then(user => dispatch('success', user.user))
+        .then(user => {
+          dispatch('success', user.user)
+          dispatch('syncUserData')
+        })
         .catch(error => dispatch('error', error))
     } else {
       firebase.auth().signInWithEmailAndPassword(payload.userName, payload.password)
@@ -69,6 +74,13 @@ const actions = {
         dispatch('displayNotification', { type: 'success', message: 'Zostałeś wylogowany.' }, { root: true })
       })
       .catch(() => dispatch('displayNotification', { type: 'error', message: 'Wystąpił błąd.' }, { root: true }))
+  },
+  syncUserData ({ state, rootState, dispatch }) {
+    database.ref(`users/${state.data.uid}`).set({ userData: rootState.userData }, (error) => {
+      if (error) {
+        dispatch('displayNotification', { type: 'error', message: 'Wystąpił błąd.' }, { root: true })
+      }
+    })
   }
 }
 

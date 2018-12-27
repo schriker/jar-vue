@@ -46,7 +46,10 @@ const actions = {
         .catch(error => dispatch('error', error))
     } else {
       firebase.auth().signInWithEmailAndPassword(payload.userName, payload.password)
-        .then(user => dispatch('success', user.user))
+        .then(user => {
+          dispatch('success', user.user)
+          dispatch('fetchUserData')
+        })
         .catch(error => dispatch('error', error))
     }
   },
@@ -81,6 +84,21 @@ const actions = {
     db.collection('users').doc(state.data.uid).set(rootState.userData)
       .then(() => console.log('Dodano'))
       .catch(() => console.log('Err'))
+  },
+  fetchUserData ({ state }) {
+    let user = db.collection('users').doc(state.data.uid)
+
+    user.get()
+      .then(user => {
+        if (user.exists) {
+          console.log('Document data:', user.data())
+        } else {
+          console.log('No such document!')
+        }
+      })
+      .catch(error => {
+        console.log('Error getting document:', error)
+      })
   }
 }
 

@@ -49,7 +49,8 @@ export default {
   },
   methods: {
     ...mapActions([
-      'fetchStreamers'
+      'fetchStreamers',
+      'fetchVideos'
     ])
   },
   computed: {

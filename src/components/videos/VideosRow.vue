@@ -1,12 +1,10 @@
 <template>
- <transition name="fade-in" appear>
   <section class="row videos">
     <h2>{{ title }}</h2>
     <div class="videos__list">
       <app-videos-item v-for="(video, index) of videos" :key="video.id" :video="video" :index="index"></app-videos-item>
     </div>
   </section>
- </transition>
 </template>
 <script>
 import AppVideosItem from './VideosItem'

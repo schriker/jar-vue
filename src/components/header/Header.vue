@@ -1,12 +1,12 @@
 <template>
     <header class="header row">
       <ul class="streamers-wraper">
-          <li class="streamer__placeholder" v-if="streamers.loading">
+          <li class="streamer__placeholder" v-if="streamers.loading || user.isFetching">
             <a>
               <app-streamer-placeholder></app-streamer-placeholder>
             </a>
           </li>
-        <app-simplebar v-if="!streamers.loading" class="simplebar" data-simplebar-auto-hide="true">
+        <app-simplebar v-if="!streamers.loading && !user.isFetching" class="simplebar" data-simplebar-auto-hide="true">
           <app-draggable v-model="streamersList" :options="{ disabled: sortable }">
               <app-streamer v-for="streamer in streamers.data" :key="streamer.info.id" :streamer="streamer"></app-streamer>
           </app-draggable>

@@ -1,7 +1,9 @@
 <template>
   <div class="container">
     <app-header></app-header>
-    <router-view></router-view>
+    <transition name="fade-in" mode="out-in">
+      <router-view></router-view>
+    </transition>
     <app-notification></app-notification>
     <transition name="fade-in">
       <app-user-login v-if="$store.state.user.showUserModal"></app-user-login>

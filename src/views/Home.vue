@@ -7,18 +7,22 @@
       </div>
       <a target="_blank" :href="`https://pancernik.info/twitch/${streamerName}`">Live - Oglądaj na pancerniku!</a>
     </div>
-      <div v-if="!loadingVideos" class="row filters">
-        <app-watched-button></app-watched-button>
-        <div class="search">
-          <input name="search" id="search" class="input" placeholder="Filtruj wyniki..." v-model="searchValue" type="text">
-          <label for="search"><i class="fas fa-search"></i></label>
+    <app-spinner v-if="(streamers.loading || user.isFetching || loadingVideos)"></app-spinner>
+    <transition name="fade-in" appear>
+      <div v-if="((!streamers.loading && !user.isFetching) && !loadingVideos)">
+          <div class="row filters">
+            <app-watched-button></app-watched-button>
+            <div class="search">
+              <input name="search" id="search" class="input" placeholder="Filtruj wyniki..." v-model="searchValue" type="text">
+              <label for="search"><i class="fas fa-search"></i></label>
+            </div>
+          </div>
+        <app-videos-list :searchValue="searchValue" :videos="videos"></app-videos-list>
+        <div class="row load-more">
+          <button :disabled="loadingMore" @click="fetchVideos({ streamerName: streamerName, loadMore: true })" class="btn">{{ loadingMore ? 'Pobieram...' : 'Załaduj więcej' }}</button>
         </div>
       </div>
-    <app-spinner v-if="loadingVideos"></app-spinner>
-    <app-videos-list v-else :searchValue="searchValue" :videos="videos"></app-videos-list>
-    <div v-if="!loadingVideos" class="row load-more">
-      <button :disabled="loadingMore" @click="fetchVideos({ streamerName: streamerName, loadMore: true })" class="btn">{{ loadingMore ? 'Pobieram...' : 'Załaduj więcej' }}</button>
-    </div>
+    </transition>
   </div>
 </template>
 <script>
@@ -45,8 +49,7 @@ export default {
   },
   methods: {
     ...mapActions([
-      'fetchVideos',
-      'addStreamer'
+      'fetchStreamers'
     ])
   },
   computed: {
@@ -54,7 +57,8 @@ export default {
       'userData',
       'loadingVideos',
       'loadingMore',
-      'streamers'
+      'streamers',
+      'user'
     ]),
     videos () {
       return this.streamers.data[this.streamerName].videos.videos
@@ -63,10 +67,10 @@ export default {
       return this.$route.params.id
     }
   },
-  async created () {
+  created () {
     if (!this.userData.streamers.includes(this.streamerName)) {
-      await this.addStreamer(this.streamerName)
-      this.fetchVideos({ streamerName: this.streamerName, loadMore: false })
+      this.$router.push({ path: `/${this.$store.state.userData.streamers[0]}` })
+      this.fetchStreamers(this.$store.state.userData.streamers[0])
     }
   }
 }

@@ -1,5 +1,4 @@
 <template>
-  <transition name="fade-in">
     <div v-show="!hide" class="videos__item">
       <router-link :to="`/${video.user_name.toLowerCase()}/${video.id}`" :video="isWatched"></router-link>
       <div class="videos__thumbnail">
@@ -16,7 +15,6 @@
         <app-toggle-watched @toggleWatched="isWatched = !isWatched" :videoId="video.id" :watched="video.watched"></app-toggle-watched>
       </div>
     </div>
-  </transition>
 </template>
 <script>
 import AppToggleWatched from '../../UI/ToggleWatched'

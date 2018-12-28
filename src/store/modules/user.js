@@ -56,7 +56,6 @@ const actions = {
       firebase.auth().signInWithEmailAndPassword(payload.userName, payload.password)
         .then(user => {
           dispatch('success', user.user)
-          dispatch('fetchUserData')
         })
         .catch(error => dispatch('error', error))
     }
@@ -78,6 +77,8 @@ const actions = {
         dispatch('displayNotification', { type: 'success', message: 'Zostałeś zalogowany.' }, { root: true })
         commit('setUserData', user)
         dispatch('fetchUserData')
+      } else {
+        commit('doneFetching')
       }
     })
   },
@@ -94,7 +95,6 @@ const actions = {
   },
   syncUserData ({ state, rootState, dispatch }) {
     if (!state.isFetching) {
-      console.log('saving')
       db.collection('users').doc(state.data.uid).set(rootState.userData)
         .then(() => {
           // Add some sync animation here
@@ -102,8 +102,7 @@ const actions = {
         .catch(() => dispatch('displayNotification', { type: 'error', message: 'Błąd podczas zapisywania danych.' }, { root: true }))
     }
   },
-  fetchUserData ({ state, dispatch, commit }) {
-    console.log('fetching')
+  fetchUserData ({ state, dispatch, commit, rootState }) {
     commit('startFetching')
     let user = db.collection('users').doc(state.data.uid)
 
@@ -112,7 +111,12 @@ const actions = {
         if (user.exists) {
           let userObject = user.data()
           dispatch('initUser', userObject, { root: true })
-          Vue.router.push({ path: `/${userObject.streamers[0]}` })
+
+          if (!userObject.streamers.includes(Vue.router.history.current.params.id)) {
+            Vue.router.push({ path: `/${rootState.userData.streamers[0]}` })
+          } else {
+            dispatch('fetchStreamers', Vue.router.history.current.params.id, { root: true })
+          }
         } else {
           dispatch('displayNotification', { type: 'error', message: 'Użytkownik nie istnieje.' }, { root: true })
         }

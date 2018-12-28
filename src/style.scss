@@ -920,6 +920,23 @@ form {
   }
 }
 @media (max-width: 575.98px) {
+  .row {
+    padding: 0 10px;
+  }
+  .header {
+    flex-direction: column;
+    flex: 0 0 120px;
+    padding: 0;
+  }
+  .streamers-wraper {
+    min-height: 60px;
+  }
+  .user-menu {
+    min-height: 60px;
+    &--links {
+      margin: 0 auto;
+    }
+  }
   .search {
     text-align: center;
     input {

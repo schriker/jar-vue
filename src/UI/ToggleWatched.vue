@@ -22,11 +22,11 @@ export default {
   methods: {
     ...mapMutations([
       'addToWatched',
-      'removeFromWatched',
-      'updateLocalStorage'
+      'removeFromWatched'
     ]),
     ...mapActions([
-      'displayNotification'
+      'displayNotification',
+      'saveData'
     ]),
     toggleWatched () {
       this.$emit('toggleWatched')
@@ -40,7 +40,7 @@ export default {
         this.displayNotification({ type: 'success', message: 'Oznaczono jako obejrzane.' })
       }
 
-      this.updateLocalStorage()
+      this.saveData()
     }
   }
 }

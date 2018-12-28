@@ -1,5 +1,6 @@
 import firebase from '../../firebase'
 import errorHandler from '../../helpers/errorHandler'
+import Vue from 'vue'
 
 let db = firebase.firestore()
 const settings = { timestampsInSnapshots: true }
@@ -8,6 +9,7 @@ db.settings(settings)
 const state = {
   data: null,
   isSending: false,
+  isFetching: true,
   isRegistration: false,
   showUserModal: false
 }
@@ -30,6 +32,12 @@ const mutations = {
   },
   doneSending (state) {
     state.isSending = false
+  },
+  startFetching (state) {
+    state.isFetching = true
+  },
+  doneFetching (state) {
+    state.isFetching = false
   }
 }
 
@@ -69,36 +77,48 @@ const actions = {
       if (user) {
         dispatch('displayNotification', { type: 'success', message: 'Zostałeś zalogowany.' }, { root: true })
         commit('setUserData', user)
+        dispatch('fetchUserData')
       }
     })
   },
-  logOut ({ commit, dispatch }) {
+  logOut ({ commit, dispatch, rootState }) {
     firebase.auth().signOut()
       .then(() => {
         commit('setUserData', null)
         dispatch('displayNotification', { type: 'success', message: 'Zostałeś wylogowany.' }, { root: true })
+        dispatch('initUser', null, { root: true })
+        dispatch('fetchStreamers', rootState.userData.streamers[0], { root: true })
+        Vue.router.push({ path: `/${rootState.userData.streamers[0]}` })
       })
       .catch(() => dispatch('displayNotification', { type: 'error', message: 'Wystąpił błąd.' }, { root: true }))
   },
   syncUserData ({ state, rootState, dispatch }) {
-    db.collection('users').doc(state.data.uid).set(rootState.userData)
-      .then(() => console.log('Dodano'))
-      .catch(() => console.log('Err'))
+    if (!state.isFetching) {
+      console.log('saving')
+      db.collection('users').doc(state.data.uid).set(rootState.userData)
+        .then(() => {
+          // Add some sync animation here
+        })
+        .catch(() => dispatch('displayNotification', { type: 'error', message: 'Błąd podczas zapisywania danych.' }, { root: true }))
+    }
   },
-  fetchUserData ({ state }) {
+  fetchUserData ({ state, dispatch, commit }) {
+    console.log('fetching')
+    commit('startFetching')
     let user = db.collection('users').doc(state.data.uid)
 
     user.get()
       .then(user => {
         if (user.exists) {
-          console.log('Document data:', user.data())
+          let userObject = user.data()
+          dispatch('initUser', userObject, { root: true })
+          Vue.router.push({ path: `/${userObject.streamers[0]}` })
         } else {
-          console.log('No such document!')
+          dispatch('displayNotification', { type: 'error', message: 'Użytkownik nie istnieje.' }, { root: true })
         }
+        commit('doneFetching')
       })
-      .catch(error => {
-        console.log('Error getting document:', error)
-      })
+      .catch(() => dispatch('displayNotification', { type: 'error', message: 'Błąd podczas pobierania użytkownika.' }, { root: true }))
   }
 }
 

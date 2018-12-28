@@ -105,7 +105,7 @@ export default new Vuex.Store({
       state.userData.bookmarks = state.userData.bookmarks.filter((obj) => obj.id !== payload)
     },
     removeStreamer (state, payload) {
-      state.userData.streamers = state.userData.streamers.filter((streamer) => streamer !== payload)
+      state.userData.streamers = state.userData.streamers.filter((streamer) => streamer.toLowerCase() !== payload.toLowerCase())
     },
     updateLastVisited (state, payload) {
       state.userData.lastVisited[payload.streamer].date = payload.date

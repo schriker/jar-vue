@@ -20,12 +20,12 @@ export default {
   },
   methods: {
     ...mapMutations([
-      'updateLocalStorage',
       'addToBookmarked',
       'removeFromBookmarked'
     ]),
     ...mapActions([
-      'displayNotification'
+      'displayNotification',
+      'saveData'
     ]),
     toggleBookmarked () {
       this.$emit('toggleBookMarked')
@@ -39,7 +39,7 @@ export default {
         this.displayNotification({ type: 'bookmarks', message: 'Usunięto z ulubionych.' })
       }
 
-      this.updateLocalStorage()
+      this.saveData()
     }
   }
 }

@@ -10,7 +10,7 @@ import AppAddStreamer from './views/AddStreamer'
 Vue.use(Router)
 Vue.use(Meta)
 
-export default new Router({
+const router = new Router({
   mode: 'history',
   base: process.env.BASE_URL,
   routes: [
@@ -20,3 +20,6 @@ export default new Router({
     { path: '/:id', component: AppHome }
   ]
 })
+
+Vue.router = router
+export default router

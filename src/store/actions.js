@@ -92,7 +92,7 @@ const actinos = {
       }
       commit('updateVideos', payload)
       commit('updateLastVisited', { streamer: actionPayload.streamerName, date: today.toISOString() })
-      commit('updateLocalStorage')
+      dispatch('saveData')
     }
   },
   async refreshBookMark ({ commit, dispatch, state }, payload) {
@@ -104,7 +104,7 @@ const actinos = {
         bookmarked: state.userData.bookmarksId.includes(payload.video.id)
       }
       commit('onRefreshBookMark', { newVideo: refreshed, index: payload.index })
-      commit('updateLocalStorage')
+      dispatch('saveData')
       dispatch('displayNotification', { type: 'success', message: 'Odświeżono.' })
     } catch (error) {
       console.log(error)
@@ -165,17 +165,34 @@ const actinos = {
       dispatch('displayNotification', { type: 'error', message: 'Wystąpił bląd.' })
       return
     }
-    commit('addStreamer', payload)
+
+    if (state.userData.streamers.includes(payload.toLowerCase())) {
+      dispatch('displayNotification', { type: 'error', message: 'Podany streamer jest już dodany.' })
+      return
+    }
+
+    commit('addStreamer', payload.toLowerCase())
     await dispatch('fetchStreamers', state.userData.streamers[0])
-    commit('updateLocalStorage')
+    dispatch('saveData')
     dispatch('displayNotification', { type: 'success', message: 'Dodano streamera.' })
   },
 
-  initUser ({ state, commit }) {
+  saveData ({ rootState, commit, dispatch }) {
+    if (rootState.user.data) {
+      dispatch('syncUserData', null, { root: true })
+    } else {
+      commit('updateLocalStorage')
+    }
+  },
+
+  initUser ({ state, commit, rootState, dispatch }, payload) {
     let userDataString = JSON.stringify(state.userData)
     let userDataObject = JSON.parse(localStorage.getItem('jarchiwumData'))
 
-    if (localStorage.getItem('jarchiwumData')) {
+    if (rootState.user.data) {
+      commit('updateUserData', payload)
+      dispatch('fetchStreamers', payload.streamers[0], { root: true })
+    } else if (localStorage.getItem('jarchiwumData')) {
       commit('updateUserData', userDataObject)
     } else {
       localStorage.setItem('jarchiwumData', userDataString)

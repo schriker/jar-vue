@@ -32,16 +32,16 @@ export default {
   },
   methods: {
     ...mapMutations([
-      'removeStreamer',
-      'updateLocalStorage'
+      'removeStreamer'
     ]),
     ...mapActions([
       'fetchStreamers',
-      'displayNotification'
+      'displayNotification',
+      'saveData'
     ]),
     async atRemoveStreamer () {
       this.removeStreamer(this.streamer.info.display_name.toLowerCase())
-      this.updateLocalStorage()
+      this.saveData()
       await this.fetchStreamers(this.$store.state.userData.streamers[0])
       this.$router.push({ path: `/${this.$store.state.userData.streamers[0]}` })
       this.displayNotification({ type: 'error', message: 'Streamer został usunięty.' })

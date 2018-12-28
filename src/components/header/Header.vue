@@ -41,7 +41,8 @@ export default {
   },
   computed: {
     ...mapState([
-      'streamers'
+      'streamers',
+      'user'
     ]),
     streamersList: {
       get () {

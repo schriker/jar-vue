@@ -185,13 +185,12 @@ const actinos = {
     }
   },
 
-  initUser ({ state, commit, rootState, dispatch }, payload) {
+  initUser ({ state, commit, rootState }, payload) {
     let userDataString = JSON.stringify(state.userData)
     let userDataObject = JSON.parse(localStorage.getItem('jarchiwumData'))
 
     if (rootState.user.data) {
       commit('updateUserData', payload)
-      dispatch('fetchStreamers', payload.streamers[0], { root: true })
     } else if (localStorage.getItem('jarchiwumData')) {
       commit('updateUserData', userDataObject)
     } else {

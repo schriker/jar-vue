@@ -7,7 +7,6 @@ const settings = { timestampsInSnapshots: true }
 db.settings(settings)
 
 const state = {
-  isReturning: null,
   data: null,
   isSending: false,
   isFetching: true,
@@ -75,13 +74,15 @@ const actions = {
     dispatch('displayNotification', { type: 'error', message: message }, { root: true })
     commit('doneSending')
   },
-  onAuthStateChange ({ commit, dispatch }) {
+  onAuthStateChange ({ commit, dispatch }, payload) {
     firebase.auth().onAuthStateChanged(user => {
       if (user) {
         dispatch('displayNotification', { type: 'success', message: 'Zostałeś zalogowany.' }, { root: true })
         commit('setUserData', user)
         dispatch('fetchUserData')
       } else {
+        dispatch('initUser', null, { root: true })
+        dispatch('fetchStreamers', payload, { root: true })
         commit('doneFetching')
       }
     })

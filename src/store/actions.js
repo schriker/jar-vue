@@ -194,6 +194,7 @@ const actinos = {
     } else if (localStorage.getItem('jarchiwumData')) {
       commit('updateUserData', userDataObject)
     } else {
+      console.log('default')
       localStorage.setItem('jarchiwumData', userDataString)
     }
   }

@@ -67,12 +67,6 @@ export default {
     streamerName () {
       return this.$route.params.id
     }
-  },
-  created () {
-    if (!this.userData.streamers.includes(this.streamerName)) {
-      this.$router.push({ path: `/${this.$store.state.userData.streamers[0]}` })
-      this.fetchStreamers(this.$store.state.userData.streamers[0])
-    }
   }
 }
 </script>

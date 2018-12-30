@@ -88,8 +88,8 @@ const actions = {
         commit('setUserData', null)
         dispatch('displayNotification', { type: 'success', message: 'Zostałeś wylogowany.' }, { root: true })
         dispatch('initUser', null, { root: true })
-        dispatch('fetchStreamers', rootState.userData.streamers[0], { root: true })
         Vue.router.push({ path: `/${rootState.userData.streamers[0]}` })
+        dispatch('fetchStreamers', rootState.userData.streamers[0], { root: true })
       })
       .catch(() => dispatch('displayNotification', { type: 'error', message: 'Wystąpił błąd.' }, { root: true }))
   },

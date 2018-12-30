@@ -13,7 +13,7 @@
 
 <script>
 
-import { mapActions } from 'vuex'
+import { mapActions, mapState } from 'vuex'
 import './style.scss'
 import AppHeader from './components/header/Header'
 import AppNotification from './components/Notification'
@@ -31,11 +31,19 @@ export default {
       'onAuthStateChange'
     ])
   },
+  computed: {
+    ...mapState([
+      'userData'
+    ]),
+    streamerName () {
+      return this.$route.params.id
+    }
+  },
   created () {
     this.initUser()
     this.onAuthStateChange()
-    if (!this.$route.params.id && !(this.$store.state.userData.streamers.length === 0)) {
-      this.$router.push({ path: `/${this.$store.state.userData.streamers[0]}` })
+    if ((!this.$route.params.id && !(this.userData.streamers.length === 0)) || !this.userData.streamers.includes(this.streamerName)) {
+      this.$router.push({ path: `/${this.userData.streamers[0]}` })
     }
   }
 }

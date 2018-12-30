@@ -68,11 +68,7 @@ export default {
   },
   created () {
     this.sortable = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
-    if (!this.streamers.data[this.streamerName]) {
-      this.fetchStreamers(this.$route.params.id)
-    } else {
-      this.$store.dispatch('fetchVideos', { streamerName: this.$route.params.id, loadMore: false })
-    }
+    // this.fetchStreamers(this.$route.params.id)
   }
 }
 </script>

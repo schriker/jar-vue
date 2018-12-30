@@ -42,9 +42,6 @@ export default {
     }
   },
   created () {
-    if ((!this.$route.params.id && !(this.userData.streamers.length === 0)) || !this.userData.streamers.includes(this.streamerName)) {
-      this.$router.push({ path: `/${this.userData.streamers[0]}` })
-    }
     this.onAuthStateChange(this.$route.params.id)
   }
 }

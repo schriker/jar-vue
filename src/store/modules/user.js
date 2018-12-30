@@ -74,7 +74,7 @@ const actions = {
     dispatch('displayNotification', { type: 'error', message: message }, { root: true })
     commit('doneSending')
   },
-  onAuthStateChange ({ commit, dispatch }, payload) {
+  onAuthStateChange ({ commit, dispatch, rootState }, payload) {
     firebase.auth().onAuthStateChanged(user => {
       if (user) {
         dispatch('displayNotification', { type: 'success', message: 'Zostałeś zalogowany.' }, { root: true })
@@ -82,7 +82,12 @@ const actions = {
         dispatch('fetchUserData')
       } else {
         dispatch('initUser', null, { root: true })
-        dispatch('fetchStreamers', payload, { root: true })
+        if (!rootState.userData.streamers.includes(Vue.router.history.current.params.id)) {
+          Vue.router.push({ path: `/${rootState.userData.streamers[0]}` })
+          dispatch('fetchStreamers', rootState.userData.streamers[0], { root: true })
+        } else {
+          dispatch('fetchStreamers', payload, { root: true })
+        }
         commit('doneFetching')
       }
     })
@@ -119,6 +124,7 @@ const actions = {
 
           if (!userObject.streamers.includes(Vue.router.history.current.params.id)) {
             Vue.router.push({ path: `/${rootState.userData.streamers[0]}` })
+            dispatch('fetchStreamers', rootState.userData.streamers[0], { root: true })
           } else {
             dispatch('fetchStreamers', Vue.router.history.current.params.id, { root: true })
           }

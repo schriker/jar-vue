@@ -75,16 +75,20 @@ const actions = {
     commit('doneSending')
   },
   onAuthStateChange ({ commit, dispatch, rootState }, payload) {
-    firebase.auth().onAuthStateChanged(user => {
+    firebase.auth().onAuthStateChanged(async user => {
       if (user) {
         dispatch('displayNotification', { type: 'success', message: 'Zostałeś zalogowany.' }, { root: true })
         commit('setUserData', user)
         dispatch('fetchUserData')
       } else {
         dispatch('initUser', null, { root: true })
-        if (!rootState.userData.streamers.includes(Vue.router.history.current.params.id)) {
+        if (!payload) {
           Vue.router.push({ path: `/${rootState.userData.streamers[0]}` })
           dispatch('fetchStreamers', rootState.userData.streamers[0], { root: true })
+          dispatch('fetchVideos', { streamerName: rootState.userData.streamers[0], loadMore: false }, { root: true })
+        } else if (!rootState.userData.streamers.includes(payload)) {
+          await dispatch('addStreamer', payload, { root: true })
+          dispatch('fetchVideos', { streamerName: payload, loadMore: false }, { root: true })
         } else {
           dispatch('fetchStreamers', payload, { root: true })
         }
@@ -117,14 +121,17 @@ const actions = {
     let user = db.collection('users').doc(state.data.uid)
 
     user.get()
-      .then(user => {
+      .then(async user => {
         if (user.exists) {
           let userObject = user.data()
           dispatch('initUser', userObject, { root: true })
-
-          if (!userObject.streamers.includes(Vue.router.history.current.params.id)) {
+          if (!Vue.router.history.current.params.id) {
             Vue.router.push({ path: `/${rootState.userData.streamers[0]}` })
             dispatch('fetchStreamers', rootState.userData.streamers[0], { root: true })
+            dispatch('fetchVideos', { streamerName: rootState.userData.streamers[0], loadMore: false }, { root: true })
+          } else if (!userObject.streamers.includes(Vue.router.history.current.params.id)) {
+            await dispatch('addStreamer', Vue.router.history.current.params.id, { root: true })
+            dispatch('fetchVideos', { streamerName: Vue.router.history.current.params.id, loadMore: false }, { root: true })
           } else {
             dispatch('fetchStreamers', Vue.router.history.current.params.id, { root: true })
           }

@@ -1,3 +1,4 @@
+import Vue from 'vue'
 import axios from 'axios'
 
 axios.defaults.baseURL = 'https://api.twitch.tv/helix'
@@ -158,16 +159,22 @@ const actinos = {
       const { data: { data } } = await axios.get(`/users?&login=${payload}`)
       if (data.length === 0) {
         dispatch('displayNotification', { type: 'error', message: 'Podany streamer nie istnieje.' })
+        Vue.router.push({ path: `/` })
+        dispatch('fetchStreamers', null, { root: true })
         return
       }
     } catch (error) {
       console.log(error)
       dispatch('displayNotification', { type: 'error', message: 'Wystąpił bląd.' })
+      Vue.router.push({ path: `/` })
+      dispatch('fetchStreamers', null, { root: true })
       return
     }
 
     if (state.userData.streamers.includes(payload.toLowerCase())) {
       dispatch('displayNotification', { type: 'error', message: 'Podany streamer jest już dodany.' })
+      Vue.router.push({ path: `/` })
+      dispatch('fetchStreamers', null, { root: true })
       return
     }
 

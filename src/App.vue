@@ -13,7 +13,7 @@
 
 <script>
 
-import { mapActions, mapState } from 'vuex'
+import { mapActions, mapState, mapMutations } from 'vuex'
 import './style.scss'
 import AppHeader from './components/header/Header'
 import AppNotification from './components/Notification'
@@ -26,14 +26,19 @@ export default {
     AppUserLogin
   },
   methods: {
+    ...mapMutations([
+      'isReturningFalse'
+    ]),
     ...mapActions([
       'initUser',
-      'onAuthStateChange'
+      'onAuthStateChange',
+      'fetchStreamers'
     ])
   },
   computed: {
     ...mapState([
-      'userData'
+      'userData',
+      'user'
     ]),
     streamerName () {
       return this.$route.params.id
@@ -44,6 +49,20 @@ export default {
     this.onAuthStateChange()
     if ((!this.$route.params.id && !(this.userData.streamers.length === 0)) || !this.userData.streamers.includes(this.streamerName)) {
       this.$router.push({ path: `/${this.userData.streamers[0]}` })
+    }
+    let db
+    let request = indexedDB.open('firebaseLocalStorageDb', 1)
+    request.onsuccess = (event) => {
+      db = event.target.result
+      let transaction = db.transaction(['firebaseLocalStorage'])
+      let objectStore = transaction.objectStore('firebaseLocalStorage')
+      let request = objectStore.getAll()
+      request.onsuccess = (event) => {
+        if (event.target.result.length === 0) {
+          this.isReturningFalse()
+          this.fetchStreamers(this.$route.params.id)
+        }
+      }
     }
   }
 }

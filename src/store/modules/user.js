@@ -7,6 +7,7 @@ const settings = { timestampsInSnapshots: true }
 db.settings(settings)
 
 const state = {
+  isReturning: null,
   data: null,
   isSending: false,
   isFetching: true,
@@ -17,6 +18,9 @@ const state = {
 const mutations = {
   toggleUserModal (state) {
     state.showUserModal = !state.showUserModal
+  },
+  isReturningFalse (state) {
+    state.isReturning = false
   },
   setUserData (state, payload) {
     state.data = payload

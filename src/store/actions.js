@@ -186,21 +186,6 @@ const actinos = {
   },
 
   initUser ({ state, commit, rootState }, payload) {
-    let db
-    let request = indexedDB.open('firebaseLocalStorageDb', 1)
-    request.onerror = () => {
-      alert("Why didn't you allow my web app to use IndexedDB?!")
-    }
-    request.onsuccess = (event) => {
-      db = event.target.result
-      let transaction = db.transaction(['firebaseLocalStorage'])
-      let objectStore = transaction.objectStore('firebaseLocalStorage')
-      let request = objectStore.getAll()
-      request.onsuccess = function (event) {
-        console.log(event.target.result)
-      }
-    }
-
     let userDataString = JSON.stringify(state.userData)
     let userDataObject = JSON.parse(localStorage.getItem('jarchiwumData'))
 

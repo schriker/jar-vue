@@ -68,7 +68,6 @@ export default {
   },
   created () {
     this.sortable = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
-    // this.fetchStreamers(this.$route.params.id)
   }
 }
 </script>

@@ -82,16 +82,7 @@ const actions = {
         dispatch('fetchUserData')
       } else {
         dispatch('initUser', null, { root: true })
-        if (!payload) {
-          Vue.router.push({ path: `/${rootState.userData.streamers[0]}` })
-          dispatch('fetchStreamers', rootState.userData.streamers[0], { root: true })
-          dispatch('fetchVideos', { streamerName: rootState.userData.streamers[0], loadMore: false }, { root: true })
-        } else if (!rootState.userData.streamers.includes(payload)) {
-          await dispatch('addStreamer', payload, { root: true })
-          dispatch('fetchVideos', { streamerName: payload, loadMore: false }, { root: true })
-        } else {
-          dispatch('fetchStreamers', payload, { root: true })
-        }
+        dispatch('routerRedirect', { data: rootState.userData, route: payload })
         commit('doneFetching')
       }
     })
@@ -125,22 +116,24 @@ const actions = {
         if (user.exists) {
           let userObject = user.data()
           dispatch('initUser', userObject, { root: true })
-          if (!Vue.router.history.current.params.id) {
-            Vue.router.push({ path: `/${rootState.userData.streamers[0]}` })
-            dispatch('fetchStreamers', rootState.userData.streamers[0], { root: true })
-            dispatch('fetchVideos', { streamerName: rootState.userData.streamers[0], loadMore: false }, { root: true })
-          } else if (!userObject.streamers.includes(Vue.router.history.current.params.id)) {
-            await dispatch('addStreamer', Vue.router.history.current.params.id, { root: true })
-            dispatch('fetchVideos', { streamerName: Vue.router.history.current.params.id, loadMore: false }, { root: true })
-          } else {
-            dispatch('fetchStreamers', Vue.router.history.current.params.id, { root: true })
-          }
+          dispatch('routerRedirect', { data: userObject, route: Vue.router.history.current.params.id })
         } else {
           dispatch('displayNotification', { type: 'error', message: 'Użytkownik nie istnieje.' }, { root: true })
         }
         commit('doneFetching')
       })
       .catch(() => dispatch('displayNotification', { type: 'error', message: 'Błąd podczas pobierania użytkownika.' }, { root: true }))
+  },
+  async routerRedirect ({ dispatch, rootState }, payload) {
+    if (!payload.route) {
+      Vue.router.push({ path: `/${rootState.userData.streamers[0]}` })
+      dispatch('fetchStreamers', rootState.userData.streamers[0], { root: true })
+    } else if (!payload.data.streamers.includes(payload.route)) {
+      await dispatch('addStreamer', payload.route, { root: true })
+      dispatch('fetchVideos', { streamerName: payload.route, loadMore: false }, { root: true })
+    } else {
+      dispatch('fetchStreamers', payload.route, { root: true })
+    }
   }
 }
 

@@ -6,7 +6,7 @@
 
 ![Preview](preview.jpg)
 
-The app allows users to subscribe their favorite twitch streamers, and watch streams that they missed.  
+The app allows users to subscribe their favorite twitch streamers, and watch streams that they have missed.  
 
 App simply starts with just demo state of default channels that community of jadisco.pl watch (Wonziu, DzejTH and NvidiaGeforcePL).  User then can simply add their own channels and/or remove them. Mark videos as watched and bookmarked. 
 

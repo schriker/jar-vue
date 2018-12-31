@@ -467,6 +467,15 @@ form {
     &--active {
       color: $bookmarks;
     }
+    &--sync {
+      position: fixed;
+      top: 0;
+      right: 0;
+      i {
+        animation: spin 3s infinite;
+        margin: 0;
+      }
+    }
     &--views {
       right: 8px;
       bottom: 12px;
@@ -853,6 +862,12 @@ form {
   100% {
     border-width: calc(60px / 7);
   }
+}
+
+@keyframes spin { 
+  100% { 
+    transform:rotate(360deg); 
+  } 
 }
 
 @media (max-width: 1199.98px) {

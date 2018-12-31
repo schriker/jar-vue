@@ -10,6 +10,7 @@ const state = {
   data: null,
   isSending: false,
   isFetching: true,
+  isSync: false,
   isRegistration: false,
   showUserModal: false
 }
@@ -41,6 +42,12 @@ const mutations = {
   },
   doneFetching (state) {
     state.isFetching = false
+  },
+  startSync (state) {
+    state.isSync = true
+  },
+  doneSync (state) {
+    state.isSync = false
   }
 }
 
@@ -98,11 +105,12 @@ const actions = {
       })
       .catch(() => dispatch('displayNotification', { type: 'error', message: 'Wystąpił błąd.' }, { root: true }))
   },
-  syncUserData ({ state, rootState, dispatch }) {
+  syncUserData ({ state, rootState, dispatch, commit }) {
     if (!state.isFetching) {
+      commit('startSync')
       db.collection('users').doc(state.data.uid).set(rootState.userData)
         .then(() => {
-          // Add some sync animation here
+          commit('doneSync')
         })
         .catch(() => dispatch('displayNotification', { type: 'error', message: 'Błąd podczas zapisywania danych.' }, { root: true }))
     }

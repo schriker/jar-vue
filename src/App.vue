@@ -6,8 +6,9 @@
     </transition>
     <app-notification></app-notification>
     <transition name="fade-in">
-      <app-user-login v-if="$store.state.user.showUserModal"></app-user-login>
+      <app-user-login v-if="user.showUserModal"></app-user-login>
     </transition>
+    <app-sync-icon v-if="user.isSync"></app-sync-icon>
   </div>
 </template>
 
@@ -18,12 +19,14 @@ import './style.scss'
 import AppHeader from './components/header/Header'
 import AppNotification from './components/Notification'
 import AppUserLogin from './components/user/UserLogin'
+import AppSyncIcon from './UI/SyncIcon'
 
 export default {
   components: {
     AppHeader,
     AppNotification,
-    AppUserLogin
+    AppUserLogin,
+    AppSyncIcon
   },
   methods: {
     ...mapActions([

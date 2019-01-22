@@ -179,7 +179,7 @@ form {
           +.streamer {
             background-color: #1D252F;
             .streamer__icon .streamer__remove {
-              opacity: 1;
+              display: block;
             }
             .streamer__icon::after {
               background-color: white;
@@ -253,7 +253,7 @@ form {
   &__remove {
     position: absolute;
     z-index: 999;
-    opacity: 0;
+    display: none;
     left: -4px;
     top: -4px;
     font-size: 12px;

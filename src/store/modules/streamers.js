@@ -27,7 +27,7 @@ const actions = {
     let streamsQueryString = ''
     let streamers = {}
 
-    for (let streamer of rootState.userData.streamers) {
+    for (const streamer of rootState.userData.streamers) {
       usersQueryString += `&login=${streamer}`
       streamsQueryString += `&user_login=${streamer}`
     }
@@ -35,7 +35,7 @@ const actions = {
     try {
       const { data: { data: users } } = await axios.get(`/users?${usersQueryString}`)
 
-      for (let streamer of users) {
+      for (const streamer of users) {
         streamers = {
           ...streamers,
           [streamer.login]: {
@@ -57,8 +57,8 @@ const actions = {
 
       const { data: { data: streams } } = await axios.get(`/streams?${streamsQueryString}`)
 
-      for (let streamer of streams) {
-        let streamerLogin = streamer.user_name.toLowerCase()
+      for (const streamer of streams) {
+        const streamerLogin = streamer.user_name.toLowerCase()
 
         streamers = {
           ...streamers,

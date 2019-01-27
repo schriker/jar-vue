@@ -54,15 +54,15 @@ export default {
       'streamers'
     ]),
     video () {
-      let id = this.$route.params.id
-      let userName = this.singleVideo[0].user_name
+      const id = this.$route.params.id
+      const userName = this.singleVideo[0].user_name
       if (userName && (userName.toLowerCase() !== id)) {
         this.$router.replace({ params: { id: userName.toLowerCase(), video: this.$route.params.video } })
       }
       return this.singleVideo
     },
     date () {
-      let date = new Date(this.video[0].published_at)
+      const date = new Date(this.video[0].published_at)
       return date.toLocaleString('nl-NL')
     },
     streamerName () {
@@ -74,7 +74,7 @@ export default {
       'getSingleVideo'
     ]),
     getVideo () {
-      let videoData = {
+      const videoData = {
         streamer: this.$route.params.id,
         video: this.$route.params.video
       }

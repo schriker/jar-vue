@@ -114,7 +114,7 @@ export default new Vuex.Store({
       state.userData = payload
     },
     updateLocalStorage (state) {
-      let userDataString = JSON.stringify(state.userData)
+      const userDataString = JSON.stringify(state.userData)
       localStorage.setItem('jarchiwumData', userDataString)
     }
   },

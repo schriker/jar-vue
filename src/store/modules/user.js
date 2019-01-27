@@ -2,7 +2,7 @@ import firebase from '../../firebase'
 import errorHandler from '../../helpers/errorHandler'
 import Vue from 'vue'
 
-let db = firebase.firestore()
+const db = firebase.firestore()
 const settings = { timestampsInSnapshots: true }
 db.settings(settings)
 
@@ -77,7 +77,7 @@ const actions = {
     commit('doneSending')
   },
   error ({ commit, dispatch }, payload) {
-    let message = errorHandler(payload.code)
+    const message = errorHandler(payload.code)
     dispatch('displayNotification', { type: 'error', message: message }, { root: true })
     commit('doneSending')
   },
@@ -117,12 +117,12 @@ const actions = {
   },
   fetchUserData ({ state, dispatch, commit, rootState }) {
     commit('startFetching')
-    let user = db.collection('users').doc(state.data.uid)
+    const user = db.collection('users').doc(state.data.uid)
 
     user.get()
       .then(async user => {
         if (user.exists) {
-          let userObject = user.data()
+          const userObject = user.data()
           dispatch('initUser', userObject, { root: true })
           dispatch('routerRedirect', { data: userObject, route: Vue.router.history.current.params.id })
         } else {

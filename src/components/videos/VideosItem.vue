@@ -63,7 +63,7 @@ export default {
       this.title = this.video.title
     }
 
-    let date = new Date(this.video.published_at)
+    const date = new Date(this.video.published_at)
     this.date = date.toLocaleString('nl-NL')
   }
 }

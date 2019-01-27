@@ -18,10 +18,10 @@ export default {
   },
   computed: {
     filtered () {
-      let searchValue = this.searchValue.toLowerCase()
-      let videos = {}
+      const searchValue = this.searchValue.toLowerCase()
+      const videos = {}
 
-      for (let key in this.videos) {
+      for (const key in this.videos) {
         videos[key] = this.videos[key].filter((item) => item.title.toLowerCase().includes(searchValue))
       }
 

@@ -6,7 +6,7 @@ axios.defaults.headers.common['Client-ID'] = 'w87bqmg0y9ckftb2aii2tdielbr1rx'
 
 const actinos = {
   async fetchVideos ({ commit, state, dispatch }, actionPayload) {
-    let today = new Date()
+    const today = new Date()
 
     if (state.streamers.data[actionPayload.streamerName]) {
       if (actionPayload.loadMore) {
@@ -66,17 +66,17 @@ const actinos = {
           ...pagination
         }
 
-        for (let video of videosArr) {
-          let date = new Date(video.published_at)
-          let lastVisited = new Date(state.userData.lastVisited[actionPayload.streamerName].date)
-          let videoObject = {
+        for (const video of videosArr) {
+          const date = new Date(video.published_at)
+          const lastVisited = new Date(state.userData.lastVisited[actionPayload.streamerName].date)
+          const videoObject = {
             ...video,
             watched: state.userData.watched.includes(video.id),
             bookmarked: state.userData.bookmarksId.includes(video.id),
             isNew: lastVisited < date
           }
 
-          let hours = ((today.getTime() - date.getTime()) / (1000 * 60 * 60)).toFixed(1)
+          const hours = ((today.getTime() - date.getTime()) / (1000 * 60 * 60)).toFixed(1)
           if (hours < 24) {
             payload.data.videos.today.push(videoObject)
           } else if (hours < 48 && hours >= 24) {
@@ -99,7 +99,7 @@ const actinos = {
   async refreshBookMark ({ commit, dispatch, state }, payload) {
     try {
       const { data: { data } } = await axios.get(`videos?id=${payload.video.id}`)
-      let refreshed = {
+      const refreshed = {
         ...data[0],
         watched: state.userData.watched.includes(payload.video.id),
         bookmarked: state.userData.bookmarksId.includes(payload.video.id)
@@ -113,7 +113,7 @@ const actinos = {
     }
   },
   updateSingleVideo ({ state, commit }, payload) {
-    for (let video of payload) {
+    for (const video of payload) {
       video.watched = state.userData.watched.includes(video.id)
       video.bookmarked = state.userData.bookmarksId.includes(video.id)
     }
@@ -129,10 +129,10 @@ const actinos = {
     let searchResults = []
 
     if (state.streamers.data[payload.streamer]) {
-      let searchInStreamers = state.streamers.data[payload.streamer].videos.videos
+      const searchInStreamers = state.streamers.data[payload.streamer].videos.videos
 
-      for (let array in searchInStreamers) {
-        let temp = searchInStreamers[array].filter((video) => video.id === payload.video)
+      for (const array in searchInStreamers) {
+        const temp = searchInStreamers[array].filter((video) => video.id === payload.video)
         searchResults = [
           ...searchResults,
           ...temp
@@ -193,8 +193,8 @@ const actinos = {
   },
 
   initUser ({ state, commit, rootState }, payload) {
-    let userDataString = JSON.stringify(state.userData)
-    let userDataObject = JSON.parse(localStorage.getItem('jarchiwumData'))
+    const userDataString = JSON.stringify(state.userData)
+    const userDataObject = JSON.parse(localStorage.getItem('jarchiwumData'))
 
     if (rootState.user.data) {
       commit('updateUserData', payload)

@@ -24,7 +24,7 @@
 </transition>
 </template>
 <script>
-import { mapMutations, mapActions } from 'vuex'
+import { mapMutations } from 'vuex'
 
 export default {
   props: {
@@ -32,19 +32,10 @@ export default {
   },
   methods: {
     ...mapMutations([
-      'removeStreamer'
-    ]),
-    ...mapActions([
-      'fetchStreamers',
-      'displayNotification',
-      'saveData'
+      'toggleRemovingModal'
     ]),
     async atRemoveStreamer () {
-      this.removeStreamer(this.streamer.info.display_name.toLowerCase())
-      this.saveData()
-      await this.fetchStreamers(this.$store.state.userData.streamers[0])
-      this.$router.push({ path: `/${this.$store.state.userData.streamers[0]}` })
-      this.displayNotification({ type: 'error', message: 'Streamer został usunięty.' })
+      this.toggleRemovingModal(this.streamer)
     }
   }
 }

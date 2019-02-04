@@ -13,17 +13,27 @@
         </app-simplebar>
       </ul>
       <app-user-menu></app-user-menu>
+      <transition name="fade-in">
+        <app-basic-modal @closeModal="toggleRemovingModal" v-if="streamers.removingAlert">
+          <div class="removing-icon">
+            <img :src="streamers.removingName.info.profile_image_url" alt="">
+            {{ streamers.removingName.info.display_name }} zostanie usnięty z listy.
+            <button @click="atRemoveStreamer" class="submit-btn submit-btn--large-padding" type="submit">Ok</button>
+          </div>
+        </app-basic-modal>
+      </transition>
     </header>
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex'
+import { mapState, mapActions, mapMutations } from 'vuex'
 
 import AppStreamer from './Streamer'
 import AppStreamerPlaceholder from './StreamerPlacholder'
 import AppUserMenu from './UserMenu'
 import AppSimplebar from 'simplebar-vue'
 import AppDraggable from 'vuedraggable'
+import AppBasicModal from '../../UI/BasicModal'
 import 'simplebar/dist/simplebar.min.css'
 
 export default {
@@ -37,7 +47,8 @@ export default {
     AppStreamer,
     AppUserMenu,
     AppSimplebar,
-    AppDraggable
+    AppDraggable,
+    AppBasicModal
   },
   computed: {
     ...mapState([
@@ -55,9 +66,23 @@ export default {
     }
   },
   methods: {
+    ...mapMutations([
+      'removeStreamer',
+      'toggleRemovingModal'
+    ]),
     ...mapActions([
-      'fetchStreamers'
-    ])
+      'fetchStreamers',
+      'displayNotification',
+      'saveData'
+    ]),
+    async atRemoveStreamer () {
+      this.removeStreamer(this.streamers.removingName.info.display_name.toLowerCase())
+      this.toggleRemovingModal(null)
+      this.saveData()
+      await this.fetchStreamers(this.$store.state.userData.streamers[0])
+      this.$router.push({ path: `/${this.$store.state.userData.streamers[0]}` })
+      this.displayNotification({ type: 'error', message: 'Streamer został usunięty.' })
+    }
   },
   watch: {
     '$route' () {

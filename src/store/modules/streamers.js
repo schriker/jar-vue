@@ -2,12 +2,18 @@ import axios from 'axios'
 
 const state = {
   data: {},
-  loading: true
+  loading: true,
+  removingAlert: false,
+  removingName: null
 }
 
 const mutations = {
   fetchingStart () {
     state.loading = true
+  },
+  toggleRemovingModal (state, payload) {
+    state.removingAlert = !state.removingAlert
+    state.removingName = payload
   },
   updateStreamers (state, payload) {
     state.data = payload

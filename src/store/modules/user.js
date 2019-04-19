@@ -3,8 +3,6 @@ import errorHandler from '../../helpers/errorHandler'
 import Vue from 'vue'
 
 const db = firebase.firestore()
-const settings = { timestampsInSnapshots: true }
-db.settings(settings)
 
 const state = {
   data: null,
@@ -89,7 +87,7 @@ const actions = {
         dispatch('fetchUserData')
       } else {
         dispatch('initUser', null, { root: true })
-        dispatch('routerRedirect', { data: rootState.userData, route: payload })
+        dispatch('routerRedirect', { data: rootState.userData, route: payload.id, playlistId: payload.playlistId })
         commit('doneFetching')
       }
     })
@@ -115,7 +113,7 @@ const actions = {
         .catch(() => dispatch('displayNotification', { type: 'error', message: 'Błąd podczas zapisywania danych.' }, { root: true }))
     }
   },
-  fetchUserData ({ state, dispatch, commit, rootState }) {
+  fetchUserData ({ state, dispatch, commit }) {
     commit('startFetching')
     const user = db.collection('users').doc(state.data.uid)
 
@@ -140,7 +138,7 @@ const actions = {
       await dispatch('addStreamer', payload.route, { root: true })
       dispatch('fetchVideos', { streamerName: payload.route, loadMore: false }, { root: true })
     } else {
-      dispatch('fetchStreamers', payload.route, { root: true })
+      dispatch('fetchStreamers', { streamerName: payload.route, playlistId: payload.playlistId }, { root: true })
     }
   }
 }

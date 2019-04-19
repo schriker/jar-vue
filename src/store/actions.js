@@ -1,8 +1,5 @@
 import Vue from 'vue'
-import axios from 'axios'
-
-axios.defaults.baseURL = 'https://api.twitch.tv/helix'
-axios.defaults.headers.common['Client-ID'] = 'w87bqmg0y9ckftb2aii2tdielbr1rx'
+import { twitchAPI, youtubeAPI } from '../helpers/axiosInstances'
 
 const actinos = {
   async fetchVideos ({ commit, state, dispatch }, actionPayload) {
@@ -47,49 +44,115 @@ const actinos = {
         }
       }
 
-      let queryString = `/videos?user_id=${state.streamers.data[actionPayload.streamerName].info.id}`
+      if (actionPayload.playlistId) {
+        try {
+          const videosIds = []
+          let queryString = `/playlistItems?part=contentDetails&maxResults=20&playlistId=${actionPayload.playlistId}`
 
-      if (actionPayload.loadMore) {
-        queryString += `&after=${state.streamers.data[actionPayload.streamerName].videos.pagination.cursor}`
-      }
+          if (actionPayload.loadMore) {
+            queryString += `&pageToken=${state.streamers.data[actionPayload.streamerName].videos.pagination}`
+          }
 
-      try {
-        const { data: { data: videosArr, pagination } } = await axios.get(queryString)
+          if (!state.streamers.data[actionPayload.streamerName].videos.pagination && actionPayload.loadMore) {
+            dispatch('displayNotification', { type: 'error', message: 'Koniec listy :(' })
+            commit('loadingVideosStop')
+            return
+          }
 
-        if (!pagination.cursor) {
-          dispatch('displayNotification', { type: 'error', message: 'Koniec listy :(' })
+          const { data: { items: tempVideosArr, nextPageToken } } = await youtubeAPI.get(queryString)
+          payload.data.pagination = nextPageToken
+
+          for (let video of tempVideosArr) {
+            videosIds.push(video.contentDetails.videoId)
+          }
+
+          const videosIdString = videosIds.join('%2C')
+          const videosQueryString = `/videos?part=snippet%2CcontentDetails%2Cstatistics%2CliveStreamingDetails&id=${videosIdString}`
+          const { data: { items: videosArr } } = await youtubeAPI.get(videosQueryString)
+
+          for (const video of videosArr) {
+            let published = null
+            video.liveStreamingDetails ? published = video.liveStreamingDetails.actualStartTime : published = video.snippet.publishedAt
+
+            const date = new Date(published)
+            const lastVisited = new Date(state.userData.lastVisited[actionPayload.streamerName].date)
+            const videoObject = {
+              isYoutube: true,
+              created_at: published,
+              duration: video.contentDetails.duration.toLowerCase().split('pt').pop(),
+              id: video.id,
+              published_at: published,
+              thumbnail_url: video.snippet.thumbnails.medium.url,
+              title: video.snippet.title,
+              user_id: video.snippet.channelId,
+              user_name: 'Wonziu',
+              view_count: video.statistics.viewCount,
+              watched: state.userData.watched.includes(video.id),
+              bookmarked: state.userData.bookmarksId.includes(video.id),
+              isNew: lastVisited < date
+            }
+
+            const hours = ((today.getTime() - date.getTime()) / (1000 * 60 * 60)).toFixed(1)
+            if (hours < 24) {
+              payload.data.videos.today.push(videoObject)
+            } else if (hours < 48 && hours >= 24) {
+              payload.data.videos.yesterday.push(videoObject)
+            } else if (hours >= 48) {
+              payload.data.videos.older.push(videoObject)
+            }
+          }
+        } catch (error) {
+          console.log(error)
+          dispatch('displayNotification', { type: 'error', message: 'Wystąpił bląd.' })
           commit('loadingVideosStop')
           return
         }
+      } else if (!actionPayload.playlistId) {
+        let queryString = `/videos?user_id=${state.streamers.data[actionPayload.streamerName].info.id}`
 
-        payload.data.pagination = {
-          ...pagination
+        if (actionPayload.loadMore) {
+          queryString += `&after=${state.streamers.data[actionPayload.streamerName].videos.pagination.cursor}`
         }
 
-        for (const video of videosArr) {
-          const date = new Date(video.published_at)
-          const lastVisited = new Date(state.userData.lastVisited[actionPayload.streamerName].date)
-          const videoObject = {
-            ...video,
-            watched: state.userData.watched.includes(video.id),
-            bookmarked: state.userData.bookmarksId.includes(video.id),
-            isNew: lastVisited < date
+        try {
+          const { data: { data: videosArr, pagination } } = await twitchAPI.get(queryString)
+
+          if (!pagination.cursor && actionPayload.loadMore) {
+            dispatch('displayNotification', { type: 'error', message: 'Koniec listy :(' })
+            commit('loadingVideosStop')
+            return
           }
 
-          const hours = ((today.getTime() - date.getTime()) / (1000 * 60 * 60)).toFixed(1)
-          if (hours < 24) {
-            payload.data.videos.today.push(videoObject)
-          } else if (hours < 48 && hours >= 24) {
-            payload.data.videos.yesterday.push(videoObject)
-          } else if (hours >= 48) {
-            payload.data.videos.older.push(videoObject)
+          payload.data.pagination = {
+            ...pagination
           }
+
+          for (const video of videosArr) {
+            const date = new Date(video.published_at)
+            const lastVisited = new Date(state.userData.lastVisited[actionPayload.streamerName].date)
+            const videoObject = {
+              ...video,
+              isYoutube: false,
+              watched: state.userData.watched.includes(video.id),
+              bookmarked: state.userData.bookmarksId.includes(video.id),
+              isNew: lastVisited < date
+            }
+
+            const hours = ((today.getTime() - date.getTime()) / (1000 * 60 * 60)).toFixed(1)
+            if (hours < 24) {
+              payload.data.videos.today.push(videoObject)
+            } else if (hours < 48 && hours >= 24) {
+              payload.data.videos.yesterday.push(videoObject)
+            } else if (hours >= 48) {
+              payload.data.videos.older.push(videoObject)
+            }
+          }
+        } catch (error) {
+          console.log(error)
+          dispatch('displayNotification', { type: 'error', message: 'Wystąpił bląd.' })
+          commit('loadingVideosStop')
+          return
         }
-      } catch (error) {
-        console.log(error)
-        dispatch('displayNotification', { type: 'error', message: 'Wystąpił bląd.' })
-        commit('loadingVideosStop')
-        return
       }
       commit('updateVideos', payload)
       commit('updateLastVisited', { streamer: actionPayload.streamerName, date: today.toISOString() })
@@ -98,7 +161,7 @@ const actinos = {
   },
   async refreshBookMark ({ commit, dispatch, state }, payload) {
     try {
-      const { data: { data } } = await axios.get(`videos?id=${payload.video.id}`)
+      const { data: { data } } = await twitchAPI.get(`videos?id=${payload.video.id}`)
       const refreshed = {
         ...data[0],
         watched: state.userData.watched.includes(payload.video.id),
@@ -120,7 +183,7 @@ const actinos = {
     commit('setSingleVideo', payload)
   },
 
-  async getSingleVideo ({ state, commit, dispatch }, payload) {
+  async getSingleVideo ({ state, dispatch }, payload) {
     if (!state.streamers.data[payload.streamer]) {
       await dispatch('fetchStreamers', payload.streamer)
       await dispatch('fetchVideos', { streamerName: payload.streamer, loadMore: false })
@@ -145,18 +208,48 @@ const actinos = {
       return
     }
 
-    const singleVideoTwitch = await axios.get(`/videos?id=${payload.video}`)
-    searchResults = [
-      ...searchResults,
-      ...singleVideoTwitch.data.data
-    ]
+    if (payload.isYoutube) {
+      const videosQueryString = `/videos?part=snippet%2CcontentDetails%2Cstatistics%2CliveStreamingDetails&id=${payload.video}`
+      const { data: { items: video } } = await youtubeAPI.get(videosQueryString)
+
+      let published = null
+      video[0].liveStreamingDetails ? published = video[0].liveStreamingDetails.actualStartTime : published = video[0].snippet.publishedAt
+
+      const date = new Date(published)
+      const lastVisited = new Date(state.userData.lastVisited[payload.streamer].date)
+      const videoObject = {
+        isYoutube: true,
+        created_at: published,
+        duration: video[0].contentDetails.duration.toLowerCase().split('pt').pop(),
+        id: video[0].id,
+        published_at: published,
+        thumbnail_url: video[0].snippet.thumbnails.medium.url,
+        title: video[0].snippet.title,
+        user_id: video[0].snippet.channelId,
+        user_name: 'Wonziu',
+        view_count: video[0].statistics.viewCount,
+        watched: state.userData.watched.includes(video[0].id),
+        bookmarked: state.userData.bookmarksId.includes(video[0].id),
+        isNew: lastVisited < date
+      }
+      searchResults = [
+        ...searchResults,
+        videoObject
+      ]
+    } else {
+      const singleVideoTwitch = await twitchAPI.get(`/videos?id=${payload.video}`)
+      searchResults = [
+        ...searchResults,
+        ...singleVideoTwitch.data.data
+      ]
+    }
 
     dispatch('updateSingleVideo', searchResults)
   },
 
   async addStreamer ({ commit, dispatch, state }, payload) {
     try {
-      const { data: { data } } = await axios.get(`/users?&login=${payload}`)
+      const { data: { data } } = await twitchAPI.get(`/users?&login=${payload}`)
       if (data.length === 0) {
         dispatch('displayNotification', { type: 'error', message: 'Podany streamer nie istnieje.' })
         Vue.router.push({ path: `/` })

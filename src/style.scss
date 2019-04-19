@@ -191,6 +191,37 @@ form {
   }
 }
 
+.archive-type {
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+  margin: -8px 0;
+  li {
+    list-style: none;
+  }
+  a {
+    display: block;
+    padding: 8px 16px;
+    &:hover {
+      color: #fff;
+      background-color: #252E3A;
+    }
+  }
+  &__active {
+    background-color: #252E3A;
+  }
+  &__yt {
+    i {
+      color: $error;
+    }
+  }
+  &__tw {
+    i {
+      color: #9961ff;
+    }
+  }
+}
+
 .streamer {
   position: relative;
   display: flex;
@@ -896,6 +927,10 @@ form {
   input[type="text"] {
     flex: 0 1 90%;
     min-width: 0;
+  }
+
+  .archive-type {
+    justify-content: center;
   }
 
   form {

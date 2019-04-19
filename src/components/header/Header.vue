@@ -86,8 +86,10 @@ export default {
   },
   watch: {
     '$route' () {
-      if (this.$route.params.id) {
-        this.$store.dispatch('fetchVideos', { streamerName: this.$route.params.id, loadMore: false })
+      if (this.$route.params.playlistId) {
+        this.$store.dispatch('fetchVideos', { streamerName: this.$route.params.id, loadMore: false, playlistId: this.$route.params.playlistId })
+      } else if (this.$route.params.id) {
+        this.$store.dispatch('fetchVideos', { streamerName: this.$route.params.id, loadMore: false, playlistId: null })
       }
     }
   },

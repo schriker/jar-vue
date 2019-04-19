@@ -1,11 +1,12 @@
 <template>
   <div>
-    <div class="player__top player__top--videos" v-if="!loadingVideos && streamers.data[streamerName].status.type">
-      <div class="live">
+    <div class="player__top player__top--videos" v-if="!loadingVideos && streamers.data[streamerName].status.type || streamerName === 'wonziu' && streamers.data[streamerName]">
+      <app-all-archives v-if="streamerName === 'wonziu'" :streamerName="streamerName"></app-all-archives>
+      <div class="live" v-if="streamers.data[streamerName].status.type">
         <div class="live__outer"></div>
         <div class="live__icon"></div>
       </div>
-      <a target="_blank" :href="`https://pancernik.info/twitch/${streamerName}`">Live - Oglądaj na pancerniku!</a>
+      <a v-if="streamers.data[streamerName].status.type" target="_blank" :href="`https://pancernik.info/twitch/${streamerName}`">Live - Oglądaj na pancerniku!</a>
     </div>
     <app-spinner v-if="(streamers.loading || user.isFetching || loadingVideos)"></app-spinner>
     <transition name="fade-in" appear>
@@ -19,7 +20,7 @@
           </div>
         <app-videos-list :searchValue="searchValue" :videos="videos"></app-videos-list>
         <div class="row load-more">
-          <button :disabled="loadingMore" @click="fetchVideos({ streamerName: streamerName, loadMore: true })" class="btn">{{ loadingMore ? 'Pobieram...' : 'Załaduj więcej' }}</button>
+          <button :disabled="loadingMore" @click="fetchVideos({ streamerName: streamerName, loadMore: true, playlistId: $route.params.playlistId })" class="btn">{{ loadingMore ? 'Pobieram...' : 'Załaduj więcej' }}</button>
         </div>
       </div>
     </transition>
@@ -30,6 +31,7 @@ import { mapState, mapActions } from 'vuex'
 import AppSpinner from '../components/Spinner'
 import AppVideosList from '../components/videos/VideosList'
 import AppWatchedButton from '../UI/WatchedButton'
+import AppAllArchives from '../components/header/AllArchives'
 
 export default {
   data () {
@@ -45,7 +47,8 @@ export default {
   components: {
     AppSpinner,
     AppVideosList,
-    AppWatchedButton
+    AppWatchedButton,
+    AppAllArchives
   },
   methods: {
     ...mapActions([

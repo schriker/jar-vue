@@ -12,7 +12,7 @@
           </transition>
           <iframe
             class="player__iframe"
-            :src="`https://player.twitch.tv/?video=v${$route.params.video}&autoplay=false`"
+            :src="videoURL"
             width="100%"
             frameborder="0"
             scrolling="false"
@@ -61,6 +61,13 @@ export default {
       }
       return this.singleVideo
     },
+    videoURL () {
+      if (this.$route.query.yt === 'true') {
+        return `http://www.youtube.com/embed/${this.$route.params.video}?autoplay=0`
+      } else {
+        return `https://player.twitch.tv/?video=v${this.$route.params.video}&autoplay=false`
+      }
+    },
     date () {
       const date = new Date(this.video[0].published_at)
       return date.toLocaleString('nl-NL')
@@ -76,7 +83,8 @@ export default {
     getVideo () {
       const videoData = {
         streamer: this.$route.params.id,
-        video: this.$route.params.video
+        video: this.$route.params.video,
+        isYoutube: this.$route.query.yt !== 'false'
       }
       this.getSingleVideo(videoData)
     }

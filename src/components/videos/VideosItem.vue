@@ -1,6 +1,6 @@
 <template>
     <div v-show="!hide" class="videos__item">
-      <router-link :to="`/${video.user_name.toLowerCase()}/${video.id}`" :video="isWatched"></router-link>
+      <router-link :to="`/${video.user_name.toLowerCase()}/${video.id}?yt=${video.isYoutube}`" :video="isWatched"></router-link>
       <div class="videos__thumbnail">
         <div v-if="video.isNew" class="videos__badge videos__badge--new">new</div>
         <div class="videos__badge videos__badge--refresh" @click="refreshBookMark({index: index, video: video})" v-if="$route.path === '/bookmarks' "><i class="fas fa-sync-alt"></i></div>

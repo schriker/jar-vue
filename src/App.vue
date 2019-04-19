@@ -45,7 +45,7 @@ export default {
     }
   },
   created () {
-    this.onAuthStateChange(this.$route.params.id)
+    this.onAuthStateChange({ id: this.$route.params.id, playlistId: this.$route.params.playlistId })
   }
 }
 </script>

@@ -22,7 +22,7 @@ const mutations = {
 }
 
 const actions = {
-  async fetchStreamers ({ commit, dispatch, rootState }, streamerName) {
+  async fetchStreamers ({ commit, dispatch, rootState }, payload) {
     commit('fetchingStart')
     if (rootState.userData.streamers.length === 0) {
       commit('updateStreamers', {})
@@ -82,7 +82,7 @@ const actions = {
     }
 
     commit('updateStreamers', streamers)
-    dispatch('fetchVideos', { streamerName: streamerName, loadMore: false }, { root: true })
+    dispatch('fetchVideos', { streamerName: payload.streamerName, loadMore: false, playlistId: payload.playlistId }, { root: true })
   }
 }
 

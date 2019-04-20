@@ -133,7 +133,7 @@ const actions = {
   async routerRedirect ({ dispatch, rootState }, payload) {
     if (!payload.route) {
       Vue.router.replace({ path: `/${rootState.userData.streamers[0]}` })
-      dispatch('fetchStreamers', rootState.userData.streamers[0], { root: true })
+      dispatch('fetchStreamers', { streamerName: rootState.userData.streamers[0] }, { root: true })
     } else if (!payload.data.streamers.includes(payload.route)) {
       await dispatch('addStreamer', payload.route, { root: true })
       dispatch('fetchVideos', { streamerName: payload.route, loadMore: false }, { root: true })

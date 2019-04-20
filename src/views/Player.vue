@@ -63,7 +63,7 @@ export default {
     },
     videoURL () {
       if (this.$route.query.yt === 'true') {
-        return `http://www.youtube.com/embed/${this.$route.params.video}?autoplay=0`
+        return `https://www.youtube.com/embed/${this.$route.params.video}?autoplay=0`
       } else {
         return `https://player.twitch.tv/?video=v${this.$route.params.video}&autoplay=false`
       }

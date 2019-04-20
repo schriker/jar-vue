@@ -32,6 +32,14 @@ export default {
         {
           title: 'Reszta',
           id: 'PLy_S3HWq-C5Ek1GORxXdjoYZjK-BjumDm'
+        },
+        {
+          title: 'DOOM',
+          id: 'PL2oOBJfCFJBZ0Qe4he9pnDyZljV6_dR75'
+        },
+        {
+          title: 'Stare Dzieje',
+          id: 'PLxiwAo629YA7BLhSExM5dNv-zunGF7dTv'
         }
       ]
     }

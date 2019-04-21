@@ -16,3 +16,13 @@ export const youtubeAPI = axios.create({
     key: 'AIzaSyBQpeY8SsVuwc_SbUL7NJmJiYIaQmwUrRc'
   }
 })
+
+export const playlistAPI = axios.create({
+  baseURL: 'https://www.googleapis.com/youtube/v3',
+  headers: {
+    'Accept': 'application/json'
+  },
+  params: {
+    key: 'AIzaSyC2O7TelrFRRBlV6m_pujDAwTxcaR811vI'
+  }
+})

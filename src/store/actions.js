@@ -110,12 +110,33 @@ const actinos = {
     }
   },
   async refreshBookMark ({ commit, dispatch, state }, payload) {
+    let refreshed = {}
     try {
-      const { data: { data } } = await twitchAPI.get(`videos?id=${payload.video.id}`)
-      const refreshed = {
-        ...data[0],
-        watched: state.userData.watched.includes(payload.video.id),
-        bookmarked: state.userData.bookmarksId.includes(payload.video.id)
+      if (payload.video.isYoutube) {
+        const videosQueryString = `/videos?part=snippet%2CcontentDetails%2Cstatistics%2CliveStreamingDetails&id=${payload.video.id}`
+        const { data: { items: video } } = await youtubeAPI.get(videosQueryString)
+
+        const config = {
+          state,
+          videosArr: video,
+          payload: null,
+          actionPayload: { streamerName: payload.video.user_name.toLowerCase() },
+          isYoutube: true
+        }
+
+        const videoObject = videoObjectCreator(config).videoObject
+        refreshed = {
+          ...videoObject,
+          watched: state.userData.watched.includes(payload.video.id),
+          bookmarked: state.userData.bookmarksId.includes(payload.video.id)
+        }
+      } else {
+        const { data: { data } } = await twitchAPI.get(`videos?id=${payload.video.id}`)
+        refreshed = {
+          ...data[0],
+          watched: state.userData.watched.includes(payload.video.id),
+          bookmarked: state.userData.bookmarksId.includes(payload.video.id)
+        }
       }
       commit('onRefreshBookMark', { newVideo: refreshed, index: payload.index })
       dispatch('saveData')

@@ -874,6 +874,9 @@ form {
     animation: pulsate 1s ease-out infinite;
     opacity: 1
   }
+  & + a {
+    white-space: nowrap;
+  }
 }
 
 @keyframes pulsate {

@@ -72,7 +72,7 @@ const actinos = {
           const { data: { items: videosArr } } = await youtubeAPI.get(videosQueryString)
           payload = videoObjectCreator({ state, videosArr, payload, actionPayload, isYoutube: true }).payload
         } catch (error) {
-          console.log(error)
+          console.log(error.response)
           dispatch('displayNotification', { type: 'error', message: 'Wystąpił bląd.' })
           commit('loadingVideosStop')
           return

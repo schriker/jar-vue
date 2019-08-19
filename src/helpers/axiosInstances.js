@@ -13,7 +13,7 @@ export const youtubeAPI = axios.create({
     'Accept': 'application/json'
   },
   params: {
-    key: 'AIzaSyBQpeY8SsVuwc_SbUL7NJmJiYIaQmwUrRc'
+    key: 'AIzaSyAe_x16Z5RUb3r_au_XOv_k2ZPgVqZHNts'
   }
 })
 
@@ -23,6 +23,6 @@ export const playlistAPI = axios.create({
     'Accept': 'application/json'
   },
   params: {
-    key: 'AIzaSyC2O7TelrFRRBlV6m_pujDAwTxcaR811vI'
+    key: 'AIzaSyAe_x16Z5RUb3r_au_XOv_k2ZPgVqZHNts'
   }
 })

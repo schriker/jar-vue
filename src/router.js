@@ -3,7 +3,7 @@ import Router from 'vue-router'
 import Meta from 'vue-meta'
 
 import AppHome from './views/Home'
-import AppPlayer from './views/Player'
+import AppReplay from './views/Replay'
 import AppBookmarks from './views/Bookmarks'
 import AppAddStreamer from './views/AddStreamer'
 
@@ -17,7 +17,7 @@ const router = new Router({
     { path: '/bookmarks', component: AppBookmarks },
     { path: '/add', component: AppAddStreamer },
     { path: '/:id/youtube/:playlistId', component: AppHome },
-    { path: '/:id/:video', component: AppPlayer },
+    { path: '/:id/:video', component: AppReplay },
     { path: '/:id', component: AppHome }
   ]
 })

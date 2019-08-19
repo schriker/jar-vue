@@ -10,25 +10,32 @@
               <app-toggle-book-marked :video="video[0]" :bookMarked="video[0].bookmarked"></app-toggle-book-marked>
             </div>
           </transition>
-          <iframe
-            class="player__iframe"
-            :src="videoURL"
-            width="100%"
-            frameborder="0"
-            scrolling="false"
-            allowfullscreen="true">
-          </iframe>
-        </div>
+            <app-twitch-player ref="player"
+              :video-id="videoId" 
+              :player-state-notify-callback="onPlayerStateNotify">
+            </app-twitch-player>
+          </div>
         <div class="poorchat" :class="{ 'poorchat--close' : !showChat }">
           <div @click="showChat = !showChat" class="poorchat__hide"><i :class="{'fas fa-eye-slash': showChat, 'fas fa-eye': !showChat}"></i></div>
           <div class="player__top player__top--left-border">
             <a target="_blank" href="https://www.poorchat.net/subscriptions/jadisco"><i class="fas fa-heart"></i>Subskrybuj czatek</a>
           </div>
-            <iframe v-if="showChat" class="poorchat__container" frameborder="0" width="100%" id="jd-chat" src="https://client.poorchat.net/jadisco"></iframe>
+          
+          <template v-if="showChat">
+            <app-chat-replay ref="chatReplay" v-if="$route.query.secret == 1"
+              streaming-service="twitch" 
+              :stream-id="videoId"
+              :get-player-time="getPlayerTime"
+              :is-player-playing="getPlayerIsPlaying">
+            </app-chat-replay>
+            <iframe v-else class="poorchat__container" frameborder="0" width="100%" id="jd-chat" src="https://client.poorchat.net/jadisco"></iframe>
+          </template>
         </div>
     </div>
 </template>
 <script>
+import AppTwitchPlayer from '../components/players/TwitchPlayer'
+import AppChatReplay from '../components/chatReplay/ChatReplay'
 import AppToggleWatched from '../UI/ToggleWatched'
 import AppToggleBookMarked from '../UI/ToggleBookMarked'
 import { mapActions, mapState } from 'vuex'
@@ -45,8 +52,10 @@ export default {
     }
   },
   components: {
+    AppTwitchPlayer,
+    AppChatReplay,
     AppToggleWatched,
-    AppToggleBookMarked
+    AppToggleBookMarked,
   },
   computed: {
     ...mapState([
@@ -74,6 +83,9 @@ export default {
     },
     streamerName () {
       return this.$route.params.id
+    },
+    videoId() {
+      return this.$route.params.video
     }
   },
   methods: {
@@ -87,6 +99,16 @@ export default {
         isYoutube: this.$route.query.yt !== 'false'
       }
       this.getSingleVideo(videoData)
+    },
+    getPlayerTime(){
+      return this.$refs.player.getPlayerTime()
+    },
+    getPlayerIsPlaying(){
+      return this.$refs.player.getIsPlaying()
+    },
+    onPlayerStateNotify(){
+      if(this.$refs.chatReplay)
+        this.$refs.chatReplay.playerNotifyCallback()
     }
   },
   watch: {

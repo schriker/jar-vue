@@ -3,8 +3,9 @@
 </template>
 <script lang="ts">
 import Vue from "vue"
-import { Component, Prop } from 'vue-property-decorator'
+import { Component, Prop, Mixins } from 'vue-property-decorator'
 import { mapActions, mapState } from 'vuex'
+import PlayerBase from './PlayerBase'
 
 declare var Twitch: any
 
@@ -15,12 +16,7 @@ declare var Twitch: any
     ])
   }
 })
-export default class extends Vue {
-  @Prop()
-  videoId: string
-  @Prop({default: () => {}})
-  playerStateNotifyCallback: () => void
-  
+export default class extends Mixins(PlayerBase) {
   twitchPlayer: any | null = null
   isPlayerPlaying = false
   isPlayerReady = false
@@ -51,23 +47,23 @@ export default class extends Vue {
     
     this.twitchPlayer.addEventListener(Twitch.Player.READY, () => {
       this.isPlayerReady = true
-      this.playerStateNotifyCallback()
+      this.stateNotifyCallback()
     })
     this.twitchPlayer.addEventListener(Twitch.Player.PLAY, () => {
       this.isPlayerPlaying = true
-      this.playerStateNotifyCallback()
+      this.stateNotifyCallback()
     })
     this.twitchPlayer.addEventListener(Twitch.Player.PAUSE, () => {
       this.isPlayerPlaying = false
-     this.playerStateNotifyCallback()
+     this.stateNotifyCallback()
     })
     this.twitchPlayer.addEventListener(Twitch.Player.PLAYBACK_BLOCKED,() => {
       this.isPlayerPlaying = false
-     this.playerStateNotifyCallback()
+     this.stateNotifyCallback()
     })
     this.twitchPlayer.addEventListener(Twitch.Player.ENDED, () => {
       this.isPlayerPlaying = false
-      this.playerStateNotifyCallback()
+      this.stateNotifyCallback()
     })
     
     /* twitchPlayerIFrame.onmouseenter = () => this.isPlayerJustFocused = true

@@ -11,9 +11,7 @@
               <app-toggle-book-marked :video="video[0]" :bookMarked="video[0].bookmarked"></app-toggle-book-marked>
             </div>
           </transition>
-            <app-twitch-player ref="player"
-              :video-id="videoId" 
-              :player-state-notify-callback="onPlayerStateNotify">
+            <app-twitch-player ref="player" :video-id="videoId">
             </app-twitch-player>
           </div>
         <div class="poorchat" :class="{ 'poorchat--close' : !showChat }">
@@ -26,8 +24,7 @@
             <app-chat-replay ref="chatReplay" v-if="$route.query.secret == 1"
               streaming-service="twitch" 
               :stream-id="videoId"
-              :get-player-time="getPlayerTime"
-              :is-player-playing="getPlayerIsPlaying">
+              :player="$refs.player">
             </app-chat-replay>
             <iframe v-else class="poorchat__container" frameborder="0" width="100%" id="jd-chat" src="https://client.poorchat.net/jadisco"></iframe>
           </template>
@@ -113,16 +110,6 @@ export default {
         isYoutube: this.$route.query.yt !== 'false'
       }
       this.getSingleVideo(videoData)
-    },
-    getPlayerTime(){
-      return this.$refs.player.getPlayerTime()
-    },
-    getPlayerIsPlaying(){
-      return this.$refs.player.getIsPlaying()
-    },
-    onPlayerStateNotify(){
-      if(this.$refs.chatReplay)
-        this.$refs.chatReplay.playerNotifyCallback()
     }
   },
   watch: {

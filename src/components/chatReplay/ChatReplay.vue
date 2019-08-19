@@ -24,6 +24,7 @@
 import Vue from "vue"
 import { Component, Prop } from 'vue-property-decorator'
 import axios from 'axios'
+import AppPlayerBase from '../players/PlayerBase'
 import AppChatEvent from './ChatEvent'
 import { UserMode, RechatEvent, RechatEventType, fetchRechatEvents } from "../../helpers/chatReplay"
 import * as Utils from '../../helpers/utils'
@@ -37,9 +38,7 @@ export default class extends Vue {
   @Prop()
   streamId: string
   @Prop()
-  getPlayerTime: () => number
-  @Prop()
-  isPlayerPlaying: () => boolean
+  player: AppPlayerBase
   
   totalRechatEvents: RechatEvent[] = []
   visibleRechatEvents: RechatEvent[] = []
@@ -64,7 +63,7 @@ export default class extends Vue {
     ] */
     
     playerNotifyCallback(){
-        console.log('Player time: ' + this.getPlayerTime()) 
+        console.log('Player time: ' + this.player.getPlayerTime()) 
         this.update()
     }
 
@@ -92,12 +91,12 @@ export default class extends Vue {
             this.updateTimeoutHandle = null;
         }
         
-        if(!this.isPlayerPlaying())
+        if(!this.player.getIsPlaying())
             return
         
         const wasScrollAtBottom = this.isScrollAtBottom()
         
-        const playerTime = this.getPlayerTime() * 1000;
+        const playerTime = this.player.getPlayerTime() * 1000;
         //console.log('update:: time: ' + playerTime + ' playing: ' + this.isPlayerPlaying());
         let eventsEnd = 0
         for(; eventsEnd < this.totalRechatEvents.length; eventsEnd++){
@@ -134,6 +133,7 @@ export default class extends Vue {
 
         this.totalRechatEvents = await fetchRechatEvents(this.streamingService, this.streamId)
         this.update()
+        this.player.stateNotifyCallback = this.playerNotifyCallback
     }
 }
 </script>

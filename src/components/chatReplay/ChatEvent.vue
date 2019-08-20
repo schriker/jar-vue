@@ -62,7 +62,7 @@ export default class extends Vue {
     jadiscoBadgesInfo: any
     
 
-    insertEmoticons(msg): (string | EmoticonViewData)[] | null{
+    private insertEmoticons(msg): (string | EmoticonViewData)[] | null{
         /*  if(this.rechatEvent.type != RechatEventType.Message)
                 return null */
             
@@ -98,13 +98,13 @@ export default class extends Vue {
         return fragments
     }
     
-    getSubscriptionBadgedName (months): string {
+    private getSubscriptionBadgedName (months): string {
         const ret = this.jadiscoBadgesInfo.subscriber
             .filter(x => x.months <= months).slice(-1)[0].file
         return ret
     }
     
-    getRandomUserColor(nick: string): string{
+    private getRandomUserColor(nick: string): string{
         const rng = new Chance(nick)
         return this.USER_COLORS[rng.integer({min: 0, max: this.USER_COLORS.length-1})]
     }

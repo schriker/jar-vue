@@ -30,22 +30,19 @@ import { UserMode, RechatEvent, RechatEventType, fetchRechatEvents } from "../..
 import * as Utils from '../../helpers/utils'
 
 @Component({
-  components: { AppChatEvent }
+    components: { AppChatEvent }
 })
 export default class extends Vue {
-  @Prop()
-  streamingService: string
-  @Prop()
-  streamId: string
-  @Prop()
-  player: AppPlayerBase
-  
-  totalRechatEvents: RechatEvent[] = []
-  visibleRechatEvents: RechatEvent[] = []
-  updateTimeoutHandle: NodeJS.Timeout | null = null
-  showScrollToBottomButton = false
-  jadiscoBadgesInfo: any | null = null
-  emoticonsInfo: any | null = null
+    @Prop() streamingService: string
+    @Prop() streamId: string
+
+    player: AppPlayerBase | null = null
+    totalRechatEvents: RechatEvent[] = []
+    visibleRechatEvents: RechatEvent[] = []
+    updateTimeoutHandle: NodeJS.Timeout | null = null
+    showScrollToBottomButton = false
+    jadiscoBadgesInfo: any | null = null
+    emoticonsInfo: any | null = null
   
    /*  const testRechatEvents = [
       {
@@ -62,17 +59,22 @@ export default class extends Vue {
       }
     ] */
     
-    playerNotifyCallback(){
-        console.log('Player time: ' + this.player.getPlayerTime()) 
-        this.update()
+    private playerNotifyCallback(){
+        //console.log('Player time: ' + this.player.getPlayerTime()) 
+        this.updateVisibleEvents()
     }
 
-    scrollToBottom(){
+    public setPlayer(player: AppPlayerBase) {
+        this.player = player
+        this.player.stateNotifyCallback = this.playerNotifyCallback
+    }
+
+    private scrollToBottom(){
         const el = document.getElementById('chat-output')!
         el.scrollTop = el.scrollHeight - el.clientHeight
     }
 
-    isScrollAtBottom(): boolean{
+    private isScrollAtBottom(): boolean{
         const el = document.getElementById('chat-output')
         if(!el)
             return true
@@ -81,23 +83,23 @@ export default class extends Vue {
         return (el.scrollHeight - el.scrollTop) - el.clientHeight < 20
     }
 
-    updateScrollToBottomButton(){
+    private updateScrollToBottomButton(){
         this.showScrollToBottomButton = !this.isScrollAtBottom()
     }
   
-    update(){
+    private updateVisibleEvents(){
         if(this.updateTimeoutHandle != null){
             clearTimeout(this.updateTimeoutHandle);
             this.updateTimeoutHandle = null;
         }
         
-        if(!this.player.getIsPlaying())
+        if(!this.player || !this.player.getIsPlaying())
             return
         
         const wasScrollAtBottom = this.isScrollAtBottom()
         
         const playerTime = this.player.getPlayerTime() * 1000;
-        //console.log('update:: time: ' + playerTime + ' playing: ' + this.isPlayerPlaying());
+        //console.log('updateVisibleEvents:: time: ' + playerTime + ' playing: ' + this.isPlayerPlaying());
         let eventsEnd = 0
         for(; eventsEnd < this.totalRechatEvents.length; eventsEnd++){
             if(this.totalRechatEvents[eventsEnd].playerTimeMs > playerTime)
@@ -113,8 +115,8 @@ export default class extends Vue {
         
         if(eventsEnd <  this.totalRechatEvents.length){
             const nextUpdateTimeout = Utils.clamp(this.totalRechatEvents[eventsEnd].playerTimeMs - playerTime, 200, 20)
-            this.updateTimeoutHandle = setTimeout(this.update, nextUpdateTimeout)
-            //console.log('next update in: ' + nextUpdateTimeout)
+            this.updateTimeoutHandle = setTimeout(this.updateVisibleEvents, nextUpdateTimeout)
+            //console.log('next updateVisibleEvents in: ' + nextUpdateTimeout)
         } else {
             //console.log('reached last event (' + eventsEnd + ')')
         }
@@ -132,8 +134,7 @@ export default class extends Vue {
             error => console.error('Could not fetch emoticons info: ' + error))
 
         this.totalRechatEvents = await fetchRechatEvents(this.streamingService, this.streamId)
-        this.update()
-        this.player.stateNotifyCallback = this.playerNotifyCallback
+        this.updateVisibleEvents()
     }
 }
 </script>

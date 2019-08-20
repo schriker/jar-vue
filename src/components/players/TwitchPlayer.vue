@@ -21,13 +21,13 @@ export default class extends Mixins(PlayerBase) {
   isPlayerPlaying = false
   isPlayerReady = false
   
-  getPlayerTime(){
+  public getPlayerTime(){
     if(!this.isPlayerReady)
       return 0
     return this.twitchPlayer.getCurrentTime()
   }
   
-  getIsPlaying(){ // FIXME: chat not starts when player starts while window is not focused
+  public getIsPlaying(){ // FIXME: chat not starts when player starts while window is not focused
     if(!this.isPlayerReady)
       return false
     //return !this.twitchPlayer.isPaused()

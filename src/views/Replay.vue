@@ -20,13 +20,11 @@
             <a target="_blank" href="https://www.poorchat.net/subscriptions/jadisco"><i class="fas fa-heart"></i>Subskrybuj czatek</a>
           </div>
           
-          <template v-if="showChat">
-            <app-chat-replay ref="chatReplay" v-if="$route.query.c == 1"
-              streaming-service="twitch" 
-              :stream-id="videoId">
-            </app-chat-replay>
-            <iframe v-else class="poorchat__container" frameborder="0" width="100%" id="jd-chat" src="https://client.poorchat.net/jadisco"></iframe>
-          </template>
+          <app-chat-replay ref="chatReplay" :class="{display: showChatReplay ? 'initial' : 'none' }"
+            streaming-service="twitch" 
+            :stream-id="videoId">
+          </app-chat-replay>
+          <iframe v-if="!showChatReplay" class="poorchat__container" frameborder="0" width="100%" id="jd-chat" src="https://client.poorchat.net/jadisco"></iframe>
         </div>
     </div>
 </template>
@@ -40,7 +38,8 @@ import { mapActions, mapState } from 'vuex'
 export default {
   data () {
     return {
-      showChat: true
+      showChat: true,
+      showChatReplay: true
     }
   },
   metaInfo () {

@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 export const appAPI = axios.create({
-  baseURL: 'http://api.jarchiwum.pl/'
+  baseURL: 'https://janusmarcin.pl/replay/'
 })
 
 export const twitchAPI = axios.create({

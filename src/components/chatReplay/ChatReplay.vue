@@ -113,8 +113,6 @@ export default class extends Vue {
         if(wasScrollAtBottom)
             setTimeout(this.scrollToBottom)            
         
-        console.log('from: ' + this.rechatEventsAvailableFrom + ' to: ' + this.rechatEventsAvailableTo)
-            
         if(eventsEnd < this.totalRechatEvents.length){
             const nextUpdateTimeout = Utils.clamp(this.totalRechatEvents[eventsEnd].playerTimeMs - playerTime, 200, 20)
             this.updateVisibleEventsHandle = setTimeout(this.updateVisibleEvents, nextUpdateTimeout)

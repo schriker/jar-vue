@@ -43,7 +43,7 @@ export interface EmoticonViewData{
 let lastGlobalRechatEventId = 0
 export async function fetchRechatEvents(streamingService: string, streamId: string): 
     Promise<{events: RechatEvent[], availableTimeFrom: number | null, availableTimeTo: number | null}>{
-    const req = appAPI.get(`/rechat/${streamingService}/${streamId}`, {transformResponse: data => data}) // force axios not to parse JSON. How stupid..
+    const req = appAPI.get(`/${streamId}`, {transformResponse: data => data}) // force axios not to parse JSON. How stupid..
     const resp = <string>(await req).data
     const [metedataStr, ...eventLines] = resp.split('\n')
     const metadata = JSON.parse(metedataStr)

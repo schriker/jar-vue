@@ -134,8 +134,8 @@ export default class extends Vue {
         this.fetchRechatEventsPromise = fetchRechatEvents(this.streamingService, this.streamId)
             .then(res => { 
                 this.totalRechatEvents = res.events
-                this.rechatEventsAvailableFrom = res.availableTimeFrom
-                this.rechatEventsAvailableTo = res.availableTimeTo
+               /*  this.rechatEventsAvailableFrom = res.availableTimeFrom
+                this.rechatEventsAvailableTo = res.availableTimeTo */
             })
     }
     

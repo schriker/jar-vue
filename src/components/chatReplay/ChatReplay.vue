@@ -16,6 +16,8 @@
                     <template v-if="replayState == 'cantDownload'" >Nie udało się pobrać powtórki czatq </template>
                     <template v-else-if="replayState == 'notAvailable'">Brak powtórki czatq dla tego streama </template>
                     <img v-if="emoticonsInfo" class="emoticon" :src="`https://static.poorchat.net/emoticons/${emoticonsInfo.find(e=>e.name=='Feels').file}/1x`" alt="Feels"/>
+                    <br>
+                    <a @click="disableChatCallback">Pokaż aktualny czat</a>
                 </span>
                 <a class="scroll-to-bottom-button"
                     v-if="showScrollToBottomButton"
@@ -42,6 +44,7 @@ import * as Utils from '../../helpers/utils'
 export default class extends Vue {
     @Prop() streamingService: string
     @Prop() streamId: string
+    @Prop({default: () => {}}) disableChatCallback: () => void
 
     player: AppPlayerBase | null = null
     fetchRechatEventsPromise: Promise<void> | null = null

@@ -18,11 +18,14 @@
           <div @click="showChat = !showChat" class="poorchat__hide"><i :class="{'fas fa-eye-slash': showChat, 'fas fa-eye': !showChat}"></i></div>
           <div class="player__top player__top--left-border">
             <a target="_blank" href="https://www.poorchat.net/subscriptions/jadisco"><i class="fas fa-heart"></i>Subskrybuj czatek</a>
+            <a @click="showChatReplay=false">Czat teraz</a>
+            <a @click="showChatReplay=true">Czat powtórka</a>
           </div>
           
-          <app-chat-replay ref="chatReplay" :class="{display: showChatReplay ? 'initial' : 'none' }"
+          <app-chat-replay ref="chatReplay" :style="{'display': (showChatReplay ? 'initial' : 'none') }"
             streaming-service="twitch" 
-            :stream-id="videoId">
+            :stream-id="videoId"
+            :disable-chat-callback="() => showChatReplay=false">
           </app-chat-replay>
           <iframe v-if="!showChatReplay" class="poorchat__container" frameborder="0" width="100%" id="jd-chat" src="https://client.poorchat.net/jadisco"></iframe>
         </div>

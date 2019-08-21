@@ -89,8 +89,8 @@ export default class extends Vue {
   
     private updateVisibleEvents(){
         if(this.updateVisibleEventsHandle != null){
-            clearTimeout(this.updateVisibleEventsHandle);
-            this.updateVisibleEventsHandle = null;
+            clearTimeout(this.updateVisibleEventsHandle)
+            this.updateVisibleEventsHandle = null
         }
         
         if(!this.player)
@@ -159,6 +159,13 @@ export default class extends Vue {
                 this.replayState = 'ok'
                 this.updateVisibleEvents()
             }
+        }
+    }
+    
+    beforeDestroy() {
+        if(this.updateVisibleEventsHandle != null){
+            clearTimeout(this.updateVisibleEventsHandle)
+            this.updateVisibleEventsHandle = null
         }
     }
 }

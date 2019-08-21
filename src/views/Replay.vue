@@ -18,14 +18,16 @@
           <div @click="showChat = !showChat" class="poorchat__hide"><i :class="{'fas fa-eye-slash': showChat, 'fas fa-eye': !showChat}"></i></div>
           <div class="player__top player__top--left-border">
             <a target="_blank" href="https://www.poorchat.net/subscriptions/jadisco"><i class="fas fa-heart"></i>Subskrybuj czatek</a>
-            <a @click="showChatReplay=false">Czat teraz</a>
-            <a @click="showChatReplay=true">Czat powtórka</a>
+            <template v-if="this.streamingService === 'twitch'">
+              <a @click="showChatReplay=false">Czat teraz</a>
+              <a @click="showChatReplay=true">Czat powtórka</a>
+            </template>
           </div>
           
-          <app-chat-replay ref="chatReplay" :style="{'display': (showChatReplay ? 'initial' : 'none') }"
-            streaming-service="twitch" 
+          <app-chat-replay ref="chatReplay" v-if="this.streamingService === 'twitch'" :style="{'display': (showChatReplay ? 'initial' : 'none') }"
+            streaming-service="twitch"
             :stream-id="videoId"
-            :disable-chat-callback="() => showChatReplay=false">
+            :disable-chat-callback="() => showChatReplay = false">
           </app-chat-replay>
           <iframe v-if="!showChatReplay" class="poorchat__container" frameborder="0" width="100%" id="jd-chat" src="https://client.poorchat.net/jadisco"></iframe>
         </div>
@@ -42,7 +44,7 @@ export default {
   data () {
     return {
       showChat: true,
-      showChatReplay: true
+      showChatReplay: false
     }
   },
   metaInfo () {
@@ -65,23 +67,28 @@ export default {
       const id = this.$route.params.id
       const userName = this.singleVideo[0].user_name
       if (userName && (userName.toLowerCase() !== id)) {
-        this.$router.replace({ params: { id: userName.toLowerCase(), video: this.$route.params.video } })
+        this.$router.replace({ params: { id: userName.toLowerCase(), video: this.videoId } })
       }
       return this.singleVideo
     },
     videoURL () {
-      if (this.$route.query.yt === 'true') {
-        return `https://www.youtube.com/embed/${this.$route.params.video}?autoplay=0`
-      } else {
-        return `https://player.twitch.tv/?video=v${this.$route.params.video}&autoplay=false`
+      switch(this.streamingService){
+        case 'twitch':
+          return `https://player.twitch.tv/?video=v${this.videoId}&autoplay=false`
+        case 'youtube':
+          return `https://www.youtube.com/embed/${this.videoId}?autoplay=0`
       }
     },
     mirkoLink () {
-      const isYoutube = this.$route.query.yt !== 'false'
-      const platform = isYoutube ? 'Youtube' : 'Twitch'
-      let link = isYoutube ? 'https://www.youtube.com/watch?v=' : 'https://www.twitch.tv/videos/'
-      link = `${link}${this.$route.params.video}`
-      return `${link} (${platform})(**${this.video[0].duration}**)(_${this.video[0].title}_)`
+      let link
+      switch(this.streamingService){
+        case 'twitch':
+          link = `https://player.twitch.tv/?video=v${this.videoId}&autoplay=false`
+        case 'youtube':
+          link = `https://www.youtube.com/embed/${this.videoId}?autoplay=0`
+      }
+
+      return `${link} (${this.streamingService})(**${this.video[0].duration}**)(_${this.video[0].title}_)`
     },
     date () {
       const date = new Date(this.video[0].published_at)
@@ -92,6 +99,9 @@ export default {
     },
     videoId() {
       return this.$route.params.video
+    },
+    streamingService() {
+      return this.$route.query.yt === 'true' ? 'youtube' : 'twitch'
     }
   },
   methods: {
@@ -120,6 +130,7 @@ export default {
   },
   created () {
     this.getVideo()
+    this.showChatReplay = this.streamingService === 'twitch'
   },
   mounted() {
     if(this.$refs.chatReplay)

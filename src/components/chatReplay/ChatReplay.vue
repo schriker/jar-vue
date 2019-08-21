@@ -1,23 +1,29 @@
 <template>
-  <div class="replay-chat">
-    <div class="chat-content">
-      <div id="chat-output" @scroll="updateScrollToBottomButton">
-        <ul class="chat-messages-dump">
-          <li v-for="(rechatEvent, eventIndex) in visibleRechatEvents" :key="rechatEvent.id">
-            <app-chat-event 
-              :rechat-event="rechatEvent"
-              :emoticons-info="emoticonsInfo"
-              :jadisco-badges-info="jadiscoBadgesInfo"
-              :is-continuation-message="eventIndex > 0 && rechatEvent.user && visibleRechatEvents[eventIndex-1].user == rechatEvent.user"> <!--TODO: compare modes-->
-            </app-chat-event>
-          </li>
-        </ul>
-        <a class="scroll-to-bottom-button"
-          v-if="showScrollToBottomButton"
-          @click="scrollToBottom">Więcej wiadomości poniżej</a>
-      </div>
+    <div class="replay-chat">
+        <div class="chat-content">
+            <div id="chat-output" @scroll="updateScrollToBottomButton">
+                <ul v-if="replayState=='ok'" class="chat-messages-dump">
+                    <li v-for="(rechatEvent, eventIndex) in visibleRechatEvents" :key="rechatEvent.id">
+                        <app-chat-event 
+                            :rechat-event="rechatEvent"
+                            :emoticons-info="emoticonsInfo"
+                            :jadisco-badges-info="jadiscoBadgesInfo"
+                            :is-continuation-message="eventIndex > 0 && rechatEvent.user && visibleRechatEvents[eventIndex-1].user == rechatEvent.user"> <!--TODO: compare modes-->
+                        </app-chat-event>
+                    </li>
+                </ul>
+                <span v-else-if="replayState != 'loading'" class="replay-error-message">
+                    <template v-if="replayState == 'cantDownload'" >Nie udało się pobrać powtórki czatq </template>
+                    <template v-else-if="replayState == 'notAvailable'">Brak powtórki czatq dla tego streama </template>
+                    <img v-if="emoticonsInfo" class="emoticon" :src="`https://static.poorchat.net/emoticons/${emoticonsInfo.find(e=>e.name=='Feels').file}/1x`" alt="Feels"/>
+                </span>
+                <a class="scroll-to-bottom-button"
+                    v-if="showScrollToBottomButton"
+                    @click="scrollToBottom">Więcej wiadomości poniżej
+                </a>
+            </div>
+        </div>
     </div>
-  </div>
 </template>
 
 <script lang="ts">
@@ -25,6 +31,7 @@ import Vue from "vue"
 import { Component, Prop } from 'vue-property-decorator'
 import axios from 'axios'
 import AppPlayerBase from '../players/PlayerBase'
+//@ts-ignore - ts doesn't like .vue files
 import AppChatEvent from './ChatEvent'
 import { UserMode, RechatEvent, RechatEventType, fetchRechatEvents } from "../../helpers/chatReplay"
 import * as Utils from '../../helpers/utils'
@@ -37,27 +44,17 @@ export default class extends Vue {
     @Prop() streamId: string
 
     player: AppPlayerBase | null = null
+    fetchRechatEventsPromise: Promise<void> | null = null
     totalRechatEvents: RechatEvent[] = []
-    visibleRechatEvents: RechatEvent[] = []
-    updateTimeoutHandle: NodeJS.Timeout | null = null
-    showScrollToBottomButton = false
+    rechatEventsAvailableFrom: number | null = null
+    rechatEventsAvailableTo: number | null = null
+    updateVisibleEventsHandle: NodeJS.Timeout | null = null
     jadiscoBadgesInfo: any | null = null
     emoticonsInfo: any | null = null
-  
-   /*  const testRechatEvents = [
-      {
-        type: RechatEventType.Message,
-        id: 0,
-        playerTimeMs: 0,
-        user: "jarzyna",
-        userColor: "#FF0000",
-        userSubscriptionMonths: 0,
-        userGiftedSubscriptionMonths: 0,
-        userModes: ["globalModerator"],
-        displayTime: "21:37",
-        message: "Kto chce bana?"
-      }
-    ] */
+    
+    visibleRechatEvents: RechatEvent[] = []
+    showScrollToBottomButton = false
+    replayState: 'loading' | 'ok' | 'cantDownload' | 'notAvailable' = 'loading'
     
     private playerNotifyCallback(){
         //console.log('Player time: ' + this.player.getPlayerTime()) 
@@ -88,13 +85,16 @@ export default class extends Vue {
     }
   
     private updateVisibleEvents(){
-        if(this.updateTimeoutHandle != null){
-            clearTimeout(this.updateTimeoutHandle);
-            this.updateTimeoutHandle = null;
+        if(this.updateVisibleEventsHandle != null){
+            clearTimeout(this.updateVisibleEventsHandle);
+            this.updateVisibleEventsHandle = null;
         }
         
-        if(!this.player || !this.player.getIsPlaying())
+        if(!this.player)
             return
+            
+        if(!this.player.getIsPlaying())
+            this.updateVisibleEventsHandle = setTimeout(this.updateVisibleEvents, 500)
         
         const wasScrollAtBottom = this.isScrollAtBottom()
         
@@ -111,20 +111,20 @@ export default class extends Vue {
             .slice(Math.max(0, eventsEnd - 200), eventsEnd)
         
         if(wasScrollAtBottom)
-            setTimeout(this.scrollToBottom, 0)
+            setTimeout(this.scrollToBottom)            
         
-        if(eventsEnd <  this.totalRechatEvents.length){
+        console.log('from: ' + this.rechatEventsAvailableFrom + ' to: ' + this.rechatEventsAvailableTo)
+            
+        if(eventsEnd < this.totalRechatEvents.length){
             const nextUpdateTimeout = Utils.clamp(this.totalRechatEvents[eventsEnd].playerTimeMs - playerTime, 200, 20)
-            this.updateTimeoutHandle = setTimeout(this.updateVisibleEvents, nextUpdateTimeout)
+            this.updateVisibleEventsHandle = setTimeout(this.updateVisibleEvents, nextUpdateTimeout)
             //console.log('next updateVisibleEvents in: ' + nextUpdateTimeout)
         } else {
             //console.log('reached last event (' + eventsEnd + ')')
         }
     }
 
-    async created(){
-        this.updateScrollToBottomButton()
-
+    created(){
         axios.get('https://api.poorchat.net/v1/channels/jadisco/badges').then(
             resp => { this.jadiscoBadgesInfo = resp.data }, 
             error => console.error('Could not fetch badges info: ' + error))
@@ -133,8 +133,32 @@ export default class extends Vue {
             resp => { this.emoticonsInfo = resp.data }, 
             error => console.error('Could not fetch emoticons info: ' + error))
 
-        this.totalRechatEvents = await fetchRechatEvents(this.streamingService, this.streamId)
-        this.updateVisibleEvents()
+        this.fetchRechatEventsPromise = fetchRechatEvents(this.streamingService, this.streamId)
+            .then(res => { 
+                this.totalRechatEvents = res.events
+                this.rechatEventsAvailableFrom = res.availableTimeFrom
+                this.rechatEventsAvailableTo = res.availableTimeTo
+            })
+    }
+    
+    async mounted() {
+        this.updateScrollToBottomButton()
+        
+        try {
+            await this.fetchRechatEventsPromise!
+        } catch(e) {
+            this.replayState = 'cantDownload'
+            throw e
+        }
+        
+        if(this.replayState != 'cantDownload') {
+            if(this.totalRechatEvents.length == 0){
+                this.replayState = 'notAvailable'
+            } else {
+                this.replayState = 'ok'
+                this.updateVisibleEvents()
+            }
+        }
     }
 }
 </script>

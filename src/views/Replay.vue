@@ -24,12 +24,14 @@
             </template>
           </div>
           
-          <app-chat-replay ref="chatReplay" v-if="this.streamingService === 'twitch'" :style="{'display': (showChatReplay ? 'initial' : 'none') }"
-            streaming-service="twitch"
-            :stream-id="videoId"
-            :disable-chat-callback="() => showChatReplay = false">
-          </app-chat-replay>
-          <iframe v-if="!showChatReplay" class="poorchat__container" frameborder="0" width="100%" id="jd-chat" src="https://client.poorchat.net/jadisco"></iframe>
+          <keep-alive>
+            <app-chat-replay ref="chatReplay" v-if="showChatReplay"
+              :streaming-service="streamingService"
+              :stream-id="videoId"
+              :disable-chat-callback="() => showChatReplay = false">
+            </app-chat-replay>
+          </keep-alive>
+          <iframe v-if="renderRealChatIframe" v-show="!showChatReplay" class="poorchat__container" frameborder="0" width="100%" id="jd-chat" src="https://client.poorchat.net/jadisco"></iframe>
         </div>
     </div>
 </template>
@@ -44,7 +46,8 @@ export default {
   data () {
     return {
       showChat: true,
-      showChatReplay: false
+      showChatReplay: false,
+      renderRealChatIframe: false
     }
   },
   metaInfo () {
@@ -126,6 +129,10 @@ export default {
   watch: {
     '$route' () {
       this.getVideo()
+    },
+    showChatReplay(oldValue, newValue) {
+      if(!oldValue)
+        this.renderRealChatIframe = true
     }
   },
   created () {

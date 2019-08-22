@@ -37,6 +37,7 @@ import AppPlayerBase from '../players/PlayerBase'
 import AppChatEvent from './ChatEvent'
 import { UserMode, RechatEvent, RechatEventType, fetchRechatEvents } from "../../helpers/chatReplay"
 import * as Utils from '../../helpers/utils'
+import { constants } from "crypto";
 
 @Component({
     components: { AppChatEvent }
@@ -72,6 +73,7 @@ export default class extends Vue {
     private scrollToBottom(){
         const el = document.getElementById('chat-output')!
         el.scrollTop = el.scrollHeight - el.clientHeight
+        this.updateScrollToBottomButton()
     }
 
     private isScrollAtBottom(): boolean{
@@ -88,12 +90,9 @@ export default class extends Vue {
     }
   
     private updateVisibleEvents(){
-        if(this.updateVisibleEventsHandle != null){
-            clearTimeout(this.updateVisibleEventsHandle)
-            this.updateVisibleEventsHandle = null
-        }
+        this.cancelPendingVisibleEventsUpdate()
         
-        if(!this.player)
+        if(!this.player || this.totalRechatEvents.length == 0)
             return
             
         if(!this.player.getIsPlaying())
@@ -122,6 +121,13 @@ export default class extends Vue {
             //console.log('next updateVisibleEvents in: ' + nextUpdateTimeout)
         } else {
             //console.log('reached last event (' + eventsEnd + ')')
+        }
+    }
+    
+    private cancelPendingVisibleEventsUpdate(){
+         if(this.updateVisibleEventsHandle != null){
+            clearTimeout(this.updateVisibleEventsHandle)
+            this.updateVisibleEventsHandle = null
         }
     }
 
@@ -162,11 +168,17 @@ export default class extends Vue {
         }
     }
     
+    activated() {
+        this.scrollToBottom()
+        this.updateVisibleEvents()
+    }
+    
+    deactivated() {
+        this.cancelPendingVisibleEventsUpdate()
+    }
+    
     beforeDestroy() {
-        if(this.updateVisibleEventsHandle != null){
-            clearTimeout(this.updateVisibleEventsHandle)
-            this.updateVisibleEventsHandle = null
-        }
+        this.cancelPendingVisibleEventsUpdate()
     }
 }
 </script>

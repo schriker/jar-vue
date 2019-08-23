@@ -16,7 +16,8 @@ export enum RechatEventType{
 interface RechatEventBase{
     type: RechatEventType
     printable: boolean
-    id: number
+    eventUid: number
+    msgid?: string
     playerTimeMs: number
 }
 
@@ -33,7 +34,12 @@ export interface RechatMessageEvent extends RechatEventBase {
     message: string
 }
 
-export type RechatEvent = RechatMessageEvent
+export interface RechatEmbedEvent extends RechatEventBase {
+    type: RechatEventType.Embed
+    embedData: any
+}
+
+export type RechatEvent = RechatMessageEvent | RechatEmbedEvent
 
 export interface EmoticonViewData{
     name: string,
@@ -70,13 +76,14 @@ function parseRechatEvent(eventString: string, streamStartTime: Date): RechatEve
     
     const [playerTimeStr, eventType, ircTagsStr, eventContent] = Utils.splitStringUpTo(eventString, ' ', 3)
     const playerTimeMs = parseInt(playerTimeStr)
+    const ircTags = Utils.parseIrcMessageTags(ircTagsStr.substring(1))
     
     const eventCommonData = {
-        id: lastGlobalRechatEventId++,
+        eventUid: lastGlobalRechatEventId++,
+        msgid: ircTags.get('msgid'),
         playerTimeMs
     }
     
-    const ircTags = Utils.parseIrcMessageTags(ircTagsStr.substring(1))
     const displayTime = new Date(streamStartTime)
     displayTime.setTime(displayTime.getTime() + playerTimeMs)
     const displayTimeStr = displayTime.getHours().toString().padStart(2, '0') + ':' + displayTime.getMinutes().toString().padStart(2, '0')
@@ -106,6 +113,12 @@ function parseRechatEvent(eventString: string, streamStartTime: Date): RechatEve
                 userGiftedSubscriptionMonths,
                 displayTime: displayTimeStr,
                 message
+            }
+        case 'embed':
+            return { ...eventCommonData,
+                type: RechatEventType.Embed,
+                printable: false, // This is not displayed as event, but included in message event
+                embedData: JSON.parse(eventContent)
             }
         default:
             return null

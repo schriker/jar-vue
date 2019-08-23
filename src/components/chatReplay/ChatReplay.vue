@@ -3,9 +3,10 @@
         <div class="chat-content">
             <div id="chat-output" @scroll="updateScrollToBottomButton">
                 <ul v-if="replayState=='ok'" class="chat-messages-dump">
-                    <li v-for="(rechatEvent, eventIndex) in visibleRechatEvents" :key="rechatEvent.id">
+                    <li v-for="(rechatEvent, eventIndex) in visibleRechatEvents" :key="rechatEvent.eventUid">
                         <app-chat-event 
                             :rechat-event="rechatEvent"
+                            :embeds-map="embedsMap"
                             :emoticons-info="emoticonsInfo"
                             :jadisco-badges-info="jadiscoBadgesInfo"
                             :is-continuation-message="eventIndex > 0 && rechatEvent.user && visibleRechatEvents[eventIndex-1].user == rechatEvent.user"> <!--TODO: compare modes-->
@@ -32,15 +33,16 @@
 import Vue from "vue"
 import { Component, Prop } from 'vue-property-decorator'
 import axios from 'axios'
+import { constants } from "crypto";
 import AppPlayerBase from '../players/PlayerBase'
 //@ts-ignore - ts doesn't like .vue files
 import AppChatEvent from './ChatEvent'
-import { UserMode, RechatEvent, RechatEventType, fetchRechatEvents } from "../../helpers/chatReplay"
+import { UserMode, RechatEvent, RechatEventType, fetchRechatEvents, RechatEmbedEvent } from "../../helpers/chatReplay"
 import * as Utils from '../../helpers/utils'
-import { constants } from "crypto";
 
 @Component({
-    components: { AppChatEvent }
+    components: { AppChatEvent },
+    name: 'ChatReplay'
 })
 export default class extends Vue {
     @Prop() streamingService: string
@@ -50,6 +52,7 @@ export default class extends Vue {
     player: AppPlayerBase | null = null
     fetchRechatEventsPromise: Promise<void> | null = null
     totalRechatEvents: RechatEvent[] = []
+    embedsMap = new Map<string, RechatEmbedEvent[]>()
     rechatEventsAvailableFrom: number | null = null
     rechatEventsAvailableTo: number | null = null
     updateVisibleEventsHandle: NodeJS.Timeout | null = null
@@ -143,6 +146,17 @@ export default class extends Vue {
         this.fetchRechatEventsPromise = fetchRechatEvents(this.streamingService, this.streamId)
             .then(res => { 
                 this.totalRechatEvents = res.events
+                
+                this.embedsMap.clear()
+                for(const event of this.totalRechatEvents){
+                    if(event.type === RechatEventType.Embed && event.msgid){
+                        if(this.embedsMap.has(event.msgid))
+                            this.embedsMap.get(event.msgid)!.push(event)
+                        else
+                            this.embedsMap.set(event.msgid, [event])
+                    }
+                }
+                
                /*  this.rechatEventsAvailableFrom = res.availableTimeFrom
                 this.rechatEventsAvailableTo = res.availableTimeTo */
             })

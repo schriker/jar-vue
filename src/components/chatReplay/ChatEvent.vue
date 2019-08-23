@@ -32,15 +32,26 @@
                 </template>
             </span>
         </span>
+        <div v-if="rechatEvent.msgid">
+            <app-chat-embed v-for="embedEvent in embedsMap.get(rechatEvent.msgid)" 
+                :key="embedEvent.eventUid" 
+                :embedData="embedEvent.embedData">
+            </app-chat-embed>
+        </div>
     </span>
 </template>
 <script lang="ts">
 import Vue from "vue"
 import Chance from 'chance'
 import { Component, Prop } from 'vue-property-decorator'
-import { UserMode, RechatEvent, RechatEventType, EmoticonViewData } from "../../helpers/chatReplay"
+import { UserMode, RechatEvent, RechatEventType, RechatEmbedEvent, EmoticonViewData } from "../../helpers/chatReplay"
+//@ts-ignore
+import AppChatEmbed from './ChatEmbed'
 
-@Component
+@Component({
+    components: { AppChatEmbed },
+    name: 'ChatEvent'
+})
 export default class extends Vue {
     readonly USER_MODES_TO_LETTER_MAPPING = new Map<UserMode, string>([
         ['admin', 'a'],
@@ -52,16 +63,12 @@ export default class extends Vue {
     readonly USER_COLORS = ["#FF0000", "#FF8000", "#FFFF00", "#80FF00", "#008000", "#00FF80", "#00FFFF", "#0080FF", "#0000FF", "#8000FF", "#FF00FF", "#FF0080"]
     readonly RechatEventType = RechatEventType
     
-    @Prop()
-    rechatEvent: RechatEvent
-    @Prop()
-    isContinuationMessage: boolean
-    @Prop()
-    emoticonsInfo: any
-    @Prop()
-    jadiscoBadgesInfo: any
+    @Prop() rechatEvent: RechatEvent
+    @Prop() embedsMap: Map<string, RechatEmbedEvent[]>
+    @Prop() isContinuationMessage: boolean
+    @Prop() emoticonsInfo: any
+    @Prop() jadiscoBadgesInfo: any
     
-
     private insertEmoticons(msg): (string | EmoticonViewData)[] | null{
         /*  if(this.rechatEvent.type != RechatEventType.Message)
                 return null */

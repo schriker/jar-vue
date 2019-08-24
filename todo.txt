@@ -8,7 +8,7 @@ autoscroll w górę
 klikanie w nick
 teksty na najechaniu myszkiem
 channel modes
-opcje czatu
+opcje
 czy powturka czatu dostępna
 tytół streama
 lista osób
@@ -17,5 +17,5 @@ czas - utf vs local
 <wiadomość usunięta>
 file sharing
 łoptymalizejszyn
-historia na starcie
-czatek powtróka <-> czatek teraz
+linkify
+escaped text - np. kolorki

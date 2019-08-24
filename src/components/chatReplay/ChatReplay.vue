@@ -3,13 +3,14 @@
         <div class="chat-content">
             <div id="chat-output" @scroll="updateScrollToBottomButton">
                 <ul v-if="replayState=='ok'" class="chat-messages-dump">
-                    <li v-for="(rechatEvent, eventIndex) in visibleRechatEvents" :key="rechatEvent.eventUid">
+                    <li v-for="(replayEvent, eventIndex) in visibleReplayEvents" :key="replayEvent.eventUid">
                         <app-chat-event 
-                            :rechat-event="rechatEvent"
+                            :replay-event="replayEvent"
+                            :stream-start-time="streamStartTime"
                             :embeds-map="embedsMap"
                             :emoticons-info="emoticonsInfo"
                             :jadisco-badges-info="jadiscoBadgesInfo"
-                            :is-continuation-message="eventIndex > 0 && rechatEvent.user && visibleRechatEvents[eventIndex-1].user == rechatEvent.user"> <!--TODO: compare modes-->
+                            :is-continuation-message="eventIndex > 0 && replayEvent.user && visibleReplayEvents[eventIndex-1].user == replayEvent.user"> <!--TODO: compare modes-->
                         </app-chat-event>
                     </li>
                 </ul>
@@ -37,8 +38,9 @@ import { constants } from "crypto";
 import AppPlayerBase from '../players/PlayerBase'
 //@ts-ignore - ts doesn't like .vue files
 import AppChatEvent from './ChatEvent'
-import { UserMode, RechatEvent, RechatEventType, fetchRechatEvents, RechatEmbedEvent } from "../../helpers/chatReplay"
+import { UserMode, ReplayEvent, ReplayEventType, fetchReplayEvents, ReplayEmbedEvent } from "../../helpers/chatReplay"
 import * as Utils from '../../helpers/utils'
+import { performance } from "perf_hooks";
 
 @Component({
     components: { AppChatEvent },
@@ -50,27 +52,32 @@ export default class extends Vue {
     @Prop({default: () => {}}) disableChatCallback: () => void
 
     player: AppPlayerBase | null = null
-    fetchRechatEventsPromise: Promise<void> | null = null
-    totalRechatEvents: RechatEvent[] = []
-    embedsMap = new Map<string, RechatEmbedEvent[]>()
-    rechatEventsAvailableFrom: number | null = null
-    rechatEventsAvailableTo: number | null = null
-    updateVisibleEventsHandle: NodeJS.Timeout | null = null
+    fetchReplayEventsPromise: Promise<void> | null = null
+    totalReplayEvents: ReplayEvent[] = []
+    streamStartTime: Date
+    embedsMap = new Map<string, ReplayEmbedEvent[]>()
+    replayEventsAvailableFrom: number | null = null
+    replayEventsAvailableTo: number | null = null
     jadiscoBadgesInfo: any | null = null
     emoticonsInfo: any | null = null
     
-    visibleRechatEvents: RechatEvent[] = []
+    updateHandle: NodeJS.Timeout | null = null
+    //lastUpdatePlayerTime: number | null = null
+    lastDispatchedEventIndex: number | null = null
+    
+    visibleReplayEvents: ReplayEvent[] = []
     showScrollToBottomButton = false
     replayState: 'loading' | 'ok' | 'cantDownload' | 'notAvailable' = 'loading'
     
-    private playerNotifyCallback(){
-        //console.log('Player time: ' + this.player.getPlayerTime()) 
-        this.updateVisibleEvents()
-    }
-
+    
     public setPlayer(player: AppPlayerBase) {
         this.player = player
         this.player.stateNotifyCallback = this.playerNotifyCallback
+    }
+    
+    private playerNotifyCallback(){
+        //console.log('Player time: ' + this.player.getPlayerTime()) 
+        this.update()
     }
 
     private scrollToBottom(){
@@ -81,10 +88,13 @@ export default class extends Vue {
 
     private isScrollAtBottom(): boolean{
         const el = document.getElementById('chat-output')
+        
         if(!el)
             return true
+            
         if(el.scrollHeight <= el.clientHeight)
             return true
+            
         return (el.scrollHeight - el.scrollTop) - el.clientHeight < 20
     }
 
@@ -92,45 +102,73 @@ export default class extends Vue {
         this.showScrollToBottomButton = !this.isScrollAtBottom()
     }
   
-    private updateVisibleEvents(){
-        this.cancelPendingVisibleEventsUpdate()
+    private update(){
+        this.cancelPendingUpdate()
         
-        if(!this.player || this.totalRechatEvents.length == 0)
+        if(!this.player || this.totalReplayEvents.length == 0)
             return
             
         if(!this.player.getIsPlaying())
-            this.updateVisibleEventsHandle = setTimeout(this.updateVisibleEvents, 500)
+            this.updateHandle = setTimeout(this.update, 500)
         
         const wasScrollAtBottom = this.isScrollAtBottom()
-        
         const playerTime = this.player.getPlayerTime() * 1000;
-        //console.log('updateVisibleEvents:: time: ' + playerTime + ' playing: ' + this.isPlayerPlaying());
-        let eventsEnd = 0
-        for(; eventsEnd < this.totalRechatEvents.length; eventsEnd++){
-            if(this.totalRechatEvents[eventsEnd].playerTimeMs > playerTime)
-                break
+        
+        let dispatchEventsStartIndex: number | null
+        if(this.lastDispatchedEventIndex == null){
+            dispatchEventsStartIndex = 0
+        } else {
+            const lastDispatchedEventTime = this.totalReplayEvents[this.lastDispatchedEventIndex].playerTimeMs
+            
+            if(lastDispatchedEventTime == playerTime) {
+                // We're in the same time as before - do nothing
+                dispatchEventsStartIndex = null
+            } else if(lastDispatchedEventTime > playerTime) {
+                // Playback shifted backwards, reapply all events
+                dispatchEventsStartIndex = 0
+                this.visibleReplayEvents = []
+            } else {
+                dispatchEventsStartIndex = this.lastDispatchedEventIndex + 1
+                
+                if(dispatchEventsStartIndex >= this.totalReplayEvents.length)
+                    dispatchEventsStartIndex = null    
+            }
         }
-
-        this.visibleRechatEvents = this.totalRechatEvents
-            .filter(event => event.printable)
-            .slice(Math.max(0, eventsEnd - 200), eventsEnd)
+        
+        if(dispatchEventsStartIndex != null) {
+            for(let i = dispatchEventsStartIndex; i < this.totalReplayEvents.length; i++){
+                const event = this.totalReplayEvents[i]
+                
+                if(event.playerTimeMs > playerTime)
+                    break
+                
+                if(event.printable)
+                    this.visibleReplayEvents.push(event)
+                
+                this.lastDispatchedEventIndex = i
+            }
+        }  
+        
+        this.visibleReplayEvents.splice(0, Math.max(this.visibleReplayEvents.length - 200, 0))
         
         if(wasScrollAtBottom)
             setTimeout(this.scrollToBottom)            
         
-        if(eventsEnd < this.totalRechatEvents.length){
-            const nextUpdateTimeout = Utils.clamp(this.totalRechatEvents[eventsEnd].playerTimeMs - playerTime, 200, 20)
-            this.updateVisibleEventsHandle = setTimeout(this.updateVisibleEvents, nextUpdateTimeout)
-            //console.log('next updateVisibleEvents in: ' + nextUpdateTimeout)
+        const prevEventIndex = this.lastDispatchedEventIndex == null ? -1 : this.lastDispatchedEventIndex
+        if(prevEventIndex < this.totalReplayEvents.length - 1){
+            const nextEventPlayerTime = this.totalReplayEvents[prevEventIndex + 1].playerTimeMs
+            const nextUpdateTimeout = Utils.clamp(nextEventPlayerTime - playerTime, 200, 20)
+            this.updateHandle = setTimeout(this.update, nextUpdateTimeout)
+            //console.log('next update in: ' + nextUpdateTimeout)
         } else {
             //console.log('reached last event (' + eventsEnd + ')')
         }
     }
     
-    private cancelPendingVisibleEventsUpdate(){
-         if(this.updateVisibleEventsHandle != null){
-            clearTimeout(this.updateVisibleEventsHandle)
-            this.updateVisibleEventsHandle = null
+    private cancelPendingUpdate(){
+         if(this.updateHandle != null){
+            clearTimeout(this.updateHandle)
+            this.updateHandle = null
         }
     }
 
@@ -143,13 +181,14 @@ export default class extends Vue {
             resp => { this.emoticonsInfo = resp.data }, 
             error => console.error('Could not fetch emoticons info: ' + error))
 
-        this.fetchRechatEventsPromise = fetchRechatEvents(this.streamingService, this.streamId)
+        this.fetchReplayEventsPromise = fetchReplayEvents(this.streamingService, this.streamId)
             .then(res => { 
-                this.totalRechatEvents = res.events
+                this.totalReplayEvents = res.events
+                this.streamStartTime = res.streamStartTime
                 
                 this.embedsMap.clear()
-                for(const event of this.totalRechatEvents){
-                    if(event.type === RechatEventType.Embed && event.msgid){
+                for(const event of this.totalReplayEvents){
+                    if(event.type === ReplayEventType.Embed && event.msgid){
                         if(this.embedsMap.has(event.msgid))
                             this.embedsMap.get(event.msgid)!.push(event)
                         else
@@ -157,8 +196,8 @@ export default class extends Vue {
                     }
                 }
                 
-               /*  this.rechatEventsAvailableFrom = res.availableTimeFrom
-                this.rechatEventsAvailableTo = res.availableTimeTo */
+               /*  this.replayEventsAvailableFrom = res.availableTimeFrom
+                this.replayEventsAvailableTo = res.availableTimeTo */
             })
     }
     
@@ -166,33 +205,33 @@ export default class extends Vue {
         this.updateScrollToBottomButton()
         
         try {
-            await this.fetchRechatEventsPromise!
+            await this.fetchReplayEventsPromise!
         } catch(e) {
             this.replayState = 'cantDownload'
             throw e
         }
         
         if(this.replayState != 'cantDownload') {
-            if(this.totalRechatEvents.length == 0){
+            if(this.totalReplayEvents.length == 0){
                 this.replayState = 'notAvailable'
             } else {
                 this.replayState = 'ok'
-                this.updateVisibleEvents()
+                this.update()
             }
         }
     }
     
     activated() {
         this.scrollToBottom()
-        this.updateVisibleEvents()
+        this.update()
     }
     
     deactivated() {
-        this.cancelPendingVisibleEventsUpdate()
+        this.cancelPendingUpdate()
     }
     
     beforeDestroy() {
-        this.cancelPendingVisibleEventsUpdate()
+        this.cancelPendingUpdate()
     }
 }
 </script>

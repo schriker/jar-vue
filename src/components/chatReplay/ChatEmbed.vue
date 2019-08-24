@@ -17,8 +17,6 @@ export default class extends Vue {
     
     isMounted = false
     
-    //{"image": [{"height": 168, "url": "https://i.imgur.com/SuIeeQw.png", "width": 135}], "type": "image", "url": "https://i.imgur.com/SuIeeQw.png"}
-
     private getSizeStyle({width: orgWidth, height: orgHeight} : {width?: number, height?: number}): any {
         /* const elem = <HTMLElement>this.$refs.sizedEl
         console.log(elem)
@@ -27,32 +25,28 @@ export default class extends Vue {
             
         if(!orgHeight)
             orgHeight = (<HTMLImageElement>elem).naturalHeight */
+    
+        const parent = this.$refs.embedEl as HTMLElement //todo: or embedInner
+        if(!parent)
+            return {}
         
-        //if (orgWidth && orgHeight) {
-            const parent = this.$refs.embedEl as HTMLElement //todo: or embedInner
-            if(!parent)
-                return {}
-            
-            const parentWidth = this.getElemWidth(parent)
-            
-            let maxWidth = Math.min(352, parentWidth)
-            let maxHeight = maxWidth / (16 / 9);
-            //maxWidth = elem.attributes['max-width'] || maxWidth
-           // maxHeight = elem.attributes['max-height'] || maxHeight
-            orgWidth = orgWidth || maxWidth
-            orgHeight = orgHeight || maxHeight
-            
-            if(orgWidth < maxWidth && orgHeight < maxHeight){
-                maxWidth = orgWidth
-                maxHeight = orgHeight
-            }
-            
-            const scale = Math.min(maxWidth / orgWidth, maxHeight / orgHeight)
-            return {
-                width: orgWidth * scale + "px",
-                height: orgHeight * scale + "px"
-            }
-       // }
+        const parentWidth = this.getElemWidth(parent)
+        
+        let maxWidth = Math.min(352, parentWidth)
+        let maxHeight = maxWidth / (16 / 9);
+        orgWidth = orgWidth || maxWidth
+        orgHeight = orgHeight || maxHeight
+        
+        if(orgWidth < maxWidth && orgHeight < maxHeight){
+            maxWidth = orgWidth
+            maxHeight = orgHeight
+        }
+        
+        const scale = Math.min(maxWidth / orgWidth, maxHeight / orgHeight)
+        return {
+            width: orgWidth * scale + "px",
+            height: orgHeight * scale + "px"
+        }
     }
     
     private getElemWidth(elem: HTMLElement): number{

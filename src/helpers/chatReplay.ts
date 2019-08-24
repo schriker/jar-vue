@@ -1,7 +1,7 @@
 import * as Utils from './utils'
 import { appAPI } from './axiosInstances'
 
-export enum RechatEventType{
+export enum ReplayEventType{
     Message,
     ActionMessage,
     Embed,
@@ -13,8 +13,8 @@ export enum RechatEventType{
     TitleChanged,
 }
 
-interface RechatEventBase{
-    type: RechatEventType
+interface ReplayEventBase{
+    type: ReplayEventType
     printable: boolean
     eventUid: number
     msgid?: string
@@ -23,54 +23,54 @@ interface RechatEventBase{
 
 export type UserMode = "vip" | "moderator" | "globalModerator" | "owner" | "admin"
 
-export interface RechatMessageEvent extends RechatEventBase {
-    type: RechatEventType.Message
+export interface ReplayMessageEvent extends ReplayEventBase {
+    type: ReplayEventType.Message
     user: string
     userColor: string | undefined
     userSubscriptionMonths: number
     userGiftedSubscriptionMonths: number
     userModes: UserMode[]
-    displayTime: string
     message: string
 }
 
-export interface RechatEmbedEvent extends RechatEventBase {
-    type: RechatEventType.Embed
+export interface ReplayEmbedEvent extends ReplayEventBase {
+    type: ReplayEventType.Embed
     embedData: any
 }
 
-export type RechatEvent = RechatMessageEvent | RechatEmbedEvent
+export type ReplayEvent = ReplayMessageEvent | ReplayEmbedEvent
 
 export interface EmoticonViewData{
     name: string,
     fileName: string
 }
 
-let lastGlobalRechatEventId = 0
-export async function fetchRechatEvents(streamingService: string, streamId: string): 
-    Promise<{events: RechatEvent[]}>{
+let lastGlobalReplayEventId = 0
+export async function fetchReplayEvents(streamingService: string, streamId: string): 
+    Promise<{events: ReplayEvent[], streamStartTime: Date}>{
     const req = appAPI.get(`/${streamId}`, {transformResponse: data => data}) // force axios not to parse JSON. How stupid..
     const resp = <string>(await req).data
     const [metedataStr, ...eventLines] = resp.split('\n')
     const metadata = JSON.parse(metedataStr)
     const streamStartTime = new Date(metadata.streamStartTime)
     
-    const rechatEvents = <RechatEvent[]>eventLines
-        .map(eventString => parseRechatEvent(eventString, streamStartTime))
+    const replayEvents = <ReplayEvent[]>eventLines
+        .map(eventString => parseReplayEvent(eventString, streamStartTime))
         .filter(event => event)
     
-    if(rechatEvents.length > 0)
-        console.log('fetchRechatEvents: first ' + rechatEvents[0].playerTimeMs + ' last: ' + rechatEvents.slice(-1)[0].playerTimeMs)        
+    if(replayEvents.length > 0)
+        console.log('fetchReplayEvents: first ' + replayEvents[0].playerTimeMs + ' last: ' + replayEvents.slice(-1)[0].playerTimeMs)        
     else 
-        console.log('fetchRechatEvents: no events fetched')
+        console.log('fetchReplayEvents: no events fetched')
     
-    return { events: rechatEvents
+    return { events: replayEvents,
+        streamStartTime
         /* availableTimeFrom: metadata.availableFrom,
         availableTimeTo: metadata.availableTo */
     }
 }
 
-function parseRechatEvent(eventString: string, streamStartTime: Date): RechatEvent | null{
+function parseReplayEvent(eventString: string, streamStartTime: Date): ReplayEvent | null{
     if(!eventString || eventString.length == 0)
         return null
     
@@ -79,14 +79,10 @@ function parseRechatEvent(eventString: string, streamStartTime: Date): RechatEve
     const ircTags = Utils.parseIrcMessageTags(ircTagsStr.substring(1))
     
     const eventCommonData = {
-        eventUid: lastGlobalRechatEventId++,
+        eventUid: lastGlobalReplayEventId++,
         msgid: ircTags.get('msgid'),
         playerTimeMs
     }
-    
-    const displayTime = new Date(streamStartTime)
-    displayTime.setTime(displayTime.getTime() + playerTimeMs)
-    const displayTimeStr = displayTime.getHours().toString().padStart(2, '0') + ':' + displayTime.getMinutes().toString().padStart(2, '0')
     
     switch(eventType){
         case 'msg':
@@ -104,19 +100,18 @@ function parseRechatEvent(eventString: string, streamStartTime: Date): RechatEve
                 .filter(mode => mode)
                 
             return { ...eventCommonData,
-                type: RechatEventType.Message,
+                type: ReplayEventType.Message,
                 printable: true,
                 user,
                 userModes,
                 userColor,
                 userSubscriptionMonths,
                 userGiftedSubscriptionMonths,
-                displayTime: displayTimeStr,
                 message
             }
         case 'embed':
             return { ...eventCommonData,
-                type: RechatEventType.Embed,
+                type: ReplayEventType.Embed,
                 printable: false, // This is not displayed as event, but included in message event
                 embedData: JSON.parse(eventContent)
             }

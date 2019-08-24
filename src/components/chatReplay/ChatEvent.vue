@@ -1,6 +1,6 @@
 <template>
-    <span v-if="rechatEvent.type == RechatEventType.Message">
-        <span class="time">{{rechatEvent.displayTime}}</span>
+    <span v-if="replayEvent.type == ReplayEventType.Message">
+        <span class="time">{{ timeString }}</span>
         <span v-if="isContinuationMessage">
             <span class="continue">
                 <i class="fa fa-angle-right"></i>
@@ -8,23 +8,23 @@
         </span>
         <span v-else>
             <span class="modes">
-                <div v-if="rechatEvent.userSubscriptionMonths > 0 && jadiscoBadgesInfo != null" class="mode">
+                <div v-if="replayEvent.userSubscriptionMonths > 0 && jadiscoBadgesInfo != null" class="mode">
                     <a href="https://www.poorchat.net/subscriptions/jadisco" target="_blank">
-                        <img :src="`https://static.poorchat.net/badges/${getSubscriptionBadgedName(rechatEvent.userSubscriptionMonths)}/1x`">
+                        <img :src="`https://static.poorchat.net/badges/${getSubscriptionBadgedName(replayEvent.userSubscriptionMonths)}/1x`">
                     </a>
                 </div>
-                <div v-for="mode in rechatEvent.userModes" v-bind:key="mode" class="mode">
+                <div v-for="mode in replayEvent.userModes" v-bind:key="mode" class="mode">
                     <img :src="`https://static.poorchat.net/badges/${USER_MODES_TO_LETTER_MAPPING.get(mode)}/1x`">
                 </div>
             </span>
-            <span class="user" :style="{color: rechatEvent.userColor || getRandomUserColor(rechatEvent.user)}">{{rechatEvent.user}}</span>
+            <span class="user" :style="{color: replayEvent.userColor || getRandomUserColor(replayEvent.user)}">{{replayEvent.user}}</span>
             <span>:</span>
         </span>
         <span class="text">
             <span>
-                <template v-for="(frag, index) in insertEmoticons(rechatEvent.message)">
+                <template v-for="(frag, index) in insertEmoticons(replayEvent.message)">
                     <template v-if="typeof frag == 'string'">
-                        {{frag}}
+                        {{ frag }}
                     </template>
                     <template v-else>
                         <img class="emoticon" :src="`https://static.poorchat.net/emoticons/${frag.fileName}/1x`" :alt="frag.name" :tooltip="frag.name" v-bind:key="index"/>
@@ -32,8 +32,8 @@
                 </template>
             </span>
         </span>
-        <div v-if="rechatEvent.msgid">
-            <app-chat-embed v-for="embedEvent in embedsMap.get(rechatEvent.msgid)" 
+        <div v-if="replayEvent.msgid">
+            <app-chat-embed v-for="embedEvent in embedsMap.get(replayEvent.msgid)" 
                 :key="embedEvent.eventUid" 
                 :embedData="embedEvent.embedData">
             </app-chat-embed>
@@ -44,7 +44,7 @@
 import Vue from "vue"
 import Chance from 'chance'
 import { Component, Prop } from 'vue-property-decorator'
-import { UserMode, RechatEvent, RechatEventType, RechatEmbedEvent, EmoticonViewData } from "../../helpers/chatReplay"
+import { UserMode, ReplayEvent, ReplayEventType, ReplayEmbedEvent, EmoticonViewData } from "../../helpers/chatReplay"
 //@ts-ignore
 import AppChatEmbed from './ChatEmbed'
 
@@ -61,16 +61,17 @@ export default class extends Vue {
         ['vip', 'h'],
     ])
     readonly USER_COLORS = ["#FF0000", "#FF8000", "#FFFF00", "#80FF00", "#008000", "#00FF80", "#00FFFF", "#0080FF", "#0000FF", "#8000FF", "#FF00FF", "#FF0080"]
-    readonly RechatEventType = RechatEventType
+    readonly ReplayEventType = ReplayEventType
     
-    @Prop() rechatEvent: RechatEvent
-    @Prop() embedsMap: Map<string, RechatEmbedEvent[]>
+    @Prop() replayEvent: ReplayEvent
+    @Prop() embedsMap: Map<string, ReplayEmbedEvent[]>
     @Prop() isContinuationMessage: boolean
+    @Prop() streamStartTime: Date
     @Prop() emoticonsInfo: any
     @Prop() jadiscoBadgesInfo: any
     
     private insertEmoticons(msg): (string | EmoticonViewData)[] | null{
-        /*  if(this.rechatEvent.type != RechatEventType.Message)
+        /*  if(this.replayEvent.type != ReplayEventType.Message)
                 return null */
             
         let fragments: (string | EmoticonViewData)[] = [msg]
@@ -105,6 +106,12 @@ export default class extends Vue {
         return fragments
     }
     
+    private get timeString(): string{
+        const displayTime = new Date(this.streamStartTime)
+        displayTime.setTime(displayTime.getTime() + this.replayEvent.playerTimeMs)
+        return displayTime.getHours().toString().padStart(2, '0') + ':' + displayTime.getMinutes().toString().padStart(2, '0')
+    }
+    
     private getSubscriptionBadgedName (months): string {
         const ret = this.jadiscoBadgesInfo.subscriber
             .filter(x => x.months <= months).slice(-1)[0].file
@@ -115,5 +122,6 @@ export default class extends Vue {
         const rng = new Chance(nick)
         return this.USER_COLORS[rng.integer({min: 0, max: this.USER_COLORS.length-1})]
     }
+    
 }
 </script>

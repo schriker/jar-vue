@@ -7,6 +7,7 @@
               <i class="fas fa-eye"></i>{{ video[0].view_count }}
               <i class="fas fa-calendar"></i>{{ date }}
               <input ref="mirkoInput" :value="mirkoLink" type="hidden" />
+              <span class="topic">{{ streamTopic }}</span>
               <app-toggle-watched :videoId="video[0].id" :watched="video[0].watched"></app-toggle-watched>
               <app-toggle-book-marked :video="video[0]" :bookMarked="video[0].bookmarked"></app-toggle-book-marked>
             </div>
@@ -28,7 +29,8 @@
             <app-chat-replay ref="chatReplay" v-if="showChatReplay"
               :streaming-service="streamingService"
               :stream-id="videoId"
-              :disable-chat-callback="() => showChatReplay = false">
+              :disable-chat-callback="() => showChatReplay = false"
+              :set-topic-callback="newTopic => streamTopic = newTopic">
             </app-chat-replay>
           </keep-alive>
           <iframe v-if="renderRealChatIframe" v-show="!showChatReplay" class="poorchat__container" frameborder="0" width="100%" id="jd-chat" src="https://client.poorchat.net/jadisco"></iframe>
@@ -47,7 +49,8 @@ export default {
     return {
       showChat: true,
       showChatReplay: false,
-      renderRealChatIframe: false
+      renderRealChatIframe: false,
+      streamTopic: null
     }
   },
   metaInfo () {

@@ -50,6 +50,7 @@ export default class extends Vue {
     @Prop() streamingService: string
     @Prop() streamId: string
     @Prop({default: () => {}}) disableChatCallback: () => void
+    @Prop({default: topic => {}}) setTopicCallback: (topic: string | null) => void
 
     player: AppPlayerBase | null = null
     fetchReplayEventsPromise: Promise<void> | null = null
@@ -127,6 +128,7 @@ export default class extends Vue {
                 // Playback shifted backwards, reapply all events
                 dispatchEventsStartIndex = 0
                 this.visibleReplayEvents = []
+                this.setTopicCallback(null)
             } else {
                 dispatchEventsStartIndex = this.lastDispatchedEventIndex + 1
                 
@@ -142,8 +144,11 @@ export default class extends Vue {
                 if(event.playerTimeMs > playerTime)
                     break
                 
-                if(event.printable)
+                if(event.printable) {
                     this.visibleReplayEvents.push(event)
+                } else if(event.type == ReplayEventType.TopicChanged) {
+                    this.setTopicCallback(event.topic)
+                }
                 
                 this.lastDispatchedEventIndex = i
             }
@@ -198,7 +203,7 @@ export default class extends Vue {
                 
                /*  this.replayEventsAvailableFrom = res.availableTimeFrom
                 this.replayEventsAvailableTo = res.availableTimeTo */
-            })
+            }, error => console.error(error))
     }
     
     async mounted() {

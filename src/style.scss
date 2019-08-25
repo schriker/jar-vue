@@ -624,6 +624,10 @@ form {
         transform: scale(1.2)
       }
     }
+    .topic {
+      margin-left: 40px;
+      font-size: 14px;
+    }
   }
   &__iframe {
     flex: 1 0 auto;
@@ -676,7 +680,7 @@ form {
       background-color: #1D252F;
     }
   }
-  &--close {
+  &--player__top {
     margin-right: -400px;
   }
 }

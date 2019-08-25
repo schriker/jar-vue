@@ -10,7 +10,7 @@ export enum ReplayEventType{
     UserParts,
     UserList,*/
     Notice,
-    TitleChanged,
+    TopicChanged,
 }
 
 interface ReplayEventBase{
@@ -35,10 +35,15 @@ export interface ReplayMessageEvent extends ReplayEventBase {
 
 export interface ReplayEmbedEvent extends ReplayEventBase {
     type: ReplayEventType.Embed
-    embedData: any
+    embedData: object
 }
 
-export type ReplayEvent = ReplayMessageEvent | ReplayEmbedEvent
+export interface ReplayTopicChangedEvent extends ReplayEventBase {
+    type: ReplayEventType.TopicChanged
+    topic: string
+}
+
+export type ReplayEvent = ReplayMessageEvent | ReplayEmbedEvent | ReplayTopicChangedEvent
 
 export interface EmoticonViewData{
     name: string,
@@ -114,6 +119,12 @@ function parseReplayEvent(eventString: string, streamStartTime: Date): ReplayEve
                 type: ReplayEventType.Embed,
                 printable: false, // This is not displayed as event, but included in message event
                 embedData: JSON.parse(eventContent)
+            }
+        case 'topic': 
+            return { ...eventCommonData,
+                type: ReplayEventType.TopicChanged,
+                printable: false,
+                topic: eventContent
             }
         default:
             return null

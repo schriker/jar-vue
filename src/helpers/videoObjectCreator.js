@@ -1,4 +1,4 @@
-const videoObjectCreator = ({ state, videosArr, payload, actionPayload, isYoutube }) => {
+const videoObjectCreator = ({ state, videosArr, payload, actionPayload }) => {
   const today = new Date()
   let videoObject = {}
   let date = null
@@ -6,7 +6,7 @@ const videoObjectCreator = ({ state, videosArr, payload, actionPayload, isYoutub
   for (const video of videosArr) {
     const lastVisited = new Date(state.userData.lastVisited[actionPayload.streamerName].date)
 
-    if (isYoutube) {
+    if (actionPayload.platform === 'youtube') {
       let published = null
       video.liveStreamingDetails ? published = video.liveStreamingDetails.actualStartTime : published = video.snippet.publishedAt
 
@@ -16,6 +16,7 @@ const videoObjectCreator = ({ state, videosArr, payload, actionPayload, isYoutub
         isYoutube: true,
         created_at: published,
         duration: video.contentDetails.duration.toLowerCase().split('pt').pop(),
+        platform: actionPayload.platform,
         id: video.id,
         published_at: published,
         thumbnail_url: video.snippet.thumbnails.medium.url,
@@ -27,15 +28,36 @@ const videoObjectCreator = ({ state, videosArr, payload, actionPayload, isYoutub
         bookmarked: state.userData.bookmarksId.includes(video.id),
         isNew: lastVisited < date
       }
-    } else if (!isYoutube) {
+    } else if (actionPayload.platform === 'twitch') {
       date = new Date(video.published_at)
 
       videoObject = {
         ...video,
         isYoutube: false,
+        platform: actionPayload.platform,
         watched: state.userData.watched.includes(video.id),
         bookmarked: state.userData.bookmarksId.includes(video.id),
         isNew: lastVisited < date
+      }
+    } else if (actionPayload.platform === 'facebook') {
+      date = new Date(video.createdAt)
+
+      videoObject = {
+        bookmarked: state.userData.bookmarksId.includes(video._id),
+        created_at: video.createdAt,
+        duration: '0', // Calc duration here
+        id: video.url.replace('https://www.facebook.com/facebook/videos/', '').replace('/', ''),
+        isNew: lastVisited < date,
+        isYoutube: false,
+        platform: actionPayload.platform,
+        published_at: video.createdAt,
+        thumbnail_url: video.thumbnail || 'https://cdn.woorkup.com/wp-content/uploads/2014/08/facebook.jpg', // Make default thumbnail for facebook videos
+        title: video.title,
+        url: video.url,
+        user_id: 'StrumienieZRuczaju',
+        user_name: 'wonziu',
+        view_count: 0, // Make some endpoint to calc views?
+        watched: state.userData.watched.includes(video._id)
       }
     }
     if (payload !== null) {

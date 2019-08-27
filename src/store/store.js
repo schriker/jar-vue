@@ -4,10 +4,6 @@ import actions from './actions'
 import notification from './modules/notification'
 import streamers from './modules/streamers'
 import user from './modules/user'
-import axios from 'axios'
-
-axios.defaults.baseURL = 'https://api.twitch.tv/helix'
-axios.defaults.headers.common['Client-ID'] = 'w87bqmg0y9ckftb2aii2tdielbr1rx'
 
 Vue.use(Vuex)
 

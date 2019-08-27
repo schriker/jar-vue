@@ -1,5 +1,9 @@
 import axios from 'axios'
 
+export const jarchiwumAPI = axios.create({
+  baseURL: 'http://localhost:3000'
+})
+
 export const twitchAPI = axios.create({
   baseURL: 'https://api.twitch.tv/helix',
   headers: {

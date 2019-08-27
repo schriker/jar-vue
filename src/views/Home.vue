@@ -20,7 +20,7 @@
           </div>
         <app-videos-list :searchValue="searchValue" :videos="videos"></app-videos-list>
         <div class="row load-more">
-          <button :disabled="loadingMore" @click="fetchVideos({ streamerName: streamerName, loadMore: true, playlistId: $route.params.playlistId })" class="btn">{{ loadingMore ? 'Pobieram...' : 'Załaduj więcej' }}</button>
+          <button :disabled="loadingMore" @click="loadMore" class="btn">{{ loadingMore ? 'Pobieram...' : 'Załaduj więcej' }}</button>
         </div>
       </div>
     </transition>
@@ -36,7 +36,8 @@ import AppAllArchives from '../components/header/AllArchives'
 export default {
   data () {
     return {
-      searchValue: ''
+      searchValue: '',
+      page: 1
     }
   },
   metaInfo () {
@@ -54,7 +55,11 @@ export default {
     ...mapActions([
       'fetchStreamers',
       'fetchVideos'
-    ])
+    ]),
+    loadMore () {
+      this.fetchVideos({ streamerName: this.streamerName, loadMore: true, playlistId: this.$route.params.playlistId, platform: this.$route.params.platform || 'twitch', page: this.page })
+      this.page = this.page + 1
+    }
   },
   computed: {
     ...mapState([

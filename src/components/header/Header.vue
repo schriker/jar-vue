@@ -86,10 +86,12 @@ export default {
   },
   watch: {
     '$route' () {
-      if (this.$route.params.playlistId) {
-        this.$store.dispatch('fetchVideos', { streamerName: this.$route.params.id, loadMore: false, playlistId: this.$route.params.playlistId })
+      if (this.$route.params.platform === 'facebook') {
+        this.$store.dispatch('fetchVideos', { streamerName: this.$route.params.id, loadMore: false, playlistId: null, platform: 'facebook' })
+      } else if (this.$route.params.platform === 'youtube') {
+        this.$store.dispatch('fetchVideos', { streamerName: this.$route.params.id, loadMore: false, playlistId: this.$route.params.playlistId, platform: 'youtube' })
       } else if (this.$route.params.id) {
-        this.$store.dispatch('fetchVideos', { streamerName: this.$route.params.id, loadMore: false, playlistId: null })
+        this.$store.dispatch('fetchVideos', { streamerName: this.$route.params.id, loadMore: false, playlistId: null, platform: 'twitch' })
       }
     }
   },

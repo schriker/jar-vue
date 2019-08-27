@@ -16,7 +16,7 @@ const router = new Router({
   routes: [
     { path: '/bookmarks', component: AppBookmarks },
     { path: '/add', component: AppAddStreamer },
-    { path: '/:id/youtube/:playlistId', component: AppHome },
+    { path: '/:id/:platform/:playlistId', component: AppHome },
     { path: '/:id/:video', component: AppPlayer },
     { path: '/:id', component: AppHome }
   ]

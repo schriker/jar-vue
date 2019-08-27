@@ -45,7 +45,7 @@ export default {
     }
   },
   created () {
-    this.onAuthStateChange({ id: this.$route.params.id, playlistId: this.$route.params.playlistId })
+    this.onAuthStateChange({ id: this.$route.params.id, playlistId: this.$route.params.playlistId, platform: this.$route.params.platform })
   }
 }
 </script>

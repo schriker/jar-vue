@@ -11,14 +11,22 @@
               <app-toggle-book-marked :video="video[0]" :bookMarked="video[0].bookmarked"></app-toggle-book-marked>
             </div>
           </transition>
-          <iframe
-            class="player__iframe"
-            :src="videoURL"
-            width="100%"
-            frameborder="0"
-            scrolling="false"
-            allowfullscreen="true">
-          </iframe>
+        <div v-if="$route.query.platform === 'facebook'" class="fb-video"
+          :data-href="`https://www.facebook.com/facebook/videos/${$route.params.video}`"
+          data-width="auto"
+          data-allowfullscreen="true"
+          data-autoplay="false"
+          data-show-captions="true">
+        </div>
+        <iframe
+          v-else
+          class="player__iframe"
+          :src="videoURL"
+          width="100%"
+          frameborder="0"
+          scrolling="false"
+          allowfullscreen="true">
+        </iframe>
         </div>
         <div class="poorchat" :class="{ 'poorchat--close' : !showChat }">
           <div @click="showChat = !showChat" class="poorchat__hide"><i :class="{'fas fa-eye-slash': showChat, 'fas fa-eye': !showChat}"></i></div>
@@ -27,6 +35,7 @@
           </div>
             <iframe v-if="showChat" class="poorchat__container" frameborder="0" width="100%" id="jd-chat" src="https://client.poorchat.net/jadisco"></iframe>
         </div>
+          <div id="fb-root"></div>
     </div>
 </template>
 <script>
@@ -63,7 +72,7 @@ export default {
       return this.singleVideo
     },
     videoURL () {
-      if (this.$route.query.yt === 'true') {
+      if (this.$route.query.platform === 'youtube') {
         return `https://www.youtube.com/embed/${this.$route.params.video}?autoplay=0`
       } else {
         return `https://player.twitch.tv/?video=v${this.$route.params.video}&autoplay=false`
@@ -94,11 +103,27 @@ export default {
       document.execCommand('copy')
       this.$refs.mirkoInput.setAttribute('type', 'hidden')
     },
+    loadFacebookAPI () {
+      window.fbAsyncInit = function () {
+        window.FB.init({
+          appId: '2331553136926174',
+          xfbml: true,
+          version: 'v3.2'
+        })
+        window.FB.Event.subscribe('xfbml.ready', msg => {
+          let player
+          if (msg.type === 'video') {
+            player = msg.instance
+          }
+          console.log(player)
+        })
+      }
+    },
     getVideo () {
       const videoData = {
         streamer: this.$route.params.id,
         video: this.$route.params.video,
-        isYoutube: this.$route.query.yt !== 'false'
+        platform: this.$route.query.platform
       }
       this.getSingleVideo(videoData)
     }
@@ -106,6 +131,12 @@ export default {
   watch: {
     '$route' () {
       this.getVideo()
+    }
+  },
+  mounted () {
+    this.loadFacebookAPI()
+    if (window.FB !== undefined) {
+      window.FB.XFBML.parse()
     }
   },
   created () {

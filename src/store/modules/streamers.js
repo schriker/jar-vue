@@ -1,4 +1,4 @@
-import axios from 'axios'
+import { twitchAPI } from '../../helpers/axiosInstances'
 
 const state = {
   data: {},
@@ -39,7 +39,7 @@ const actions = {
     }
 
     try {
-      const { data: { data: users } } = await axios.get(`/users?${usersQueryString}`)
+      const { data: { data: users } } = await twitchAPI.get(`/users?${usersQueryString}`)
 
       for (const streamer of users) {
         streamers = {
@@ -61,7 +61,7 @@ const actions = {
         }
       }
 
-      const { data: { data: streams } } = await axios.get(`/streams?${streamsQueryString}`)
+      const { data: { data: streams } } = await twitchAPI.get(`/streams?${streamsQueryString}`)
 
       for (const streamer of streams) {
         const streamerLogin = streamer.user_name.toLowerCase()
@@ -80,9 +80,8 @@ const actions = {
       console.log(error)
       dispatch('displayNotification', { type: 'error', message: 'Wystąpił bląd.' }, { root: true })
     }
-
     commit('updateStreamers', streamers)
-    dispatch('fetchVideos', { streamerName: payload.streamerName, loadMore: false, playlistId: payload.playlistId }, { root: true })
+    dispatch('fetchVideos', { streamerName: payload.streamerName, loadMore: false, playlistId: payload.playlistId, platform: payload.platform }, { root: true })
   }
 }
 

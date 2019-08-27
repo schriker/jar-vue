@@ -220,6 +220,11 @@ form {
       color: #9961ff;
     }
   }
+  &__fb {
+    i {
+      color: #4968ad;
+    }
+  }
 }
 
 .streamer {
@@ -580,6 +585,7 @@ form {
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  background-color: #000; 
   &__top {
     display: flex;
     color: white;
@@ -627,6 +633,9 @@ form {
   }
   &__iframe {
     flex: 1 0 auto
+  }
+  .fb-video {
+    margin: auto 0;
   }
 }
 

@@ -87,7 +87,7 @@ const actions = {
         dispatch('fetchUserData')
       } else {
         dispatch('initUser', null, { root: true })
-        dispatch('routerRedirect', { data: rootState.userData, route: payload.id, playlistId: payload.playlistId })
+        dispatch('routerRedirect', { data: rootState.userData, route: payload.id, playlistId: payload.playlistId, platform: Vue.router.history.current.params.platform })
         commit('doneFetching')
       }
     })
@@ -98,7 +98,7 @@ const actions = {
         commit('setUserData', null)
         dispatch('displayNotification', { type: 'success', message: 'Zostałeś wylogowany.' }, { root: true })
         dispatch('initUser', null, { root: true })
-        Vue.router.push({ path: `/${rootState.userData.streamers[0]}` })
+        Vue.router.push({ path: `/${rootState.userData.streamers[0]}` }) // There is some bug here after loging put user
         dispatch('fetchStreamers', rootState.userData.streamers[0], { root: true })
       })
       .catch(() => dispatch('displayNotification', { type: 'error', message: 'Wystąpił błąd.' }, { root: true }))
@@ -122,7 +122,7 @@ const actions = {
         if (user.exists) {
           const userObject = user.data()
           dispatch('initUser', userObject, { root: true })
-          dispatch('routerRedirect', { data: userObject, route: Vue.router.history.current.params.id })
+          dispatch('routerRedirect', { data: userObject, route: Vue.router.history.current.params.id, platform: Vue.router.history.current.params.platform })
         } else {
           dispatch('displayNotification', { type: 'error', message: 'Użytkownik nie istnieje.' }, { root: true })
         }
@@ -138,7 +138,7 @@ const actions = {
       await dispatch('addStreamer', payload.route, { root: true })
       dispatch('fetchVideos', { streamerName: payload.route, loadMore: false }, { root: true })
     } else {
-      dispatch('fetchStreamers', { streamerName: payload.route, playlistId: payload.playlistId }, { root: true })
+      dispatch('fetchStreamers', { streamerName: payload.route, playlistId: payload.playlistId, platform: payload.platform || 'twitch' }, { root: true })
     }
   }
 }

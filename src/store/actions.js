@@ -1,5 +1,5 @@
 import Vue from 'vue'
-import { twitchAPI, youtubeAPI, playlistAPI } from '../helpers/axiosInstances'
+import { twitchAPI, youtubeAPI, playlistAPI, jarchiwumAPI } from '../helpers/axiosInstances'
 import videoObjectCreator from '../helpers/videoObjectCreator'
 
 const actinos = {
@@ -44,8 +44,24 @@ const actinos = {
           }
         }
       }
+      if (actionPayload.platform === 'facebook') {
+        try {
+          const page = actionPayload.page || 0
+          const queryString = `/facebookvideo?page=${page + 1}&per_page=20`
+          const { data: videosArr } = await jarchiwumAPI.get(queryString)
 
-      if (actionPayload.playlistId) {
+          if (actionPayload.loadMore && videosArr.length === 0) {
+            dispatch('displayNotification', { type: 'error', message: 'Koniec listy :(' })
+            commit('loadingVideosStop')
+            return
+          }
+          payload = videoObjectCreator({ state, videosArr, payload, actionPayload }).payload
+        } catch (error) {
+          dispatch('displayNotification', { type: 'error', message: 'Wystąpił bląd.' })
+          commit('loadingVideosStop')
+          return
+        }
+      } else if (actionPayload.platform === 'youtube') {
         try {
           const videosIds = []
           let queryString = `/playlistItems?part=contentDetails&maxResults=25&playlistId=${actionPayload.playlistId}`
@@ -70,14 +86,14 @@ const actinos = {
           const videosIdString = videosIds.join('%2C')
           const videosQueryString = `/videos?part=snippet%2CcontentDetails%2Cstatistics%2CliveStreamingDetails&id=${videosIdString}`
           const { data: { items: videosArr } } = await youtubeAPI.get(videosQueryString)
-          payload = videoObjectCreator({ state, videosArr, payload, actionPayload, isYoutube: true }).payload
+          payload = videoObjectCreator({ state, videosArr, payload, actionPayload }).payload
         } catch (error) {
           console.log(error.response)
           dispatch('displayNotification', { type: 'error', message: 'Wystąpił bląd.' })
           commit('loadingVideosStop')
           return
         }
-      } else if (!actionPayload.playlistId) {
+      } else if (actionPayload.platform === 'twitch') {
         let queryString = `/videos?user_id=${state.streamers.data[actionPayload.streamerName].info.id}`
 
         if (actionPayload.loadMore) {
@@ -96,7 +112,7 @@ const actinos = {
           payload.data.pagination = {
             ...pagination
           }
-          payload = videoObjectCreator({ state, videosArr, payload, actionPayload, isYoutube: false }).payload
+          payload = videoObjectCreator({ state, videosArr, payload, actionPayload }).payload
         } catch (error) {
           console.log(error)
           dispatch('displayNotification', { type: 'error', message: 'Wystąpił bląd.' })
@@ -179,7 +195,7 @@ const actinos = {
       return
     }
 
-    if (payload.isYoutube) {
+    if (payload.platform === 'youtube') {
       const videosQueryString = `/videos?part=snippet%2CcontentDetails%2Cstatistics%2CliveStreamingDetails&id=${payload.video}`
       const { data: { items: video } } = await youtubeAPI.get(videosQueryString)
 
@@ -196,11 +212,17 @@ const actinos = {
         ...searchResults,
         videoObject
       ]
-    } else {
+    } else if (payload.platform === 'twitch') {
       const singleVideoTwitch = await twitchAPI.get(`/videos?id=${payload.video}`)
       searchResults = [
         ...searchResults,
         ...singleVideoTwitch.data.data
+      ]
+    } else if (payload.platform === 'facebook') {
+      const singleFacebookVideo = await jarchiwumAPI.get(`/facebookvideo?id=${payload.video}`)
+      searchResults = [
+        ...searchResults,
+        ...singleFacebookVideo.data
       ]
     }
 

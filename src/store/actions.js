@@ -203,7 +203,7 @@ const actinos = {
         state,
         videosArr: video,
         payload: null,
-        actionPayload: { streamerName: payload.streamer },
+        actionPayload: { streamerName: payload.streamer, platform: payload.platform },
         isYoutube: true
       }
 
@@ -219,10 +219,21 @@ const actinos = {
         ...singleVideoTwitch.data.data
       ]
     } else if (payload.platform === 'facebook') {
-      const singleFacebookVideo = await jarchiwumAPI.get(`/facebookvideo?id=${payload.video}`)
+      const singleFacebookVideoArray = await jarchiwumAPI.get(`/facebookvideo?id=${payload.video}`)
+
+      const config = {
+        state,
+        videosArr: singleFacebookVideoArray.data,
+        payload: null,
+        actionPayload: { streamerName: payload.streamer, platform: payload.platform },
+        isYoutube: false
+      }
+
+      const singleFacebookVideo = videoObjectCreator(config).videoObject
+
       searchResults = [
         ...searchResults,
-        ...singleFacebookVideo.data
+        singleFacebookVideo
       ]
     }
 

@@ -1,8 +1,9 @@
+import msToTime from '../helpers/milisecondsToTime'
+
 const videoObjectCreator = ({ state, videosArr, payload, actionPayload }) => {
   const today = new Date()
   let videoObject = {}
   let date = null
-
   for (const video of videosArr) {
     const lastVisited = new Date(state.userData.lastVisited[actionPayload.streamerName].date)
 
@@ -41,23 +42,24 @@ const videoObjectCreator = ({ state, videosArr, payload, actionPayload }) => {
       }
     } else if (actionPayload.platform === 'facebook') {
       date = new Date(video.createdAt)
+      const id = video.url.replace('https://www.facebook.com/facebook/videos/', '').replace('/', '')
 
       videoObject = {
-        bookmarked: state.userData.bookmarksId.includes(video._id),
+        bookmarked: state.userData.bookmarksId.includes(id),
         created_at: video.createdAt,
-        duration: '0', // Calc duration here
-        id: video.url.replace('https://www.facebook.com/facebook/videos/', '').replace('/', ''),
+        duration: msToTime(video.duration),
+        id: id,
         isNew: lastVisited < date,
         isYoutube: false,
         platform: actionPayload.platform,
-        published_at: video.createdAt,
+        published_at: video.started,
         thumbnail_url: video.thumbnail || 'https://cdn.woorkup.com/wp-content/uploads/2014/08/facebook.jpg', // Make default thumbnail for facebook videos
         title: video.title,
         url: video.url,
         user_id: 'StrumienieZRuczaju',
         user_name: 'wonziu',
-        view_count: 0, // Make some endpoint to calc views?
-        watched: state.userData.watched.includes(video._id)
+        view_count: video.views, // Make some endpoint to calc views?
+        watched: state.userData.watched.includes(id)
       }
     }
     if (payload !== null) {

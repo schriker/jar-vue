@@ -41,6 +41,7 @@
 <script>
 import AppToggleWatched from '../UI/ToggleWatched'
 import AppToggleBookMarked from '../UI/ToggleBookMarked'
+import { jarchiwumAPI } from '../helpers/axiosInstances'
 import { mapActions, mapState } from 'vuex'
 
 export default {
@@ -104,6 +105,7 @@ export default {
       this.$refs.mirkoInput.setAttribute('type', 'hidden')
     },
     loadFacebookAPI () {
+      jarchiwumAPI.get(`/updateviews?id=${this.$route.params.video}`)
       window.fbAsyncInit = function () {
         window.FB.init({
           appId: '2331553136926174',

@@ -33,21 +33,31 @@
           <div class="player__top player__top--left-border">
             <a target="_blank" href="https://www.poorchat.net/subscriptions/jadisco"><i class="fas fa-heart"></i>Subskrybuj czatek</a>
           </div>
-            <iframe v-if="showChat" class="poorchat__container" frameborder="0" width="100%" id="jd-chat" src="https://client.poorchat.net/jadisco"></iframe>
+          <AppChat
+            :playerPosition.sync="playerPosition"
+            :isPlaying.sync="isPlaying"
+            :videoStartedDate="video[0].published_at"
+            :videoFinishedDate="video[0].created_at"
+            v-if="showChat && $route.query.platform === 'facebook'"
+          />
+          <iframe v-if="showChat && $route.query.platform !== 'facebook'" class="poorchat__container" frameborder="0" width="100%" id="jd-chat" src="https://client.poorchat.net/jadisco"></iframe>
         </div>
-          <div id="fb-root"></div>
     </div>
 </template>
 <script>
 import AppToggleWatched from '../UI/ToggleWatched'
 import AppToggleBookMarked from '../UI/ToggleBookMarked'
+import AppChat from '../components/chat/Chat'
 import { jarchiwumAPI } from '../helpers/axiosInstances'
 import { mapActions, mapState } from 'vuex'
 
 export default {
   data () {
     return {
-      showChat: true
+      showChat: true,
+      playerPosition: 0,
+      player: null,
+      isPlaying: false
     }
   },
   metaInfo () {
@@ -57,7 +67,8 @@ export default {
   },
   components: {
     AppToggleWatched,
-    AppToggleBookMarked
+    AppToggleBookMarked,
+    AppChat
   },
   computed: {
     ...mapState([
@@ -105,21 +116,37 @@ export default {
       this.$refs.mirkoInput.setAttribute('type', 'hidden')
     },
     loadFacebookAPI () {
-      jarchiwumAPI.get(`/updateviews?id=${this.$route.params.video}`)
-      window.fbAsyncInit = function () {
+      if (this.$route.query.platform === 'facebook') {
+        jarchiwumAPI.get(`/updateviews?id=${this.$route.params.video}`)
+      }
+      window.fbAsyncInit = () => {
         window.FB.init({
           appId: '2331553136926174',
           xfbml: true,
-          version: 'v3.2'
-        })
-        window.FB.Event.subscribe('xfbml.ready', msg => {
-          let player
-          if (msg.type === 'video') {
-            player = msg.instance
-          }
-          console.log(player)
+          version: 'v4.0'
         })
       }
+      window.FB.Event.subscribe('xfbml.ready', msg => {
+        if (msg.type === 'video') {
+          this.player = msg.instance
+          this.player.subscribe('startedPlaying', () => {
+            this.playerPosition = this.player.getCurrentPosition()
+            this.isPlaying = true
+          })
+          this.player.subscribe('paused', () => {
+            this.playerPosition = this.player.getCurrentPosition()
+            this.isPlaying = false
+          })
+          this.player.subscribe('finishedPlaying', () => {
+            this.player.pause()
+            this.isPlaying = false
+          })
+          this.player.subscribe('startedBuffering', () => {
+            this.player.pause()
+            this.isPlaying = false
+          })
+        }
+      })
     },
     getVideo () {
       const videoData = {
@@ -136,9 +163,13 @@ export default {
     }
   },
   mounted () {
-    this.loadFacebookAPI()
     if (window.FB !== undefined) {
       window.FB.XFBML.parse()
+      this.loadFacebookAPI()
+    } else {
+      window.addEventListener('load', () => {
+        this.loadFacebookAPI()
+      })
     }
   },
   created () {

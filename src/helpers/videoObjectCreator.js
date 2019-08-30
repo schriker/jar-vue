@@ -42,13 +42,12 @@ const videoObjectCreator = ({ state, videosArr, payload, actionPayload }) => {
       }
     } else if (actionPayload.platform === 'facebook') {
       date = new Date(video.createdAt)
-      const id = video.url.replace('https://www.facebook.com/facebook/videos/', '').replace('/', '')
 
       videoObject = {
-        bookmarked: state.userData.bookmarksId.includes(id),
+        bookmarked: state.userData.bookmarksId.includes(video.facebookId),
         created_at: video.createdAt,
         duration: msToTime(video.duration),
-        id: id,
+        id: video.facebookId,
         isNew: lastVisited < date,
         isYoutube: false,
         platform: actionPayload.platform,
@@ -59,7 +58,7 @@ const videoObjectCreator = ({ state, videosArr, payload, actionPayload }) => {
         user_id: 'StrumienieZRuczaju',
         user_name: 'wonziu',
         view_count: video.views, // Make some endpoint to calc views?
-        watched: state.userData.watched.includes(id)
+        watched: state.userData.watched.includes(video.facebookId)
       }
     }
     if (payload !== null) {

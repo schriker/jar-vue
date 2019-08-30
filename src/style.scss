@@ -639,6 +639,96 @@ form {
   }
 }
 
+// .vuebar-element {
+//   height: calc(100% - 70px);
+//   width: 100%;
+// }
+
+// .vb-dragger {
+//     z-index: 999;
+//     width: 12px;
+//     right: 0;
+//     padding: 5px 0; 
+// }
+
+// .vb-dragger > .vb-dragger-styler {
+//     -webkit-backface-visibility: hidden;
+//     backface-visibility: hidden;
+//     -webkit-transform: rotate3d(0,0,0,0);
+//     transform: rotate3d(0,0,0,0);
+//     -webkit-transition:
+//         background-color 100ms ease-out,
+//         margin 100ms ease-out,
+//         height 100ms ease-out;
+//     transition:
+//         background-color 100ms ease-out,
+//         margin 100ms ease-out,
+//         height 100ms ease-out;
+//     background-color: $body-bg;
+//     margin: 0 5px 0 0;
+//     border-radius: 20px;
+//     height: 100%;
+//     display: block;
+// }
+
+// .vb-dragger:hover > .vb-dragger-styler {
+//     background-color: $light;
+//     height: 100%;
+// }
+
+.chat {
+  overflow: auto;
+  margin: auto auto 0 auto;
+  width: 100%;
+  height: 100%;
+  a {
+    color: $success;
+    &:hover {
+      color: #8BFFE3;
+    }
+  }
+  &__message {
+    color: #fff;
+    padding: 4px;
+    line-height: 24px;
+    font-size: 14px;
+    img {
+      margin-left: 5px;
+      vertical-align: middle;
+    }
+    &:nth-child(2n) {
+      // background-color: #18202B;
+      // border-top: 1px solid #252E3A;
+      // border-bottom: 1px solid #252E3A;
+    }
+  }
+  &__author {
+    margin-left: 5px;
+    font-weight: bold;
+  }
+  &__time {
+    color: $dark;
+  }
+  &__body {
+    img {
+      height: 28px;
+    }
+  }
+  &__emoticon {
+    margin: 0 !important;
+  }
+  &__img {
+    max-width: 100%;
+    height: 200px !important;
+    display: block;
+    padding: 5px;
+    margin: 0 auto 0 auto !important;
+  }
+  &__options {
+    height: 70px;
+  }
+}
+
 .removing-icon {
   display: flex;
   align-items: center;
@@ -660,7 +750,7 @@ form {
   flex-direction: column;
   flex: 0 0 400px;
   width: 400px;
-  background-color: $header-bg;
+  background-color: #121821;
   &__container {
     flex:  1 0 auto;
   }

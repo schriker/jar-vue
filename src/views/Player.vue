@@ -28,19 +28,33 @@
           allowfullscreen="true">
         </iframe>
         </div>
-        <div class="poorchat" :class="{ 'poorchat--close' : !showChat }">
+        <div  class="poorchat" :class="{ 'poorchat--close' : !showChat }">
           <div @click="showChat = !showChat" class="poorchat__hide"><i :class="{'fas fa-eye-slash': showChat, 'fas fa-eye': !showChat}"></i></div>
           <div class="player__top player__top--left-border">
             <a target="_blank" href="https://www.poorchat.net/subscriptions/jadisco"><i class="fas fa-heart"></i>Subskrybuj czatek</a>
           </div>
           <AppChat
+            :class="{'hide': showJadisco}"
+            :showTime.sync="showTime"
+            :showImg.sync="showImg"
             :playerPosition.sync="playerPosition"
             :isPlaying.sync="isPlaying"
+            :finished.sync="finished"
             :videoStartedDate="video[0].published_at"
             :videoFinishedDate="video[0].created_at"
             v-if="showChat && $route.query.platform === 'facebook'"
           />
-          <iframe v-if="showChat && $route.query.platform !== 'facebook'" class="poorchat__container" frameborder="0" width="100%" id="jd-chat" src="https://client.poorchat.net/jadisco"></iframe>
+          <iframe v-if="showChat && $route.query.platform !== 'facebook' || showJadisco" class="poorchat__container" frameborder="0" width="100%" id="jd-chat" src="https://client.poorchat.net/jadisco"></iframe>
+          <div v-if="showOptions" @click="showOptions = false" class="chat__settings--backdrop"></div>
+          <div class="chat__settings" v-if="showOptions">
+            <h3>Opcje:</h3>
+            <div @click="chatOptionsHandler('showTime')">Czas<i v-if="showTime" class="fas fa-check-square"></i></div>
+            <div @click="chatOptionsHandler('showImg')">Obrazki<i v-if="showImg" class="fas fa-check-square"></i></div>
+          </div>
+          <div class="chat__options">
+            <div @click="switchChat"><i class="fas fa-comments"></i>Czat Jadisco</div>
+            <i @click="showOptions = !showOptions" class="fas fa-cog"></i>
+          </div>
         </div>
     </div>
 </template>
@@ -57,7 +71,12 @@ export default {
       showChat: true,
       playerPosition: 0,
       player: null,
-      isPlaying: false
+      isPlaying: false,
+      finished: false,
+      showOptions: false,
+      showJadisco: false,
+      showTime: true,
+      showImg: true
     }
   },
   metaInfo () {
@@ -91,10 +110,8 @@ export default {
       }
     },
     mirkoLink () {
-      const isYoutube = this.$route.query.yt !== 'false'
-      const platform = isYoutube ? 'Youtube' : 'Twitch'
-      let link = isYoutube ? 'https://www.youtube.com/watch?v=' : 'https://www.twitch.tv/videos/'
-      link = `${link}${this.$route.params.video}`
+      const platform = this.$route.query.platform
+      let link = platform === 'youtube' ? `https://www.youtube.com/watch?v=${this.$route.params.video}` : platform === 'twitch' ? `https://www.twitch.tv/videos/${this.$route.params.video}` : `https://jarchiwum.pl/wonziu/${this.$route.params.video}?platform=facebook`
       return `${link} (${platform})(**${this.video[0].duration}**)(_${this.video[0].title}_)`
     },
     date () {
@@ -115,6 +132,19 @@ export default {
       document.execCommand('copy')
       this.$refs.mirkoInput.setAttribute('type', 'hidden')
     },
+    switchChat () {
+      this.isPlaying = false
+      this.player.pause()
+      this.showJadisco = !this.showJadisco
+    },
+    chatOptionsHandler (option) {
+      this[option] = !this[option]
+      const localStorageOptions = {
+        showImg: this.showImg,
+        showTime: this.showTime
+      }
+      localStorage.setItem('chatOptions', JSON.stringify(localStorageOptions))
+    },
     loadFacebookAPI () {
       if (this.$route.query.platform === 'facebook') {
         jarchiwumAPI.get(`/updateviews?id=${this.$route.params.video}`)
@@ -129,19 +159,28 @@ export default {
       window.FB.Event.subscribe('xfbml.ready', msg => {
         if (msg.type === 'video') {
           this.player = msg.instance
+
           this.player.subscribe('startedPlaying', () => {
             this.playerPosition = this.player.getCurrentPosition()
             this.isPlaying = true
+            this.finished = false
           })
           this.player.subscribe('paused', () => {
             this.playerPosition = this.player.getCurrentPosition()
             this.isPlaying = false
           })
           this.player.subscribe('finishedPlaying', () => {
+            this.player.seek(0)
             this.player.pause()
+            this.finished = true
             this.isPlaying = false
           })
           this.player.subscribe('startedBuffering', () => {
+            this.player.pause()
+            this.isPlaying = false
+          })
+
+          this.player.subscribe('error', () => {
             this.player.pause()
             this.isPlaying = false
           })
@@ -174,6 +213,12 @@ export default {
   },
   created () {
     this.getVideo()
+    const options = JSON.parse(localStorage.getItem('chatOptions'))
+    if (options) {
+      for (const option in options) {
+        this[option] = options[option]
+      }
+    }
   }
 }
 </script>

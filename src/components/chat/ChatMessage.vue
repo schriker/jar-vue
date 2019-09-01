@@ -1,6 +1,6 @@
 <template>
   <div>
-      <span class="chat__time">{{ time }}</span>
+      <span v-if="showTime" class="chat__time">{{ time }}</span>
       <img v-for="icon in icons" :key="icon" :src="icon" />
       <span class="chat__author" :style="{ color: color(message.color) }">{{ message.author }}</span>:
       <span class="chat__body" v-html="messageText"></span>
@@ -17,7 +17,9 @@ export default {
     message: Object,
     badges: Object,
     emoticons: Array,
-    ogContent: null
+    ogContent: null,
+    showTime: Boolean,
+    showImg: Boolean
   },
   data () {
     return {
@@ -32,7 +34,7 @@ export default {
       const urlsFromMessageBody = new Set(this.message.body.match(/\bhttps?:\/\/\S+/gi))
       if (urlsFromMessageBody.size > 0) {
         for (const url of [...urlsFromMessageBody]) {
-          if (/\.(?:jpg|jpeg|gif|png)$/i.test(url)) {
+          if (/\.(?:jpg|jpeg|gif|png)$/i.test(url) && this.showImg) {
             message += `<a target="_blank" href="${url}"><img class="chat__img" src=${url} /></a>`
           }
           // call api for og here

@@ -1,28 +1,38 @@
 <template>
-  <simplebar ref="div" class="chat" data-simplebar-auto-hide="tru">
-  <div class="chat__message" v-for="message in messages" :key="message.uid">
-    <AppChatMessage :badges.sync="badges" :emoticons.sync="emoticons" :message="message" />
+  <div v-bar class="chat">
+    <div ref="div">
+      <div class="chat__message" v-for="message in messages" :key="message.uid">
+        <AppChatMessage
+          :showTime.sync="showTime"
+          :showImg.sync="showImg"
+          :badges.sync="badges"
+          :emoticons.sync="emoticons"
+          :message="message" />
+      </div>
+      <div ref="bottom"></div>
+      <div @click="scrollToBottom" v-if="scrollingUp" class="chat__more">więcej wiadomości</div>
+    </div>
+    <div class="chat__error" v-if="messages.length === 0"><i class="fas fa-comments"></i></div>
   </div>
-  </simplebar>
-  <!-- <div class="chat__options">Tutaj opcje</div> -->
 </template>
 <script>
 import axios from 'axios'
 import shortid from 'shortid'
 import { jarchiwumAPI } from '../../helpers/axiosInstances'
 import AppChatMessage from './ChatMessage'
-import simplebar from 'simplebar-vue'
 
 export default {
   components: {
-    AppChatMessage,
-    simplebar
+    AppChatMessage
   },
   props: {
     playerPosition: Number,
     videoStartedDate: String,
     videoFinishedDate: String,
-    isPlaying: Boolean
+    isPlaying: Boolean,
+    finished: Boolean,
+    showTime: Boolean,
+    showImg: Boolean
   },
   data () {
     return {
@@ -32,11 +42,14 @@ export default {
       chatInterval: undefined,
       fetched: null,
       startTime: null,
-      lastScrollTop: 0,
       scrollingUp: false
     }
   },
   methods: {
+    scrollToBottom () {
+      this.$refs.bottom.scrollIntoView()
+      this.scrollingUp = false
+    },
     async fetchMessages (gt, lt) {
       try {
         const messages = await jarchiwumAPI.post('/message', {
@@ -64,18 +77,22 @@ export default {
       })
 
       for (let message of messagesInView) {
-        const out = this.$refs.div.$el.SimpleBar.getScrollElement()
-        const isScrolledToBottom = out.scrollHeight - out.clientHeight <= out.scrollTop + 1
+        const out = this.$refs.div
+        const isScrolledToBottom = out.scrollHeight - out.clientHeight <= out.scrollTop + 100
 
         this.messages.push(message)
-        this.$nextTick(() => {
+        this.$nextTick().then(() => {
           if (isScrolledToBottom) {
-            out.scrollTop = out.scrollHeight - out.clientHeight
+            this.scrollingUp = false
+            this.$refs.bottom.scrollIntoView()
+          } else {
+            this.scrollingUp = true
           }
         })
       }
 
-      if (this.fetched.data.length === 0) {
+      if (this.fetched.data.length === 0 && this.messages.length !== 0) {
+        console.log('Test')
         clearInterval(this.chatInterval)
         this.chatInterval = undefined
         await this.fetchMessages(this.messages[this.messages.length - 1].createdAt, this.videoFinishedDate)
@@ -88,9 +105,15 @@ export default {
     }
   },
   watch: {
+    finished () {
+      this.messages = []
+      this.fetched = null
+      clearInterval(this.chatInterval)
+      this.chatInterval = undefined
+    },
     async isPlaying () {
       this.startTime = new Date(new Date(this.videoStartedDate).getTime() + this.playerPosition * 1000)
-      if (this.isPlaying) {
+      if (this.isPlaying && !this.finished) {
         try {
           await this.fetchMessages(this.startTime, this.videoFinishedDate)
         } catch (error) {
@@ -111,12 +134,3 @@ export default {
   }
 }
 </script>
-
-<style>
-  .chat {
-    height: calc(100% - 33px);
-  }
-  .chat .simplebar-content > div {
-    height: auto;
-  }
-</style>

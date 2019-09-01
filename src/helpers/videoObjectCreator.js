@@ -1,5 +1,3 @@
-import msToTime from '../helpers/milisecondsToTime'
-
 const videoObjectCreator = ({ state, videosArr, payload, actionPayload }) => {
   const today = new Date()
   let videoObject = {}
@@ -46,7 +44,7 @@ const videoObjectCreator = ({ state, videosArr, payload, actionPayload }) => {
       videoObject = {
         bookmarked: state.userData.bookmarksId.includes(video.facebookId),
         created_at: video.createdAt,
-        duration: msToTime(video.duration),
+        duration: video.duration,
         id: video.facebookId,
         isNew: lastVisited < date,
         isYoutube: false,
@@ -57,7 +55,7 @@ const videoObjectCreator = ({ state, videosArr, payload, actionPayload }) => {
         url: video.url,
         user_id: 'StrumienieZRuczaju',
         user_name: 'wonziu',
-        view_count: video.views, // Make some endpoint to calc views?
+        view_count: video.views,
         watched: state.userData.watched.includes(video.facebookId)
       }
     }

@@ -3,6 +3,7 @@
     <div ref="div">
       <div class="chat__message" v-for="message in messages" :key="message.uid">
         <AppChatMessage
+          @scrollToBottom="scrollImg"
           :showTime.sync="showTime"
           :showImg.sync="showImg"
           :badges.sync="badges"
@@ -50,6 +51,14 @@ export default {
       this.$refs.bottom.scrollIntoView()
       this.scrollingUp = false
     },
+    scrollImg () {
+      const out = this.$refs.div
+      const isScrolledToBottom = out.scrollHeight - out.clientHeight <= out.scrollTop + 100
+      if (isScrolledToBottom) {
+        this.scrollingUp = false
+        this.$refs.bottom.scrollIntoView()
+      }
+    },
     async fetchMessages (gt, lt) {
       try {
         const messages = await jarchiwumAPI.post('/message', {
@@ -92,14 +101,13 @@ export default {
       }
 
       if (this.fetched.data.length === 0 && this.messages.length !== 0) {
-        console.log('Test')
         clearInterval(this.chatInterval)
         this.chatInterval = undefined
         await this.fetchMessages(this.messages[this.messages.length - 1].createdAt, this.videoFinishedDate)
       }
 
       this.startTime = new Date(new Date(this.startTime).getTime() + 1 * 50)
-      if (this.messages.length > 50) {
+      if (this.messages.length > 100) {
         this.messages.splice(0, 1)
       }
     }

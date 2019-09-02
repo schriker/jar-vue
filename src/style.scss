@@ -737,8 +737,9 @@ form {
   &__img {
     cursor: zoom-in;
     width: auto !important;
+    height: initial !important;
     max-width: 100% !important;
-    height: auto !important;
+    max-height: 200px !important;
     display: block;
     padding: 5px;
     margin: 0 auto 0 auto !important;

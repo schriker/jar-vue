@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div ref="imgContainer">
       <span v-if="showTime" class="chat__time">{{ time }}</span>
       <img v-for="icon in icons" :key="icon" :src="icon" />
       <span class="chat__author" :style="{ color: color(message.color) }">{{ message.author }}</span>:
@@ -11,6 +11,7 @@
 import moment from 'moment'
 import linkifyHtml from 'linkifyjs/html'
 import random from '../../helpers/random'
+import imagesLoaded from 'imagesloaded'
 
 export default {
   props: {
@@ -23,36 +24,11 @@ export default {
   },
   data () {
     return {
+      messageText: null
       // icons: []
     }
   },
   computed: {
-    messageText () {
-      let message = linkifyHtml(this.message.body, {
-        defaultProtocol: 'https'
-      })
-      const urlsFromMessageBody = new Set(this.message.body.match(/\bhttps?:\/\/\S+/gi))
-      if (urlsFromMessageBody.size > 0) {
-        for (const url of [...urlsFromMessageBody]) {
-          if (/\.(?:jpg|jpeg|gif|png)$/i.test(url) && this.showImg) {
-            message += `<a target="_blank" href="${url}"><img class="chat__img" src=${url} /></a>`
-          }
-          // call api for og here
-          // try {
-          //     const result = await ogs({ url: url })
-          //     if (result.success) {
-          //         openGraphs.push(result)
-          //     }
-          // } catch (eror) {
-          //     console.log(eror)
-          // }
-        }
-      }
-      for (const emoticon of this.emoticons) {
-        message = message.replace(new RegExp(emoticon.name, 'g'), () => `<img class="chat__emoticon" src="https://static.poorchat.net/emoticons/${emoticon.file}/1x" />`)
-      }
-      return message
-    },
     time () {
       moment.locale('pl')
       return moment(this.message.createdAt).format('LT')
@@ -81,6 +57,40 @@ export default {
         return color
       }
     }
+  },
+  created () {
+    let message = linkifyHtml(this.message.body, {
+      defaultProtocol: 'https'
+    })
+    const urlsFromMessageBody = new Set(this.message.body.match(/\bhttps?:\/\/\S+/gi))
+    if (urlsFromMessageBody.size > 0) {
+      for (const url of [...urlsFromMessageBody]) {
+        if (/\.(?:jpg|jpeg|gif|png)$/i.test(url) && this.showImg) {
+          message += `<a target="_blank" href="${url}"><img class="chat__img" src=${url} /></a>`
+
+          this.$nextTick().then(() => {
+            const img = document.querySelectorAll('.chat__img')
+            console.log(img[img.length - 1])
+            imagesLoaded(img[img.length - 1], () => {
+              this.$emit('scrollToBottom')
+            })
+          })
+        }
+        // call api for og here
+        // try {
+        //     const result = await ogs({ url: url })
+        //     if (result.success) {
+        //         openGraphs.push(result)
+        //     }
+        // } catch (eror) {
+        //     console.log(eror)
+        // }
+      }
+    }
+    for (const emoticon of this.emoticons) {
+      message = message.replace(new RegExp(emoticon.name, 'g'), () => `<img class="chat__emoticon" src="https://static.poorchat.net/emoticons/${emoticon.file}/1x" />`)
+    }
+    this.messageText = message
   }
 }
 </script>

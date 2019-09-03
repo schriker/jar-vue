@@ -736,6 +736,7 @@ form {
   }
   &__img {
     cursor: zoom-in;
+    box-sizing: border-box;
     width: auto !important;
     height: initial !important;
     max-width: 100% !important;

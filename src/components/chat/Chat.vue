@@ -3,7 +3,7 @@
     <div ref="div">
       <div class="chat__message" v-for="message in messages" :key="message.uid">
         <AppChatMessage
-          @scrollToBottom="scrollImg"
+          @scrollToBottom="scrollToBottom"
           :showTime.sync="showTime"
           :showImg.sync="showImg"
           :badges.sync="badges"
@@ -50,14 +50,6 @@ export default {
     scrollToBottom () {
       this.$refs.bottom.scrollIntoView()
       this.scrollingUp = false
-    },
-    scrollImg () {
-      const out = this.$refs.div
-      const isScrolledToBottom = out.scrollHeight - out.clientHeight <= out.scrollTop + 100
-      if (isScrolledToBottom) {
-        this.scrollingUp = false
-        this.$refs.bottom.scrollIntoView()
-      }
     },
     async fetchMessages (gt, lt) {
       try {

@@ -132,11 +132,16 @@ const actions = {
   },
   async routerRedirect ({ dispatch, rootState }, payload) {
     if (!payload.route) {
-      Vue.router.replace({ path: `/${rootState.userData.streamers[0]}` })
-      dispatch('fetchStreamers', { streamerName: rootState.userData.streamers[0] }, { root: true })
+      Vue.router.push({ path: `/wonziu/facebook/StrumienieZRuczaju` })
+      dispatch('fetchStreamers', { streamerName: 'wonziu', playlistId: payload.playlistId, platform: 'facebook' }, { root: true })
+      // Vue.router.push({ path: `/${rootState.userData.streamers[0]}` })
+      // dispatch('fetchStreamers', { streamerName: rootState.userData.streamers[0] }, { root: true })
     } else if (!payload.data.streamers.includes(payload.route)) {
       await dispatch('addStreamer', payload.route, { root: true })
       dispatch('fetchVideos', { streamerName: payload.route, loadMore: false }, { root: true })
+    } else if (payload.route === 'wonziu' && Vue.router.history.current.params.video === undefined) {
+      Vue.router.push({ path: `/wonziu/facebook/StrumienieZRuczaju` })
+      dispatch('fetchStreamers', { streamerName: 'wonziu', playlistId: payload.playlistId, platform: 'facebook' }, { root: true })
     } else {
       dispatch('fetchStreamers', { streamerName: payload.route, playlistId: payload.playlistId, platform: payload.platform || 'twitch' }, { root: true })
     }

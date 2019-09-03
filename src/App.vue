@@ -16,6 +16,7 @@
 
 import { mapActions, mapState } from 'vuex'
 import './style.scss'
+import './ircstyles.css'
 import AppHeader from './components/header/Header'
 import AppNotification from './components/Notification'
 import AppUserLogin from './components/user/UserLogin'

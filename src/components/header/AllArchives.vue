@@ -1,7 +1,7 @@
 <template>
     <ul class="archive-type">
-      <li class="archive-type__tw"><router-link active-class="archive-type__active" :to="`/${streamerName}`" exact><i class="fab fa-twitch"></i>Twitch</router-link></li>
       <li class="archive-type__fb"><router-link active-class="archive-type__active" :to="`/${streamerName}/facebook/StrumienieZRuczaju`" exact><i class="fab fa-facebook-square"></i>Facebook</router-link></li>
+      <li class="archive-type__tw"><router-link active-class="archive-type__active" :to="`/${streamerName}`" exact><i class="fab fa-twitch"></i>Twitch</router-link></li>
       <li class="archive-type__yt" v-for="archive in youtubeArchives" :key="archive.id"><router-link active-class="archive-type__active" :to="`/${streamerName}/youtube/${archive.id}`"><i class="fab fa-youtube"></i>{{archive.title}}</router-link></li>
     </ul>
 </template>

@@ -12,6 +12,7 @@ import moment from 'moment'
 import linkifyHtml from 'linkifyjs/html'
 import random from '../../helpers/random'
 import imagesLoaded from 'imagesloaded'
+import ircf from 'irc-formatting'
 
 export default {
   props: {
@@ -70,7 +71,6 @@ export default {
 
           this.$nextTick().then(() => {
             const img = document.querySelectorAll('.chat__img')
-            console.log(img[img.length - 1])
             imagesLoaded(img[img.length - 1], () => {
               this.$emit('scrollToBottom')
             })
@@ -90,7 +90,9 @@ export default {
     for (const emoticon of this.emoticons) {
       message = message.replace(new RegExp(emoticon.name, 'g'), () => `<img class="chat__emoticon" src="https://static.poorchat.net/emoticons/${emoticon.file}/1x" />`)
     }
-    this.messageText = message
+    if (this.message.type !== 'EMBED' || this.message.type !== 'NOTICE') {
+      this.messageText = ircf.renderHtml(message)
+    }
   }
 }
 </script>

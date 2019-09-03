@@ -1,7 +1,7 @@
 <template>
 <transition name="fade-in" appear>
     <li>
-        <router-link :to="`/${streamer.info.login}`" active-class="active"></router-link>
+        <router-link :to="streamer.info.login === 'wonziu' ? '/wonziu/facebook/StrumienieZRuczaju' : `/${streamer.info.login}`" active-class="active"></router-link>
         <div class="streamer">
             <div class="streamer__icon">
                 <!-- <div class="streamer__badge">4</div> -->

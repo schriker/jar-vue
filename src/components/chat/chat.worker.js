@@ -3,7 +3,6 @@ let timeInterval
 
 onmessage = ({ data }) => {
   const intervalFunction = () => {
-    console.log(data.startTime)
     if (data.fetched.length === 0 && data.messages.length !== 0) {
       postMessage({
         type: 'FETCH'

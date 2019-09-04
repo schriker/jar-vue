@@ -3,6 +3,7 @@
     <div ref="div">
       <div class="chat__message" v-for="message in messages" :key="message.uid">
         <AppChatMessage
+          v-if="message.author !== 'irc.poorchat.net'"
           @scrollToBottom="scrollToBottom"
           :showTime.sync="showTime"
           :showImg.sync="showImg"

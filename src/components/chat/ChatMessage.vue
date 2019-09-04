@@ -82,9 +82,7 @@ export default {
     for (const emoticon of this.emoticons) {
       message = message.replace(new RegExp(emoticon.name, 'g'), () => `<img class="chat__emoticon" src="https://static.poorchat.net/emoticons/${emoticon.file}/1x" />`)
     }
-    if (this.message.type !== 'EMBED' || this.message.type !== 'NOTICE') {
-      this.messageText = ircf.renderHtml(message)
-    }
+    this.messageText = ircf.renderHtml(message)
   }
 }
 </script>

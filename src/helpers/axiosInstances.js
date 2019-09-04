@@ -2,6 +2,7 @@ import axios from 'axios'
 
 export const jarchiwumAPI = axios.create({
   baseURL: 'https://api.jarchiwum.pl'
+  // baseURL: 'http://localhost:3000'
 })
 
 export const twitchAPI = axios.create({

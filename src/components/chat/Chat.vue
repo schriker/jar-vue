@@ -21,6 +21,7 @@ import axios from 'axios'
 import shortid from 'shortid'
 import { jarchiwumAPI } from '../../helpers/axiosInstances'
 import AppChatMessage from './ChatMessage'
+import ChatWorker from './chat.worker'
 
 export default {
   components: {
@@ -40,10 +41,10 @@ export default {
       messages: [],
       badges: {},
       emoticons: [],
-      chatInterval: undefined,
       fetched: null,
       startTime: null,
-      scrollingUp: false
+      scrollingUp: false,
+      chatWorker: new ChatWorker()
     }
   },
   methods: {
@@ -61,46 +62,39 @@ export default {
           message.uid = shortid.generate()
         }
         this.fetched = messages
-        if (this.chatInterval === undefined) {
-          this.chatInterval = setInterval(this.messageInterval, 50)
+
+        this.chatWorker.postMessage({
+          type: 'START',
+          fetched: this.fetched.data,
+          messages: this.messages,
+          startTime: this.startTime
+        })
+        this.chatWorker.onmessage = ({ data }) => {
+          switch (data.type) {
+            case 'ADD_MESSAGE':
+              const out = this.$refs.div
+              const isScrolledToBottom = out.scrollHeight - out.clientHeight <= out.scrollTop + 100
+
+              this.messages.push(data.message)
+              this.$nextTick().then(() => {
+                if (isScrolledToBottom) {
+                  this.scrollingUp = false
+                  this.$refs.bottom.scrollIntoView()
+                } else {
+                  this.scrollingUp = true
+                }
+              })
+              break
+            case 'FETCH':
+              this.fetchMessages(this.messages[this.messages.length - 1].createdAt, this.videoFinishedDate)
+              break
+            case 'SPLICE': {
+              this.messages = data.messages
+            }
+          }
         }
       } catch (error) {
         console.log(error)
-      }
-    },
-    async messageInterval () {
-      const messagesInView = this.fetched.data.filter((message, index) => {
-        const condition = new Date(message.createdAt) <= this.startTime
-        if (condition) {
-          this.fetched.data.splice(index, 1)
-        }
-        return condition
-      })
-
-      for (let message of messagesInView) {
-        const out = this.$refs.div
-        const isScrolledToBottom = out.scrollHeight - out.clientHeight <= out.scrollTop + 100
-
-        this.messages.push(message)
-        this.$nextTick().then(() => {
-          if (isScrolledToBottom) {
-            this.scrollingUp = false
-            this.$refs.bottom.scrollIntoView()
-          } else {
-            this.scrollingUp = true
-          }
-        })
-      }
-
-      if (this.fetched.data.length === 0 && this.messages.length !== 0) {
-        clearInterval(this.chatInterval)
-        this.chatInterval = undefined
-        await this.fetchMessages(this.messages[this.messages.length - 1].createdAt, this.videoFinishedDate)
-      }
-
-      this.startTime = new Date(new Date(this.startTime).getTime() + 1 * 50)
-      if (this.messages.length > 100) {
-        this.messages.splice(0, 1)
       }
     }
   },
@@ -108,8 +102,9 @@ export default {
     finished () {
       this.messages = []
       this.fetched = null
-      clearInterval(this.chatInterval)
-      this.chatInterval = undefined
+      this.chatWorker.postMessage({
+        type: 'STOP'
+      })
     },
     async isPlaying () {
       this.startTime = new Date(new Date(this.videoStartedDate).getTime() + this.playerPosition * 1000)
@@ -121,8 +116,9 @@ export default {
         }
       }
       if (!this.isPlaying) {
-        clearInterval(this.chatInterval)
-        this.chatInterval = undefined
+        this.chatWorker.postMessage({
+          type: 'STOP'
+        })
       }
     }
   },

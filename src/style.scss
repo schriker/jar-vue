@@ -740,10 +740,16 @@ form {
     width: auto !important;
     height: initial !important;
     max-width: 100% !important;
-    max-height: 200px !important;
+    max-height: 250px !important;
     display: block;
     padding: 5px;
     margin: 0 auto 0 auto !important;
+  }
+  &__img-wrapper {
+    height: 250px !important;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
   &__settings {
     color: white;

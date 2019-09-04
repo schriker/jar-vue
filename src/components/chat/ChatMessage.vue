@@ -11,7 +11,6 @@
 import moment from 'moment'
 import linkifyHtml from 'linkifyjs/html'
 import random from '../../helpers/random'
-import imagesLoaded from 'imagesloaded'
 import ircf from 'irc-formatting'
 
 export default {
@@ -67,14 +66,7 @@ export default {
     if (urlsFromMessageBody.size > 0) {
       for (const url of [...urlsFromMessageBody]) {
         if (/\.(?:jpg|jpeg|gif|png)$/i.test(url) && this.showImg) {
-          message += `<a target="_blank" href="${url}"><img class="chat__img" src=${url} /></a>`
-
-          this.$nextTick().then(() => {
-            const img = document.querySelectorAll('.chat__img')
-            imagesLoaded(img[img.length - 1], () => {
-              this.$emit('scrollToBottom')
-            })
-          })
+          message += `<div class="chat__img-wrapper"><a target="_blank" href="${url}"><img class="chat__img" src=${url} /></a></div>`
         }
         // call api for og here
         // try {

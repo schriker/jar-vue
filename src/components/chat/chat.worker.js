@@ -26,7 +26,6 @@ onmessage = ({ data }) => {
       })
     }
 
-    // data.startTime = new Date(new Date(data.startTime).getTime() + 1 * 50)
     if (data.messages.length > 100) {
       data.messages.splice(0, 1)
       postMessage({

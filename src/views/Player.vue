@@ -14,6 +14,7 @@
         <div v-if="$route.query.platform === 'facebook'" class="fb-video"
           :data-href="`https://www.facebook.com/facebook/videos/${$route.params.video}`"
           data-width="auto"
+          data-height="auto"
           data-allowfullscreen="true"
           data-autoplay="false"
           data-show-captions="true">
@@ -150,6 +151,7 @@ export default {
         jarchiwumAPI.get(`/updateviews?id=${this.$route.params.video}`)
       }
       window.fbAsyncInit = () => {
+        window.FB.Canvas.setAutoResize(7)
         window.FB.init({
           appId: '2331553136926174',
           xfbml: true,

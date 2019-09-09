@@ -1,14 +1,21 @@
 <template>
-  <div ref="imgContainer">
-      <span v-if="showTime" class="chat__time">{{ time }}</span>
-      <img v-for="icon in icons" :key="icon" :src="icon" />
-      <span class="chat__author" :style="{ color: color(message.color) }">{{ message.author }}</span>:
-      <span class="chat__body" v-html="messageText"></span>
-      <div  v-if="ogContent" v-html="ogContent"></div>
+  <div>
+      <div :style="{borderColor: card && card.color ? card.color : null}" class="chat__body--irc" v-if="message.author === 'irc.poorchat.net' && showImg">
+        <span class="chat__body" v-html="messageText"></span>
+        <AppChatCard :card="card" v-if="card" />
+      </div>
+      <div v-else-if="message.author !== 'irc.poorchat.net'">
+        <span v-if="showTime" class="chat__time">{{ time }}</span>
+        <img v-for="icon in icons" :key="icon" :src="icon" />
+        <span class="chat__author" :style="{ color: color(message.color) }">{{ message.author }}</span>:
+        <span class="chat__body" v-html="messageText"></span>
+        <div  v-if="ogContent" v-html="ogContent"></div>
+      </div>
   </div>
 </template>
 <script>
 import moment from 'moment'
+import AppChatCard from './ChatCard'
 import linkifyHtml from 'linkifyjs/html'
 import random from '../../helpers/random'
 import ircf from 'irc-formatting'
@@ -22,9 +29,13 @@ export default {
     showTime: Boolean,
     showImg: Boolean
   },
+  components: {
+    AppChatCard
+  },
   data () {
     return {
-      messageText: null
+      messageText: null,
+      card: null
       // icons: []
     }
   },
@@ -62,27 +73,26 @@ export default {
     let message = linkifyHtml(this.message.body, {
       defaultProtocol: 'https'
     })
-    const urlsFromMessageBody = new Set(this.message.body.match(/\bhttps?:\/\/\S+/gi))
-    if (urlsFromMessageBody.size > 0) {
-      for (const url of [...urlsFromMessageBody]) {
-        if (/\.(?:jpg|jpeg|gif|png)$/i.test(url) && this.showImg) {
-          message += `<div class="chat__img-wrapper"><a target="_blank" href="${url}"><img class="chat__img" src=${url} /></a></div>`
-        }
-        // call api for og here
-        // try {
-        //     const result = await ogs({ url: url })
-        //     if (result.success) {
-        //         openGraphs.push(result)
-        //     }
-        // } catch (eror) {
-        //     console.log(eror)
-        // }
-      }
-    }
+    // const urlsFromMessageBody = new Set(this.message.body.match(/\bhttps?:\/\/\S+/gi))
+    // if (urlsFromMessageBody.size > 0) {
+    //   for (const url of [...urlsFromMessageBody]) {
+    //     // if (/\.(?:jpg|jpeg|gif|png)$/i.test(url) && this.showImg) {
+    //     // message += `<div class="chat__img-wrapper"><a target="_blank" href="${url}"><img class="chat__img" src=${url} /></a></div>`
+    //     // }
+    //   }
+    // }
     for (const emoticon of this.emoticons) {
-      message = message.replace(new RegExp(emoticon.name, 'g'), () => `<img class="chat__emoticon" src="https://static.poorchat.net/emoticons/${emoticon.file}/1x" />`)
+      message = message.replace(new RegExp('\\b' + emoticon.name + '\\b', 'g'), () => `<img class="chat__emoticon" src="https://static.poorchat.net/emoticons/${emoticon.file}/1x" />`)
     }
-    this.messageText = ircf.renderHtml(message)
+    if (this.message.author === 'irc.poorchat.net') {
+      try {
+        this.card = JSON.parse(this.message.body)
+      } catch (error) {
+        this.messageText = this.message.body
+      }
+    } else {
+      this.messageText = ircf.renderHtml(message)
+    }
   }
 }
 </script>

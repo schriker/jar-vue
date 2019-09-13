@@ -1,6 +1,9 @@
 <template>
   <div>
-      <div :style="{borderColor: card && card.color ? card.color : null}" class="chat__body--irc" v-if="message.author === 'irc.poorchat.net' && showImg">
+      <div
+        :style="{borderColor: card && card.color ? card.color : null}"
+        class="chat__body--irc"
+        v-if="message.author === 'irc.poorchat.net' && showImg">
         <span class="chat__body" v-html="messageText"></span>
         <AppChatCard :card="card" v-if="card" />
       </div>
@@ -35,8 +38,22 @@ export default {
   data () {
     return {
       messageText: null,
-      card: null
-      // icons: []
+      card: null,
+      mods: {
+        tr0lit: 'a',
+        trasek: 'a',
+        jarzyna: 'm',
+        Wonziu: 'q',
+        B4rt0: 'o',
+        Navari: 'o',
+        Pancernik: 'o',
+        cbool222: 'h',
+        dzej: 'h',
+        Jaa: 'h',
+        michal: 'h',
+        schriker: 'h',
+        Vasu: 'h'
+      }
     }
   },
   computed: {
@@ -46,6 +63,9 @@ export default {
     },
     icons () {
       const icons = []
+      if (this.mods[this.message.author]) {
+        icons.push(`https://static.poorchat.net/badges/${this.mods[this.message.author]}/1x`)
+      }
       if (this.badges.subscriber.length > 0) {
         if (this.message.subscription > 0) {
           const badge = this.badges.subscriber.filter(badge => badge.months <= this.message.subscription)

@@ -198,6 +198,11 @@ form {
   margin: -8px 0;
   li {
     list-style: none;
+    &:hover > ul {
+      display: block;
+      visibility: initial;
+      opacity: 1;
+    }
   }
   a {
     display: block;
@@ -206,6 +211,14 @@ form {
       color: #fff;
       background-color: #252E3A;
     }
+  }
+  &__submenu {
+    visibility: hidden;
+    opacity: 0;
+    position: absolute;
+    z-index: 999;
+    background-color: #1e252e;
+    transition: all ease .2s;
   }
   &__active {
     background-color: #252E3A;
@@ -995,7 +1008,7 @@ form {
     font-size: 14px;
     line-height: 22px;
     padding: 0 30px;
-    margin: 0 0 40px 0;
+    margin: 40px 0 40px 0;
   }
   &__switches {
     display: flex;

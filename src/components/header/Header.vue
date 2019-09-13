@@ -18,7 +18,7 @@
           <div class="removing-icon">
             <img :src="streamers.removingName.info.profile_image_url" alt="">
             {{ streamers.removingName.info.display_name }} zostanie usnięty z listy.
-            <button @click="atRemoveStreamer" class="submit-btn submit-btn--large-padding" type="submit">Ok</button>
+            <button @click="atRemoveStreamer" class="submit-btn submit-btn--large-padding" type="submit">OK</button>
           </div>
         </app-basic-modal>
       </transition>

@@ -1,5 +1,13 @@
 <template>
   <div class="container">
+    <transition name="fade-in">
+      <app-basic-modal @closeModal="toggleFirstVisitModal" v-if="firstVisit">
+        <p>Hej, jeśli korzystasz z FireFoxa i nie widzisz materiałów z Facebooka możesz spróbować wyłączyć blokowanie treści dla tej witryny:</p>
+        <img width="300px" :src="FireFox" alt="FireFox Error">
+        <p>Jeśli nie zadziałało, a masz zainstalowany dodatek <b>Facebook Container</b> sprawdź czy wyłączenie go nie pomoże. </p>
+        <button @click="firstVisit = false" class="submit-btn submit-btn--large-padding" type="submit">Zamknij</button>
+      </app-basic-modal>
+    </transition>
     <app-header></app-header>
     <transition name="fade-in" mode="out-in">
       <router-view></router-view>
@@ -21,20 +29,30 @@ import AppHeader from './components/header/Header'
 import AppNotification from './components/Notification'
 import AppUserLogin from './components/user/UserLogin'
 import AppSyncIcon from './UI/SyncIcon'
+import AppBasicModal from './UI/BasicModal'
+import FireFox from './assets/ff_error.jpg'
 
 export default {
   components: {
     AppHeader,
     AppNotification,
     AppUserLogin,
-    AppSyncIcon
+    AppSyncIcon,
+    AppBasicModal
   },
+  data: () => ({
+    firstVisit: false,
+    FireFox
+  }),
   methods: {
     ...mapActions([
       'initUser',
       'onAuthStateChange',
       'fetchStreamers'
-    ])
+    ]),
+    toggleFirstVisitModal () {
+      this.firstVisit = !this.firstVisit
+    }
   },
   computed: {
     ...mapState([
@@ -46,6 +64,13 @@ export default {
     }
   },
   created () {
+    setTimeout(() => {
+      const firstVisit = !!localStorage.getItem('firstVisit')
+      if (!firstVisit) {
+        this.firstVisit = true
+        localStorage.setItem('firstVisit', 1)
+      }
+    }, 2000)
     this.onAuthStateChange({ id: this.$route.params.id, playlistId: this.$route.params.playlistId, platform: this.$route.params.platform })
   }
 }

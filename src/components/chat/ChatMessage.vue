@@ -48,11 +48,15 @@ export default {
         Navari: 'o',
         Pancernik: 'o',
         cbool222: 'h',
+        Emil: 'h',
         dzej: 'h',
         Jaa: 'h',
         michal: 'h',
         schriker: 'h',
-        Vasu: 'h'
+        Vasu: 'h',
+        kurak55: 'h',
+        ratlooz: 'h',
+        Macon: 'h'
       }
     }
   },

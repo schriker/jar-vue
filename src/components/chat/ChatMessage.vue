@@ -56,7 +56,9 @@ export default {
         Vasu: 'h',
         kurak55: 'h',
         ratlooz: 'h',
-        Macon: 'h'
+        Macon: 'h',
+        Glamhoth: 'h',
+        kin_zadra: 'h'
       }
     }
   },

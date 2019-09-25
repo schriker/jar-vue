@@ -39,14 +39,15 @@ const videoObjectCreator = ({ state, videosArr, payload, actionPayload }) => {
         isNew: lastVisited < date
       }
     } else if (actionPayload.platform === 'facebook') {
-      date = new Date(video.createdAt)
+      date = new Date(video.started)
+      const createDate = new Date(video.createdAt)
 
       videoObject = {
         bookmarked: state.userData.bookmarksId.includes(video.facebookId),
         created_at: video.createdAt,
         duration: video.duration,
         id: video.facebookId,
-        isNew: lastVisited < date,
+        isNew: lastVisited < createDate,
         isYoutube: false,
         platform: actionPayload.platform,
         published_at: video.started,

@@ -1,7 +1,8 @@
 <template>
   <div v-bar class="chat">
     <div ref="div">
-      <div class="chat__message" v-for="message in messages" :key="message.uid">
+      <div v-for="message in messages" :key="message.uid">
+        <div class="chat__message" v-if="message.type !== 'MODE'">
         <AppChatMessage
           @scrollToBottom="scrollToBottom"
           :showTime.sync="showTime"
@@ -9,6 +10,7 @@
           :badges.sync="badges"
           :emoticons.sync="emoticons"
           :message="message" />
+        </div>
       </div>
       <div ref="bottom"></div>
       <div @click="scrollToBottom" v-if="scrollingUp" class="chat__more">więcej wiadomości</div>
@@ -86,6 +88,7 @@ export default {
               })
               break
             case 'FETCH':
+              this.startTime = data.startTime
               this.fetchMessages(this.messages[this.messages.length - 1].createdAt, this.videoFinishedDate)
               break
             case 'SPLICE': {
@@ -127,6 +130,9 @@ export default {
     const badges = await axios.get('https://api.poorchat.net/v1/channels/jadisco/badges')
     this.badges = badges.data
     this.emoticons = emoticons.data
+  },
+  destroyed () {
+    this.chatWorker.terminate()
   }
 }
 </script>

@@ -140,7 +140,9 @@ const actions = {
       await dispatch('addStreamer', payload.route, { root: true })
       dispatch('fetchVideos', { streamerName: payload.route, loadMore: false }, { root: true })
     } else if (payload.route === 'wonziu' && Vue.router.history.current.params.video === undefined) {
-      Vue.router.push({ path: `/wonziu/facebook/StrumienieZRuczaju` })
+      if (Vue.router.currentRoute.path !== `/wonziu/facebook/StrumienieZRuczaju`) {
+        Vue.router.push({ path: `/wonziu/facebook/StrumienieZRuczaju` })
+      }
       dispatch('fetchStreamers', { streamerName: 'wonziu', playlistId: payload.playlistId, platform: 'facebook' }, { root: true })
     } else {
       dispatch('fetchStreamers', { streamerName: payload.route, playlistId: payload.playlistId, platform: payload.platform || 'twitch' }, { root: true })

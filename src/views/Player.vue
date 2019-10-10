@@ -11,7 +11,8 @@
               <app-toggle-book-marked :video="video[0]" :bookMarked="video[0].bookmarked"></app-toggle-book-marked>
             </div>
           </transition>
-        <div v-if="$route.query.platform === 'facebook'" class="fb-video"
+        <div ref="youTubePlayer" v-if="video[0].youTubeId"></div>
+        <div v-else-if="$route.query.platform === 'facebook'" class="fb-video"
           :data-href="`https://www.facebook.com/facebook/videos/${$route.params.video}`"
           data-width="auto"
           data-height="auto"
@@ -146,6 +147,48 @@ export default {
       }
       localStorage.setItem('chatOptions', JSON.stringify(localStorageOptions))
     },
+    loadYouTubeApi () {
+      const onPlayerStateChange = (event) => {
+        const { data: state } = event
+        switch (state) {
+          case 0:
+            // console.log('Ended')
+            player.seekTo(0)
+            player.pauseVideo()
+            this.finished = true
+            this.isPlaying = false
+            break
+          case 1:
+            // console.log('Playing')
+            this.playerPosition = player.getCurrentTime()
+            this.isPlaying = true
+            this.finished = false
+            break
+          case 2:
+            // console.log('Paused')
+            this.playerPosition = player.getCurrentTime()
+            this.isPlaying = false
+            break
+          case 3:
+            // console.log('Buffering')
+            this.isPlaying = false
+            break
+        }
+      }
+      const onPlayerError = () => {
+        this.player.pause()
+        this.isPlaying = false
+      }
+      let player = new window.YT.Player(this.$refs.youTubePlayer, {
+        height: '100%',
+        width: '100%',
+        videoId: this.video[0].youTubeId,
+        events: {
+          'onStateChange': onPlayerStateChange,
+          'onError': onPlayerError
+        }
+      })
+    },
     loadFacebookAPI () {
       if (this.$route.query.platform === 'facebook') {
         jarchiwumAPI.get(`/updateviews?id=${this.$route.params.video}`)
@@ -189,17 +232,24 @@ export default {
         }
       })
     },
-    getVideo () {
+    async getVideo () {
       const videoData = {
         streamer: this.$route.params.id,
         video: this.$route.params.video,
         platform: this.$route.query.platform
       }
-      this.getSingleVideo(videoData)
+      await this.getSingleVideo(videoData)
+      if (window.YT !== undefined && this.video[0].youTubeId) {
+        this.loadYouTubeApi()
+      } else if (this.video[0].youTubeId) {
+        window.addEventListener('load', () => {
+          this.loadYouTubeApi()
+        })
+      }
     }
   },
   watch: {
-    '$route' () {
+    async '$route' () {
       this.getVideo()
     }
   },
@@ -212,9 +262,16 @@ export default {
         this.loadFacebookAPI()
       })
     }
+    if (window.YT !== undefined && this.video[0].youTubeId) {
+      this.loadYouTubeApi()
+    } else if (this.video[0].youTubeId) {
+      window.addEventListener('load', () => {
+        this.loadYouTubeApi()
+      })
+    }
   },
-  created () {
-    this.getVideo()
+  async created () {
+    await this.getVideo()
     const options = JSON.parse(localStorage.getItem('chatOptions'))
     if (options) {
       for (const option in options) {

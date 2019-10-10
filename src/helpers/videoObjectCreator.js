@@ -41,7 +41,6 @@ const videoObjectCreator = ({ state, videosArr, payload, actionPayload }) => {
     } else if (actionPayload.platform === 'facebook') {
       date = new Date(video.started)
       const createDate = new Date(video.createdAt)
-
       videoObject = {
         bookmarked: state.userData.bookmarksId.includes(video.facebookId),
         created_at: video.createdAt,
@@ -49,6 +48,7 @@ const videoObjectCreator = ({ state, videosArr, payload, actionPayload }) => {
         id: video.facebookId,
         isNew: lastVisited < createDate,
         isYoutube: false,
+        youTubeId: video.youTubeId,
         platform: actionPayload.platform,
         published_at: video.started,
         thumbnail_url: video.thumbnail || 'https://cdn.woorkup.com/wp-content/uploads/2014/08/facebook.jpg', // Make default thumbnail for facebook videos

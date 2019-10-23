@@ -37,17 +37,22 @@ onmessage = ({ data }) => {
   }
 
   const timeFunction = () => {
-    data.startTime = new Date(new Date(data.startTime).getTime() + 1 * 50)
+    data.startTime = new Date(new Date(data.startTime).getTime() + 1 * data.playbackRate * 50)
   }
 
   switch (data.type) {
     case 'START':
+      clearInterval(messageInterval)
+      clearInterval(timeInterval)
       messageInterval = setInterval(intervalFunction, 50)
       timeInterval = setInterval(timeFunction, 50)
       break
     case 'STOP':
       clearInterval(messageInterval)
       clearInterval(timeInterval)
+      break
+    case 'PLAYBACK_RATE':
+      console.log(data.playbackRate)
       break
   }
 }

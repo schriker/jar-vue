@@ -51,7 +51,7 @@ const videoObjectCreator = ({ state, videosArr, payload, actionPayload }) => {
         youTubeId: video.youTubeId,
         platform: actionPayload.platform,
         published_at: video.started,
-        thumbnail_url: video.thumbnail || 'https://cdn.woorkup.com/wp-content/uploads/2014/08/facebook.jpg', // Make default thumbnail for facebook videos
+        thumbnail_url: video.thumbnail,
         title: video.title,
         url: video.url,
         user_id: 'StrumienieZRuczaju',

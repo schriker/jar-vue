@@ -33,6 +33,7 @@ export default {
     playerPosition: Number,
     videoStartedDate: String,
     videoFinishedDate: String,
+    playbackRate: Number,
     isPlaying: Boolean,
     finished: Boolean,
     showTime: Boolean,
@@ -60,6 +61,13 @@ export default {
           gt: gt,
           lt: lt
         })
+        if (messages.data.length === 0) {
+          this.chatWorker.postMessage({
+            type: 'STOP'
+          })
+          const error = 'End of messages!'
+          throw error
+        }
         for (const message of messages.data) {
           message.uid = shortid.generate()
         }
@@ -69,7 +77,8 @@ export default {
           type: 'START',
           fetched: this.fetched.data,
           messages: this.messages,
-          startTime: this.startTime
+          startTime: this.startTime,
+          playbackRate: this.playbackRate
         })
         this.chatWorker.onmessage = ({ data }) => {
           switch (data.type) {
@@ -108,6 +117,19 @@ export default {
       this.chatWorker.postMessage({
         type: 'STOP'
       })
+    },
+    async playbackRate () {
+      this.chatWorker.postMessage({
+        type: 'STOP'
+      })
+      this.startTime = new Date(new Date(this.videoStartedDate).getTime() + this.playerPosition * 1000)
+      if (this.isPlaying && !this.finished) {
+        try {
+          await this.fetchMessages(this.startTime, this.videoFinishedDate)
+        } catch (error) {
+          console.log(error)
+        }
+      }
     },
     async isPlaying () {
       this.startTime = new Date(new Date(this.videoStartedDate).getTime() + this.playerPosition * 1000)

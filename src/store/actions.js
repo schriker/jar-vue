@@ -47,7 +47,12 @@ const actinos = {
       if (actionPayload.platform === 'facebook') {
         try {
           const page = actionPayload.page || 0
-          const queryString = `/facebookvideo?page=${page + 1}&per_page=20`
+          let queryString
+          if (actionPayload.playlistId === 'NvidiaGeforcePL') {
+            queryString = `/facebookvideo?nvidia=true&page=${page + 1}&per_page=20`
+          } else {
+            queryString = `/facebookvideo?page=${page + 1}&per_page=20`
+          }
           const { data: videosArr } = await jarchiwumAPI.get(queryString)
 
           if (actionPayload.loadMore && videosArr.length === 0) {

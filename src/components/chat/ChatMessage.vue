@@ -22,6 +22,7 @@ import AppChatCard from './ChatCard'
 import linkifyHtml from 'linkifyjs/html'
 import random from '../../helpers/random'
 import ircf from 'irc-formatting'
+import emojisArray from '../../helpers/emojis'
 
 export default {
   props: {
@@ -58,6 +59,7 @@ export default {
         ratlooz: 'h',
         Macon: 'h',
         Glamhoth: 'h',
+        Bonkol: 'h',
         kin_zadra: 'h'
       }
     }
@@ -99,14 +101,6 @@ export default {
     let message = linkifyHtml(this.message.body, {
       defaultProtocol: 'https'
     })
-    // const urlsFromMessageBody = new Set(this.message.body.match(/\bhttps?:\/\/\S+/gi))
-    // if (urlsFromMessageBody.size > 0) {
-    //   for (const url of [...urlsFromMessageBody]) {
-    //     // if (/\.(?:jpg|jpeg|gif|png)$/i.test(url) && this.showImg) {
-    //     // message += `<div class="chat__img-wrapper"><a target="_blank" href="${url}"><img class="chat__img" src=${url} /></a></div>`
-    //     // }
-    //   }
-    // }
     for (const emoticon of this.emoticons) {
       message = message.replace(new RegExp('\\b' + emoticon.name + '\\b', 'g'), () => `<img class="chat__emoticon" src="https://static.poorchat.net/emoticons/${emoticon.file}/1x" />`)
     }
@@ -117,7 +111,16 @@ export default {
         this.messageText = this.message.body
       }
     } else {
-      this.messageText = ircf.renderHtml(message)
+      const withEmojis = message.replace((new RegExp(/:(\b.*?\b)[:\s]/, 'g')), el => {
+        const shordcode = el.replace(new RegExp(/(:)/, 'g'), '')
+        const emoji = emojisArray.filter(el => el.shortcodes.includes(shordcode))
+        if (emoji.length === 0) {
+          return el
+        } else {
+          return emoji[0].emoji
+        }
+      })
+      this.messageText = ircf.renderHtml(window.twemoji.parse(withEmojis))
     }
   }
 }

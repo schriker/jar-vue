@@ -42,6 +42,7 @@
             :playerPosition.sync="playerPosition"
             :isPlaying.sync="isPlaying"
             :finished.sync="finished"
+            :playbackRate.sync="playbackRate"
             :videoStartedDate="video[0].published_at"
             :videoFinishedDate="video[0].created_at"
             v-if="showChat && $route.query.platform === 'facebook'"
@@ -74,6 +75,7 @@ export default {
       playerPosition: 0,
       player: null,
       isPlaying: false,
+      playbackRate: 1,
       finished: false,
       showOptions: false,
       showJadisco: false,
@@ -136,7 +138,7 @@ export default {
     },
     switchChat () {
       this.isPlaying = false
-      this.player.pause()
+      this.isPlaying = true
       this.showJadisco = !this.showJadisco
     },
     chatOptionsHandler (option) {
@@ -148,8 +150,13 @@ export default {
       localStorage.setItem('chatOptions', JSON.stringify(localStorageOptions))
     },
     loadYouTubeApi () {
+      const onPlaybackRateChange = () => {
+        this.playbackRate = player.getPlaybackRate()
+        this.playerPosition = player.getCurrentTime()
+      }
       const onPlayerStateChange = (event) => {
         const { data: state } = event
+        this.playbackRate = player.getPlaybackRate()
         switch (state) {
           case 0:
             // console.log('Ended')
@@ -158,33 +165,43 @@ export default {
             this.finished = true
             this.isPlaying = false
             break
-          case 1:
-            // console.log('Playing')
-            this.playerPosition = player.getCurrentTime()
-            this.isPlaying = true
-            this.finished = false
-            break
           case 2:
             // console.log('Paused')
-            this.playerPosition = player.getCurrentTime()
             this.isPlaying = false
             break
           case 3:
             // console.log('Buffering')
             this.isPlaying = false
             break
+          case 1:
+            if (!this.isPlaying) {
+              // console.log('Playing')
+              this.playerPosition = player.getCurrentTime()
+              this.isPlaying = true
+              this.finished = false
+            }
+            break
         }
       }
       const onPlayerError = () => {
-        this.player.pause()
+        player.pauseVideo()
         this.isPlaying = false
+      }
+      const onReady = () => {
+        this.player = player
       }
       let player = new window.YT.Player(this.$refs.youTubePlayer, {
         height: '100%',
         width: '100%',
         videoId: this.video[0].youTubeId,
+        playerVars: {
+          enablejsapi: 1,
+          origin: 'https://jarchiwum.pl'
+        },
         events: {
+          'onReady': onReady,
           'onStateChange': onPlayerStateChange,
+          'onPlaybackRateChange': onPlaybackRateChange,
           'onError': onPlayerError
         }
       })
@@ -262,16 +279,9 @@ export default {
         this.loadFacebookAPI()
       })
     }
-    if (window.YT !== undefined && this.video[0].youTubeId) {
-      this.loadYouTubeApi()
-    } else if (this.video[0].youTubeId) {
-      window.addEventListener('load', () => {
-        this.loadYouTubeApi()
-      })
-    }
   },
   async created () {
-    await this.getVideo()
+    this.getVideo()
     const options = JSON.parse(localStorage.getItem('chatOptions'))
     if (options) {
       for (const option in options) {

@@ -139,7 +139,7 @@ const actions = {
     } else if (!payload.data.streamers.includes(payload.route)) {
       await dispatch('addStreamer', payload.route, { root: true })
       dispatch('fetchVideos', { streamerName: payload.route, loadMore: false }, { root: true })
-    } else if (payload.route === 'wonziu' && Vue.router.history.current.params.video === undefined) {
+    } else if (payload.route === 'wonziu' && Vue.router.history.current.params.video === undefined && Vue.router.history.current.params.playlistId !== 'NvidiaGeforcePL') {
       if (Vue.router.currentRoute.path !== `/wonziu/facebook/StrumienieZRuczaju`) {
         Vue.router.push({ path: `/wonziu/facebook/StrumienieZRuczaju` })
       }

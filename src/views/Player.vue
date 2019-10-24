@@ -6,25 +6,26 @@
               <span @click="copyMirko" class="hide-mobile"><i class="fas fa-play"></i>{{ video[0].duration }}</span>
               <i class="fas fa-eye"></i>{{ video[0].view_count }}
               <i class="fas fa-calendar"></i>{{ date }}
-               <ul class="archive-type" style="margin-left: 15px;">
-                <!-- <li @click="switchPlayer()" :class="{ 'archive-type__fb': !facebookPlayer, 'archive-type__yt': facebookPlayer }">
-                  <a><i :class="{ 'fab fa-facebook-square': !facebookPlayer, 'fab fa-youtube': facebookPlayer }"></i>{{ !facebookPlayer ? 'Facebook Player' : 'YouTube Player' }}</a>
-                </li> -->
-               </ul>
               <input ref="mirkoInput" :value="mirkoLink" type="hidden" />
+              <ul v-if="video[0].youTubeId" class="archive-type" style="margin-left: 15px;">
+                <li @click="switchPlayer()" :class="{ 'archive-type__fb': !facebookPlayer, 'archive-type__yt': facebookPlayer }">
+                  <a><i :class="{ 'fab fa-facebook-square': !facebookPlayer, 'fab fa-youtube': facebookPlayer }"></i>{{ !facebookPlayer ? 'Facebook Player' : 'YouTube Player' }}</a>
+                </li>
+              </ul>
               <app-toggle-watched :videoId="video[0].id" :watched="video[0].watched"></app-toggle-watched>
               <app-toggle-book-marked :video="video[0]" :bookMarked="video[0].bookmarked"></app-toggle-book-marked>
             </div>
           </transition>
-        <div ref="youTubePlayer" v-if="video[0].youTubeId"></div>
-        <div v-else-if="$route.query.platform === 'facebook'" class="fb-video"
-          :data-href="`https://www.facebook.com/facebook/videos/${$route.params.video}`"
-          data-width="auto"
-          data-height="auto"
-          data-allowfullscreen="true"
-          data-autoplay="false"
-          data-show-captions="true">
-        </div>
+        <AppYoutubePlayer
+          v-if="video[0].youTubeId && !facebookPlayer"
+          :videoId="video[0].youTubeId"
+          @playerEvent="playerEventsHandler"
+        />
+        <AppFacebookPlayer
+          v-else-if="$route.query.platform === 'facebook'"
+          :videoId="$route.params.video"
+          @playerEvent="playerEventsHandler"
+        />
         <iframe
           v-else
           class="player__iframe"
@@ -70,6 +71,8 @@
 import AppToggleWatched from '../UI/ToggleWatched'
 import AppToggleBookMarked from '../UI/ToggleBookMarked'
 import AppChat from '../components/chat/Chat'
+import AppYoutubePlayer from '../components/youtubePlayer/YoutubePlayer'
+import AppFacebookPlayer from '../components/facebookPlayer/FacebookPlayer'
 import { jarchiwumAPI } from '../helpers/axiosInstances'
 import { mapActions, mapState } from 'vuex'
 
@@ -98,6 +101,8 @@ export default {
   components: {
     AppToggleWatched,
     AppToggleBookMarked,
+    AppYoutubePlayer,
+    AppFacebookPlayer,
     AppChat
   },
   computed: {
@@ -149,7 +154,42 @@ export default {
       this.showJadisco = !this.showJadisco
     },
     switchPlayer () {
+      this.isPlaying = false
       this.facebookPlayer = !this.facebookPlayer
+    },
+    playerEventsHandler (event) {
+      switch (event.name) {
+        case 'ended':
+          this.finished = true
+          this.isPlaying = false
+          break
+        case 'paused':
+          if (event.position) {
+            this.playerPosition = event.position
+          }
+          this.isPlaying = false
+          break
+        case 'buffering':
+          this.isPlaying = false
+          break
+        case 'playing':
+          if (!this.isPlaying) {
+            this.playerPosition = event.position
+            this.isPlaying = true
+            this.finished = false
+          }
+          break
+        case 'playbackRate':
+          this.playbackRate = event.playbackRate
+          break
+        case 'playbackRateChange':
+          this.playbackRate = event.playbackRate
+          this.playerPosition = event.position
+          break
+        case 'error':
+          this.isPlaying = false
+          break
+      }
     },
     chatOptionsHandler (option) {
       this[option] = !this[option]
@@ -159,106 +199,6 @@ export default {
       }
       localStorage.setItem('chatOptions', JSON.stringify(localStorageOptions))
     },
-    loadYouTubeApi () {
-      const onPlaybackRateChange = () => {
-        this.playbackRate = player.getPlaybackRate()
-        this.playerPosition = player.getCurrentTime()
-      }
-      const onPlayerStateChange = (event) => {
-        const { data: state } = event
-        this.playbackRate = player.getPlaybackRate()
-        switch (state) {
-          case 0:
-            // console.log('Ended')
-            player.seekTo(0)
-            player.pauseVideo()
-            this.finished = true
-            this.isPlaying = false
-            break
-          case 2:
-            // console.log('Paused')
-            this.isPlaying = false
-            break
-          case 3:
-            // console.log('Buffering')
-            this.isPlaying = false
-            break
-          case 1:
-            if (!this.isPlaying) {
-              // console.log('Playing')
-              this.playerPosition = player.getCurrentTime()
-              this.isPlaying = true
-              this.finished = false
-            }
-            break
-        }
-      }
-      const onPlayerError = () => {
-        player.pauseVideo()
-        this.isPlaying = false
-      }
-      const onReady = () => {
-        this.player = player
-      }
-      let player = new window.YT.Player(this.$refs.youTubePlayer, {
-        height: '100%',
-        width: '100%',
-        videoId: this.video[0].youTubeId,
-        playerVars: {
-          enablejsapi: 1,
-          origin: 'https://jarchiwum.pl'
-        },
-        events: {
-          'onReady': onReady,
-          'onStateChange': onPlayerStateChange,
-          'onPlaybackRateChange': onPlaybackRateChange,
-          'onError': onPlayerError
-        }
-      })
-    },
-    loadFacebookAPI () {
-      if (this.$route.query.platform === 'facebook') {
-        jarchiwumAPI.get(`/updateviews?id=${this.$route.params.video}`)
-      }
-      window.fbAsyncInit = () => {
-        window.FB.Canvas.setAutoResize(7)
-        window.FB.init({
-          appId: '2331553136926174',
-          xfbml: true,
-          version: 'v4.0'
-        })
-      }
-      window.FB.Event.subscribe('xfbml.ready', msg => {
-        if (msg.type === 'video') {
-          this.player = msg.instance
-
-          this.player.subscribe('startedPlaying', () => {
-            this.playerPosition = this.player.getCurrentPosition()
-            this.isPlaying = true
-            this.finished = false
-          })
-          this.player.subscribe('paused', () => {
-            this.playerPosition = this.player.getCurrentPosition()
-            this.isPlaying = false
-          })
-          this.player.subscribe('finishedPlaying', () => {
-            this.player.seek(0)
-            this.player.pause()
-            this.finished = true
-            this.isPlaying = false
-          })
-          this.player.subscribe('startedBuffering', () => {
-            this.player.pause()
-            this.isPlaying = false
-          })
-
-          this.player.subscribe('error', () => {
-            this.player.pause()
-            this.isPlaying = false
-          })
-        }
-      })
-    },
     async getVideo () {
       const videoData = {
         streamer: this.$route.params.id,
@@ -266,13 +206,6 @@ export default {
         platform: this.$route.query.platform
       }
       await this.getSingleVideo(videoData)
-      if (window.YT !== undefined && this.video[0].youTubeId) {
-        this.loadYouTubeApi()
-      } else if (this.video[0].youTubeId) {
-        window.addEventListener('load', () => {
-          this.loadYouTubeApi()
-        })
-      }
     }
   },
   watch: {
@@ -281,13 +214,8 @@ export default {
     }
   },
   mounted () {
-    if (window.FB !== undefined) {
-      window.FB.XFBML.parse()
-      this.loadFacebookAPI()
-    } else {
-      window.addEventListener('load', () => {
-        this.loadFacebookAPI()
-      })
+    if (this.$route.query.platform === 'facebook') {
+      jarchiwumAPI.get(`/updateviews?id=${this.$route.params.video}`)
     }
   },
   async created () {

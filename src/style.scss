@@ -603,6 +603,12 @@ form {
   display: flex;
   flex-direction: column;
   background-color: #000; 
+  &__wrapper {
+    flex: 1 1 auto;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
   &__top {
     display: flex;
     color: white;

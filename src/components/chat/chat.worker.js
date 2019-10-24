@@ -51,9 +51,6 @@ onmessage = ({ data }) => {
       clearInterval(messageInterval)
       clearInterval(timeInterval)
       break
-    case 'PLAYBACK_RATE':
-      console.log(data.playbackRate)
-      break
   }
 }
 

@@ -6,6 +6,11 @@
               <span @click="copyMirko" class="hide-mobile"><i class="fas fa-play"></i>{{ video[0].duration }}</span>
               <i class="fas fa-eye"></i>{{ video[0].view_count }}
               <i class="fas fa-calendar"></i>{{ date }}
+               <ul class="archive-type" style="margin-left: 15px;">
+                <!-- <li @click="switchPlayer()" :class="{ 'archive-type__fb': !facebookPlayer, 'archive-type__yt': facebookPlayer }">
+                  <a><i :class="{ 'fab fa-facebook-square': !facebookPlayer, 'fab fa-youtube': facebookPlayer }"></i>{{ !facebookPlayer ? 'Facebook Player' : 'YouTube Player' }}</a>
+                </li> -->
+               </ul>
               <input ref="mirkoInput" :value="mirkoLink" type="hidden" />
               <app-toggle-watched :videoId="video[0].id" :watched="video[0].watched"></app-toggle-watched>
               <app-toggle-book-marked :video="video[0]" :bookMarked="video[0].bookmarked"></app-toggle-book-marked>
@@ -72,6 +77,7 @@ export default {
   data () {
     return {
       showChat: true,
+      facebookPlayer: false,
       playerPosition: 0,
       player: null,
       isPlaying: false,
@@ -80,7 +86,8 @@ export default {
       showOptions: false,
       showJadisco: false,
       showTime: true,
-      showImg: true
+      showImg: true,
+      componentKey: 0
     }
   },
   metaInfo () {
@@ -140,6 +147,9 @@ export default {
       this.isPlaying = false
       this.isPlaying = true
       this.showJadisco = !this.showJadisco
+    },
+    switchPlayer () {
+      this.facebookPlayer = !this.facebookPlayer
     },
     chatOptionsHandler (option) {
       this[option] = !this[option]

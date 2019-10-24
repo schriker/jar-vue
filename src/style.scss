@@ -194,7 +194,6 @@ form {
 .archive-type {
   display: flex;
   flex-wrap: wrap;
-  width: 100%;
   margin: -8px 0;
   li {
     list-style: none;
@@ -715,6 +714,7 @@ form {
     }
   }
   a {
+    word-break: break-all;
     color: $success;
     &:hover {
       color: #8BFFE3;
@@ -899,7 +899,7 @@ form {
     height: auto !important;
     width: auto!important;
     max-height: 200px;
-    margin: 0 !important;
+    margin: 10px 0 15px 0 !important;
     max-width: 100%;
   }
   &__img-wrapper {

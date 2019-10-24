@@ -60,7 +60,8 @@ export default {
         Macon: 'h',
         Glamhoth: 'h',
         Bonkol: 'h',
-        kin_zadra: 'h'
+        kin_zadra: 'h',
+        GeneratorFrajdy: 'h'
       }
     }
   },

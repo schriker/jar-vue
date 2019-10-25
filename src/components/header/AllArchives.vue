@@ -1,5 +1,5 @@
 <template>
-    <ul class="archive-type">
+    <ul class="archive-type archive-type--mobile">
       <li class="archive-type__fb"><router-link active-class="archive-type__active" :to="`/${streamerName}/facebook/StrumienieZRuczaju`" exact><i class="fab fa-facebook-square"></i>Facebook</router-link></li>
       <li class="archive-type__nv"><router-link active-class="archive-type__active" :to="`/${streamerName}/facebook/NvidiaGeforcePL`" exact><i class="fab fa-twitch"></i>Nvidia</router-link></li>
       <li class="archive-type__tw"><router-link active-class="archive-type__active" :to="`/${streamerName}`" exact><i class="fab fa-twitch"></i>Twitch</router-link></li>

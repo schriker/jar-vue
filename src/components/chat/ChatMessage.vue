@@ -1,17 +1,19 @@
 <template>
   <div>
       <div
-        :style="{borderColor: card && card.color ? card.color : null}"
+        :style="{borderColor: card && card.color === '#171a21' ? '#95A1B6' : card && card.color ? card.color : null}"
         class="chat__body--irc"
         v-if="message.author === 'irc.poorchat.net' && showImg">
         <span class="chat__body" v-html="messageText"></span>
         <AppChatCard :card="card" v-if="card" />
       </div>
-      <div v-else-if="message.author !== 'irc.poorchat.net'">
-        <span v-if="showTime" class="chat__time">{{ time }}</span>
-        <img v-for="icon in icons" :key="icon" :src="icon" />
+      <div class="chat__message" v-else-if="message.author !== 'irc.poorchat.net'">
+        <span v-if="showTime" class="chat__time">{{ isActionMessage ? '*' : time }}</span>
+        <span v-if="!isActionMessage">
+          <img v-for="icon in icons" :key="icon" :src="icon" />
+        </span>
         <span class="chat__author" :style="{ color: color(message.color) }">{{ message.author }}</span>:
-        <span class="chat__body" v-html="messageText"></span>
+        <span :class="{ chat__body: true, 'chat__body--action': isActionMessage}" v-html="messageText"></span>
         <div  v-if="ogContent" v-html="ogContent"></div>
       </div>
   </div>
@@ -70,6 +72,14 @@ export default {
       moment.locale('pl')
       return moment(this.message.createdAt).format('LT')
     },
+    isActionMessage () {
+      const messageArr = this.message.body.split(' ')
+      if (messageArr[0] === '\u0001ACTION') {
+        return true
+      } else {
+        return false
+      }
+    },
     icons () {
       const icons = []
       if (this.mods[this.message.author]) {
@@ -102,6 +112,7 @@ export default {
     let message = linkifyHtml(this.message.body, {
       defaultProtocol: 'https'
     })
+    message = message.replace('\u0001ACTION', '')
     for (const emoticon of this.emoticons) {
       message = message.replace(new RegExp('\\b' + emoticon.name + '\\b', 'g'), () => `<img class="chat__emoticon" src="https://static.poorchat.net/emoticons/${emoticon.file}/1x" />`)
     }
@@ -113,6 +124,7 @@ export default {
       }
     } else {
       const withEmojis = message.replace((new RegExp(/:(\b.*?\b)[:\s]/, 'g')), el => {
+        console.log(el)
         const shordcode = el.replace(new RegExp(/(:)/, 'g'), '')
         const emoji = emojisArray.filter(el => el.shortcodes.includes(shordcode))
         if (emoji.length === 0) {

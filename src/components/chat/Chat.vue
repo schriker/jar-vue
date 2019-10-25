@@ -2,15 +2,14 @@
   <div v-bar class="chat">
     <div ref="div">
       <div v-for="message in messages" :key="message.uid">
-        <div class="chat__message" v-if="message.type !== 'MODE'">
         <AppChatMessage
+          v-if="message.type !== 'MODE'"
           @scrollToBottom="scrollToBottom"
           :showTime.sync="showTime"
           :showImg.sync="showImg"
           :badges.sync="badges"
           :emoticons.sync="emoticons"
           :message="message" />
-        </div>
       </div>
       <div ref="bottom"></div>
       <div @click="scrollToBottom" v-if="scrollingUp" class="chat__more">więcej wiadomości</div>
@@ -54,6 +53,13 @@ export default {
     scrollToBottom () {
       this.$refs.bottom.scrollIntoView()
       this.scrollingUp = false
+    },
+    scrollEventHandler (event) {
+      const out = event.target
+      const isScrolledToBottom = out.scrollHeight - out.clientHeight <= out.scrollTop + 100
+      if (isScrolledToBottom) {
+        this.scrollingUp = false
+      }
     },
     async fetchMessages (gt, lt) {
       try {
@@ -152,6 +158,7 @@ export default {
     const badges = await axios.get('https://api.poorchat.net/v1/channels/jadisco/badges')
     this.badges = badges.data
     this.emoticons = emoticons.data
+    this.$refs.div.addEventListener('scroll', this.scrollEventHandler)
   },
   destroyed () {
     this.chatWorker.terminate()

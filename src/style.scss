@@ -48,6 +48,7 @@ body {
   font-family: 'Roboto', sans-serif;
   background-color: $body-bg;
   background-size: contain;
+  -webkit-overflow-scrolling: touch;
 }
 
 .input {
@@ -120,30 +121,29 @@ form {
 }
 
 .btn {
-  background: transparent;
+  background-color: #328672;
   border: 1px solid $success;
-  border-radius: 5px;
+  border-radius: 30px;
   cursor: pointer;
   color: white;
   outline: 0;
   padding: 6px 12px;
-  font-weight: 600;
+  font-weight: 500;
   transition: all .2s ease;
   &:hover {
-    color: $header-bg;
-    background-color: $success
+    background-color: #21AA89;
   }
   &:disabled {
     cursor: initial;
     color: white;
     border-color: $light;
-    background-color: $light;
+    background-color: #58667B;
   }
   &::-moz-focus-inner {
     border: 0;
   }
   &--active {
-    color: $header-bg;
+    color: #124A3A;
     background-color: $success;
   }
 }
@@ -431,21 +431,24 @@ form {
   }
   &__item {
     flex: 0 1 25%;
-    max-width: 25%;
+    display: flex;
+    flex-direction: column;
+    max-width: calc(25% - 20px);
     position: relative;
-    padding: 0 10px;
-    margin: 10px 0 30px 0;
+    padding: 10px;
+    margin: 10px 10px 30px 10px;
+    border-radius: 8px;
+    background-color: #404753;
+    transition: box-shadow .2s ease;
     a {
       width: calc(100% - 20px);
-      height: 100%;
+      height: calc(100% - 20px);
       display: block;
       position: absolute;
       z-index: 800;
-      &:hover {
-        +.videos__thumbnail img {
-          box-shadow: 0px 0px 13px 0px rgba(0,0,0,0.4);
-        }
-      }
+    }
+    &:hover {
+      box-shadow: 0px 0px 13px 0px rgba(0,0,0,0.4);
     }
   }
   &__thumbnail {
@@ -464,10 +467,14 @@ form {
     color: white;
     padding: 0 30px 0 0;
     margin: 15px 0 0 0;
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
     h3 {
     font-size: 16px;
     line-height: 20px;
-    font-weight: 600;
+    font-weight: 400;
       margin: 0 0 8px 0;
     }
     span {
@@ -481,10 +488,13 @@ form {
     border-radius: 3px;
     background-color: black;
     color: white;
-    font-size: 14px;
+    font-size: 13px;
     padding: 8px 10px;
     line-height: 14px;
     i {
+      line-height: 14px;
+      vertical-align: top;
+      font-size: 12px;
       margin: 0 8px 0 0;
     }
     &--new {
@@ -499,11 +509,13 @@ form {
       right: 8px;
       padding: 0;
       z-index: 900;
-      font-size: 22px;
       padding: 10px;
       transition: all .2s ease;
+      i {
+        font-size: 18px !important;
+      }
       &:hover {
-        transform: scale(1.6);
+        transform: scale(1.2);
         cursor: pointer;
       }
     }
@@ -546,7 +558,7 @@ form {
     right: 0;
     cursor: pointer;
     &:hover {
-      transform: scale(1.5);
+      transform: scale(1.2);
     }
     &--active {
       color: $success;
@@ -566,6 +578,7 @@ form {
   margin: 10px 0 35px 0;
   button {
     width: 20%;
+    max-width: 225px;
     padding: 15px 0;
     font-size: 16px;
   }
@@ -754,10 +767,14 @@ form {
       height: 28px;
       width: 28px;
     }
+    &--action {
+      font-style: italic;
+    }
     &--irc {
+      font-size: 14px;
       color: #95A1B6;
-      background-color: #181e27;
-      padding: 2px 10px;
+      background-color: #18202b;
+      padding: 8px 10px;
       border-left: 3px solid #00E1AB;
     }
   }
@@ -891,28 +908,47 @@ form {
   box-sizing: border-box;
   &__provider {
     color: #515D71;
+    font-size: 14px;
   }
   &__title {
     font-size: 16px;
     color: #fff;
-    margin: 0 0 10px 0;
+    margin: 10px 0;
   }
   &__description {
     color: #95A1B6;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 22px;
     display: flex;
   }
   &__img {
     height: auto !important;
     width: auto!important;
     max-height: 200px;
-    margin: 10px 0 15px 0 !important;
+    margin: 10px 0 20px 0 !important;
     max-width: 100%;
   }
+  &__open-icon {
+    color: #fff;
+    opacity: 0;
+    background-color: rgba(0,0,0, .9);
+    border-radius: 50%;
+    padding: 20px;
+    position: absolute;
+    transition: all ease .2s;
+  }
   &__img-wrapper {
+    position: relative;
     height: 200px !important;
     display: flex;
     justify-content: center;
     align-items: center;
+  }
+  &:hover {
+    .card__open-icon {
+      opacity: 1;
+    }
   }
   iframe {
     margin: 10px 0 0 0;
@@ -1215,7 +1251,7 @@ form {
   .videos {
     &__item {
       flex: 0 1 33.3%;
-      max-width: 33.3%;
+      max-width: calc(33.3% - 20px);
     }
   }
 }
@@ -1225,12 +1261,8 @@ form {
     min-width: 0;
   }
 
-  .player__top {
+  .hide-medium {
     display: none;
-  }
-
-  .archive-type {
-    justify-content: center;
   }
 
   form {
@@ -1264,7 +1296,7 @@ form {
   .videos {
     &__item {
       flex: 0 1 50%;
-      max-width: 50%;
+      max-width: calc(50% - 20px);
     }
   }
 
@@ -1291,12 +1323,36 @@ form {
     .center-flex {
     flex-direction: column;
     overflow-x: initial;
-    max-height: calc(100vh - 60px);
+    max-height: calc(100vh);
+  }
+
+  .streamer {
+      &__icon {
+        img {
+          height: 30px;
+          width: 30px;
+        }
+    }
+  }
+  .simplebar {
+    height: 50px !important;
   }
   .player {
     flex: 0 1 50%;
     max-height: 50%;
     max-width: 100%;
+  }
+
+  .archive-type {
+    &--mobile {
+      width: calc(100% + 20px);
+      display: flex;
+      margin: -8px -10px;
+      justify-content: center;
+    }
+    a {
+      padding: 8px;
+    }
   }
 
   .poorchat {
@@ -1311,12 +1367,14 @@ form {
   .header {
     flex-direction: column;
     padding: 0;
+    flex: 0 0 50px;
+    height: 50px;
   }
   .streamers-wraper {
-    min-height: 60px;
+    min-height: 50px;
   }
   .user-menu {
-    min-height: 60px;
+    min-height: 50px;
     &--links {
       margin: 0 auto;
       display: none !important;

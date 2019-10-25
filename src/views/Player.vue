@@ -3,11 +3,11 @@
         <div class="player">
           <transition name="fade-in" appear>
             <div v-if="video[0]" class="player__top">
-              <span @click="copyMirko" class="hide-mobile"><i class="fas fa-play"></i>{{ video[0].duration }}</span>
-              <i class="fas fa-eye"></i>{{ video[0].view_count }}
-              <i class="fas fa-calendar"></i>{{ date }}
+              <span @click="copyMirko" class="hide-mobile hide-medium"><i class="fas fa-play"></i>{{ video[0].duration }}</span>
+              <span><i class="fas fa-eye"></i>{{ video[0].view_count }}</span>
+              <span class="hide-mobile hide-medium"><i class="fas fa-calendar"></i>{{ date }}</span>
               <input ref="mirkoInput" :value="mirkoLink" type="hidden" />
-              <ul v-if="video[0].youTubeId" class="archive-type" style="margin-left: 15px;">
+              <ul v-if="video[0].youTubeId" class="archive-type">
                 <li @click="switchPlayer()" :class="{ 'archive-type__fb': !facebookPlayer, 'archive-type__yt': facebookPlayer }">
                   <a><i :class="{ 'fab fa-facebook-square': !facebookPlayer, 'fab fa-youtube': facebookPlayer }"></i>{{ !facebookPlayer ? 'Facebook Player' : 'YouTube Player' }}</a>
                 </li>

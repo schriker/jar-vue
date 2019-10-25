@@ -6,6 +6,9 @@
         {{ card.title }}
         </div>
         <div v-if="card.image || card.type === 'gifv' || card.type === 'video'" class="card__img-wrapper">
+          <div class="card__open-icon">
+            <i class="fas fa-external-link-alt"></i>
+          </div>
           <video muted autoplay loop class="card__img" v-if="card.type === 'gifv'" :src="card.video[0].url" alt="gifv"></video>
           <video muted autoplay loop class="card__img" v-if="card.type === 'video'" :src="card.url" alt="gifv"></video>
           <img class="card__img" v-if="card.image" :src="card.image[card.image.length - 1].url" :alt="card.title" />

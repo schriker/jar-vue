@@ -18,7 +18,8 @@ export default {
     }
   },
   props: {
-    videoId: String
+    videoId: String,
+    seekTo: Number
   },
   methods: {
     loadFacebookAPI () {
@@ -33,7 +34,7 @@ export default {
       window.FB.Event.subscribe('xfbml.ready', msg => {
         if (msg.type === 'video') {
           let player = msg.instance
-
+          this.player = player
           player.subscribe('startedPlaying', () => {
             this.$emit('playerEvent', {
               name: 'playing',
@@ -67,6 +68,14 @@ export default {
           })
         }
       })
+    }
+  },
+  watch: {
+    seekTo () {
+      if (this.seekTo > 0) {
+        this.player.seek(this.seekTo / 1000 - 15)
+        this.player.play()
+      }
     }
   },
   mounted () {

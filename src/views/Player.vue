@@ -7,23 +7,31 @@
               <span><i class="fas fa-eye"></i>{{ video[0].view_count }}</span>
               <span class="hide-mobile hide-medium"><i class="fas fa-calendar"></i>{{ date }}</span>
               <input ref="mirkoInput" :value="mirkoLink" type="hidden" />
-              <ul v-if="video[0].youTubeId" class="archive-type">
-                <li @click="switchPlayer()" :class="{ 'archive-type__fb': !facebookPlayer, 'archive-type__yt': facebookPlayer }">
+              <ul class="archive-type">
+                <li v-if="video[0].youTubeId && video[0].public" @click="switchPlayer()" :class="{ 'archive-type__fb': !facebookPlayer, 'archive-type__yt': facebookPlayer }">
                   <a><i :class="{ 'fab fa-facebook-square': !facebookPlayer, 'fab fa-youtube': facebookPlayer }"></i>{{ !facebookPlayer ? 'Facebook Player' : 'YouTube Player' }}</a>
+                </li>
+                <li @click="showHighLights=!showHighLights" v-if="video[0].highLights && video[0].highLights.length > 0" class="archive-type__highlights">
+                  <a><i class="fas fa-fire"></i>Momenty</a>
                 </li>
               </ul>
               <app-toggle-watched :videoId="video[0].id" :watched="video[0].watched"></app-toggle-watched>
               <app-toggle-book-marked :video="video[0]" :bookMarked="video[0].bookmarked"></app-toggle-book-marked>
             </div>
           </transition>
+          <transition name="fade-in" appear v-if="video[0].highLights && video[0].highLights.length > 0">
+            <AppHighLights @seekTo="seekToHandler" :end="video[0].created_at" :start="video[0].published_at" v-if="showHighLights" :highLights="video[0].highLights"  />
+          </transition>
         <AppYoutubePlayer
           v-if="video[0].youTubeId && !facebookPlayer"
           :videoId="video[0].youTubeId"
+          :seekTo.sync="seekTo"
           @playerEvent="playerEventsHandler"
         />
         <AppFacebookPlayer
           v-else-if="$route.query.platform === 'facebook'"
           :videoId="$route.params.video"
+          :seekTo.sync="seekTo"
           @playerEvent="playerEventsHandler"
         />
         <iframe
@@ -73,6 +81,7 @@ import AppToggleBookMarked from '../UI/ToggleBookMarked'
 import AppChat from '../components/chat/Chat'
 import AppYoutubePlayer from '../components/youtubePlayer/YoutubePlayer'
 import AppFacebookPlayer from '../components/facebookPlayer/FacebookPlayer'
+import AppHighLights from '../components/highlights/HighLights'
 import { jarchiwumAPI } from '../helpers/axiosInstances'
 import { mapActions, mapState } from 'vuex'
 
@@ -80,6 +89,7 @@ export default {
   data () {
     return {
       showChat: true,
+      showHighLights: false,
       facebookPlayer: false,
       playerPosition: 0,
       player: null,
@@ -90,7 +100,8 @@ export default {
       showJadisco: false,
       showTime: true,
       showImg: true,
-      componentKey: 0
+      componentKey: 0,
+      seekTo: 0
     }
   },
   metaInfo () {
@@ -103,7 +114,8 @@ export default {
     AppToggleBookMarked,
     AppYoutubePlayer,
     AppFacebookPlayer,
-    AppChat
+    AppChat,
+    AppHighLights
   },
   computed: {
     ...mapState([
@@ -142,6 +154,9 @@ export default {
     ...mapActions([
       'getSingleVideo'
     ]),
+    seekToHandler (time) {
+      this.seekTo = time
+    },
     copyMirko () {
       this.$refs.mirkoInput.setAttribute('type', 'text')
       this.$refs.mirkoInput.select()
@@ -177,6 +192,7 @@ export default {
             this.playerPosition = event.position
             this.isPlaying = true
             this.finished = false
+            this.seekTo = 0
           }
           break
         case 'playbackRate':

@@ -11,7 +11,8 @@ export default {
     }
   },
   props: {
-    videoId: String
+    videoId: String,
+    seekTo: Number
   },
   methods: {
     loadYouTubeApi () {
@@ -78,6 +79,14 @@ export default {
           'onError': onPlayerError
         }
       })
+    }
+  },
+  watch: {
+    seekTo () {
+      if (this.seekTo > 0) {
+        this.player.seekTo(this.seekTo / 1000 - 15)
+        this.player.playVideo()
+      }
     }
   },
   mounted () {

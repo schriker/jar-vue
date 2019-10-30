@@ -13,8 +13,8 @@
           <img v-for="icon in icons" :key="icon" :src="icon" />
         </span>
         <span class="chat__author" :style="{ color: color(message.color) }">{{ message.author }}</span>:
-        <span :class="{ chat__body: true, 'chat__body--action': isActionMessage}" v-html="messageText"></span>
-        <div  v-if="ogContent" v-html="ogContent"></div>
+        <span v-if="message.body==='<wiadomość usunięta>'" :class="{ chat__body: true, 'chat__body--action': isActionMessage}">{{message.body}}</span>
+        <span v-else :class="{ chat__body: true, 'chat__body--action': isActionMessage}" v-html="messageText"></span>
       </div>
   </div>
 </template>
@@ -31,7 +31,6 @@ export default {
     message: Object,
     badges: Object,
     emoticons: Array,
-    ogContent: null,
     showTime: Boolean,
     showImg: Boolean
   },
@@ -114,7 +113,7 @@ export default {
     })
     message = message.replace('\u0001ACTION', '')
     for (const emoticon of this.emoticons) {
-      message = message.replace(new RegExp('\\b' + emoticon.name + '\\b', 'g'), () => `<img class="chat__emoticon" src="https://static.poorchat.net/emoticons/${emoticon.file}/1x" />`)
+      message = message.replace(new RegExp('\\b' + emoticon.name + '\\b', 'g'), () => `<img class="chat__emoticon" src="https://static.poorchat.net/emoticons/${emoticon.file}/4x" />`)
     }
     if (this.message.author === 'irc.poorchat.net') {
       try {
@@ -123,8 +122,7 @@ export default {
         this.messageText = this.message.body
       }
     } else {
-      const withEmojis = message.replace((new RegExp(/:(\b.*?\b)[:\s]/, 'g')), el => {
-        console.log(el)
+      const withEmojis = message.replace((new RegExp(/:(\D\d|\w*?):/, 'g')), el => {
         const shordcode = el.replace(new RegExp(/(:)/, 'g'), '')
         const emoji = emojisArray.filter(el => el.shortcodes.includes(shordcode))
         if (emoji.length === 0) {

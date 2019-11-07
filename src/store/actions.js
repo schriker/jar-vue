@@ -1,11 +1,11 @@
 import Vue from 'vue'
 import { twitchAPI, youtubeAPI, playlistAPI, jarchiwumAPI } from '../helpers/axiosInstances'
 import videoObjectCreator from '../helpers/videoObjectCreator'
+import merge from 'lodash.merge'
 
 const actinos = {
   async fetchVideos ({ commit, state, dispatch }, actionPayload) {
     const today = new Date()
-
     if (state.streamers.data[actionPayload.streamerName]) {
       if (actionPayload.loadMore) {
         commit('loadingMoreStart')
@@ -49,9 +49,9 @@ const actinos = {
           const page = actionPayload.page || 0
           let queryString
           if (actionPayload.playlistId === 'NvidiaGeforcePL') {
-            queryString = `/facebookvideo?nvidia=true&page=${page + 1}&per_page=20`
+            queryString = `/facebookvideo?nvidia=true&page=${page + 1}&per_page=20&streamer=${actionPayload.streamerName}`
           } else {
-            queryString = `/facebookvideo?page=${page + 1}&per_page=20`
+            queryString = `/facebookvideo?page=${page + 1}&per_page=20&streamer=${actionPayload.streamerName}`
           }
           const { data: videosArr } = await jarchiwumAPI.get(queryString)
 
@@ -224,7 +224,7 @@ const actinos = {
         ...singleVideoTwitch.data.data
       ]
     } else if (payload.platform === 'facebook') {
-      const singleFacebookVideoArray = await jarchiwumAPI.get(`/facebookvideo?id=${payload.video}`)
+      const singleFacebookVideoArray = await jarchiwumAPI.get(`/facebookvideo?id=${payload.video}&streamer=${payload.streamer}`)
 
       const config = {
         state,
@@ -289,6 +289,10 @@ const actinos = {
 
     if (rootState.user.data) {
       commit('updateUserData', payload)
+    } else if (localStorage.getItem('jarchiwumData') && userDataObject.version !== state.userData.version) {
+      const newData = merge(userDataObject, state.userData)
+      commit('updateUserData', newData)
+      commit('updateLocalStorage')
     } else if (localStorage.getItem('jarchiwumData')) {
       commit('updateUserData', userDataObject)
     } else {

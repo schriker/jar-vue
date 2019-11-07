@@ -11,12 +11,15 @@ export default new Vuex.Store({
   state: {
     userData: {
       hideWatched: false,
-      streamers: ['wonziu', 'dzejth', 'nvidiageforcepl'],
+      streamers: ['wonziu', 'bonkol', 'dzejth', 'nvidiageforcepl'],
       watched: [],
       bookmarksId: [],
       bookmarks: [],
       lastVisited: {
         wonziu: {
+          date: ''
+        },
+        bonkol: {
           date: ''
         },
         dzejth: {
@@ -25,7 +28,8 @@ export default new Vuex.Store({
         nvidiageforcepl: {
           date: ''
         }
-      }
+      },
+      version: 1
     },
     singleVideo: [{}],
     loadingVideos: true,

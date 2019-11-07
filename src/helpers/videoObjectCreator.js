@@ -26,7 +26,8 @@ const videoObjectCreator = ({ state, videosArr, payload, actionPayload }) => {
         watched: state.userData.watched.includes(video.id),
         bookmarked: state.userData.bookmarksId.includes(video.id),
         isNew: lastVisited < date,
-        highLights: []
+        highLights: [],
+        chatData: []
       }
     } else if (actionPayload.platform === 'twitch') {
       date = new Date(video.published_at)
@@ -38,7 +39,8 @@ const videoObjectCreator = ({ state, videosArr, payload, actionPayload }) => {
         watched: state.userData.watched.includes(video.id),
         bookmarked: state.userData.bookmarksId.includes(video.id),
         isNew: lastVisited < date,
-        highLights: []
+        highLights: [],
+        chatData: []
       }
     } else if (actionPayload.platform === 'facebook') {
       date = new Date(video.started)
@@ -57,9 +59,10 @@ const videoObjectCreator = ({ state, videosArr, payload, actionPayload }) => {
         thumbnail_url: video.thumbnail,
         title: video.title,
         highLights: video.highLights,
+        chatData: video.chatData,
         url: video.url,
-        user_id: 'StrumienieZRuczaju',
-        user_name: 'wonziu',
+        user_id: actionPayload.playlistId,
+        user_name: actionPayload.streamerName,
         view_count: video.views,
         watched: state.userData.watched.includes(video.facebookId)
       }

@@ -9,9 +9,11 @@
   },
   "dependencies": {
     "axios": "^0.18.1",
+    "chart.js": "^2.9.1",
     "firebase": "^5.11.1",
     "irc-formatting": "^1.0.0-rc3",
     "linkifyjs": "^2.1.8",
+    "lodash.merge": "^4.6.2",
     "moment": "^2.24.0",
     "shortid": "^2.2.14",
     "simplebar-vue": "^0.1.6",

@@ -89,6 +89,9 @@ export default {
       }
     }
   },
+  beforeDestroy () {
+    this.player.destroy()
+  },
   mounted () {
     if (window.YT !== undefined && this.videoId) {
       this.loadYouTubeApi()

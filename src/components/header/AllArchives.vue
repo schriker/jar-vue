@@ -1,17 +1,19 @@
 <template>
-    <ul class="archive-type archive-type--mobile">
-      <li class="archive-type__fb"><router-link active-class="archive-type__active" :to="`/${streamerName}/facebook/StrumienieZRuczaju`" exact><i class="fab fa-facebook-square"></i>Facebook</router-link></li>
-      <li class="archive-type__nv"><router-link active-class="archive-type__active" :to="`/${streamerName}/facebook/NvidiaGeforcePL`" exact><i class="fab fa-twitch"></i>Nvidia</router-link></li>
-      <li class="archive-type__tw"><router-link active-class="archive-type__active" :to="`/${streamerName}`" exact><i class="fab fa-twitch"></i>Twitch</router-link></li>
-      <li class="archive-type__yt">
+    <ul v-if="isSupported" class="archive-type archive-type--mobile">
+      <li class="archive-type__fb"><router-link active-class="archive-type__active" :to="`/${$route.params.id}/facebook/${isSupported.pageId}`" exact><i class="fab fa-facebook-square"></i>Facebook</router-link></li>
+      <li v-if="$route.params.id === 'wonziu'" class="archive-type__nv"><router-link active-class="archive-type__active" :to="`/${$route.params.id}/facebook/NvidiaGeforcePL`" exact><i class="fab fa-twitch"></i>Nvidia</router-link></li>
+      <!-- <li class="archive-type__tw"><router-link active-class="archive-type__active" :to="`/${$route.params.id}/`" exact><i class="fab fa-twitch"></i>Twitch</router-link></li> -->
+      <li v-if="$route.params.id === 'wonziu'" class="archive-type__yt">
         <a><i class="fab fa-youtube"></i>YouTube</a>
         <ul class="archive-type__submenu">
-        <li class="archive-type__yt" v-for="archive in youtubeArchives" :key="archive.id"><router-link active-class="archive-type__active" :to="`/${streamerName}/youtube/${archive.id}`"><i class="fab fa-youtube"></i>{{archive.title}}</router-link></li>
+        <li class="archive-type__yt" v-for="archive in youtubeArchives" :key="archive.id"><router-link active-class="archive-type__active" :to="`/${$route.params.id}/youtube/${archive.id}`"><i class="fab fa-youtube"></i>{{archive.title}}</router-link></li>
         </ul>
       </li>
     </ul>
 </template>
 <script>
+import { streamers } from '../../helpers/consts'
+
 export default {
   data () {
     return {
@@ -52,7 +54,19 @@ export default {
     }
   },
   props: {
-    streamerName: String
+    streamer: Object
+  },
+  computed: {
+    isSupported () {
+      const supportedStreamer = streamers.filter(el => el.twitchId === this.streamer.data.info.id)
+      if (supportedStreamer.length > 0) {
+        return {
+          ...supportedStreamer[0]
+        }
+      } else {
+        return false
+      }
+    }
   }
 }
 </script>

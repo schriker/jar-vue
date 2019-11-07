@@ -1,7 +1,7 @@
 <template>
   <div>
-    <div class="player__top player__top--videos" v-if="!loadingVideos && streamers.data[streamerName].status.type || streamerName === 'wonziu' && streamers.data[streamerName]">
-      <app-all-archives v-if="streamerName === 'wonziu'" :streamerName="streamerName"></app-all-archives>
+    <div class="player__top player__top--videos" v-if="!loadingVideos && streamers.data[streamerName].status.type || isSupported && streamers.data[streamerName]">
+      <app-all-archives :streamer="streamer"></app-all-archives>
       <div class="live" v-if="streamers.data[streamerName].status.type">
         <div class="live__outer"></div>
         <div class="live__icon"></div>
@@ -32,6 +32,7 @@ import AppSpinner from '../components/Spinner'
 import AppVideosList from '../components/videos/VideosList'
 import AppWatchedButton from '../UI/WatchedButton'
 import AppAllArchives from '../components/header/AllArchives'
+import { streamers } from '../helpers/consts'
 
 export default {
   data () {
@@ -71,6 +72,20 @@ export default {
     ]),
     videos () {
       return this.streamers.data[this.streamerName].videos.videos
+    },
+    streamer () {
+      return {
+        data: this.streamers.data[this.streamerName]
+      }
+    },
+    isSupported () {
+      const supportedStreamer = streamers.filter(el => el.name === this.$route.params.id.split('_')[0])
+
+      if (supportedStreamer.length > 0) {
+        return true
+      } else {
+        return false
+      }
     },
     streamerName () {
       return this.$route.params.id

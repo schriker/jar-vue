@@ -1,7 +1,7 @@
 <template>
 <transition name="fade-in" appear>
     <li>
-        <router-link :to="streamer.info.login === 'wonziu' ? '/wonziu/facebook/StrumienieZRuczaju' : `/${streamer.info.login}`" active-class="active"></router-link>
+        <router-link :to="link" active-class="active"></router-link>
         <div class="streamer">
             <div class="streamer__icon">
                 <!-- <div class="streamer__badge">4</div> -->
@@ -25,10 +25,22 @@
 </template>
 <script>
 import { mapMutations } from 'vuex'
+import { streamers } from '../../helpers/consts'
 
 export default {
   props: {
     streamer: Object
+  },
+  computed: {
+    link () {
+      const supportedStreamer = streamers.filter(el => el.twitchId === this.streamer.info.id)
+
+      if (supportedStreamer.length > 0) {
+        return `/${this.streamer.info.login}/facebook/${supportedStreamer[0].pageId}`
+      } else {
+        return `/${this.streamer.info.login}`
+      }
+    }
   },
   methods: {
     ...mapMutations([

@@ -226,12 +226,13 @@ export default {
   },
   watch: {
     async '$route' () {
-      this.getVideo()
+      // this.getVideo()
     }
   },
   mounted () {
+    // await this.getVideo()
     if (this.$route.query.platform === 'facebook') {
-      jarchiwumAPI.get(`/updateviews?id=${this.$route.params.video}`)
+      jarchiwumAPI.get(`/updateviews?id=${this.$route.params.video}&streamer=${this.$route.params.id}`)
     }
   },
   async created () {

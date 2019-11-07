@@ -65,7 +65,8 @@ export default {
       try {
         const messages = await jarchiwumAPI.post('/message', {
           gt: gt,
-          lt: lt
+          lt: lt,
+          streamer: this.$route.params.id
         })
         if (messages.data.length === 0) {
           this.chatWorker.postMessage({
@@ -154,10 +155,24 @@ export default {
     }
   },
   async created () {
-    const emoticons = await axios.get('https://api.poorchat.net/v1/emoticons')
+    const jadiscoEmoticons = axios.get('https://api.poorchat.net/v1/emoticons')
+    const bonkolEmoticons = axios.get('https://api.poorchat.net/v1/channels/bonkol/emoticons')
+    const lehEmoticons = axios.get('https://api.poorchat.net/v1/channels/leh/emoticons')
+
+    const icons = await Promise.all([jadiscoEmoticons, bonkolEmoticons, lehEmoticons])
+
+    let emoticons = []
+
+    for (let el of icons) {
+      emoticons = [
+        ...emoticons,
+        ...el.data
+      ]
+    }
+
     const badges = await axios.get('https://api.poorchat.net/v1/channels/jadisco/badges')
     this.badges = badges.data
-    this.emoticons = emoticons.data
+    this.emoticons = emoticons
     this.$refs.div.addEventListener('scroll', this.scrollEventHandler)
   },
   destroyed () {

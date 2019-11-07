@@ -14,7 +14,20 @@ By default state will be stored in browser localStorage, but you can register si
 
 If you are a streamer yo can share link like:  https://jarchiwum.pl/your-twitch-name and that will automatically  add your channel to users favorites. 
 
-*Important note:* chat on video page is made by [tr0lit](https://tr0l.it/) [poorchat](https://www.poorchat.net/)
+*Important note:* chat on some video page is made by [tr0lit](https://tr0l.it/) [poorchat](https://www.poorchat.net/)
+
+## Update 07.11.2019 
+
+### Fixed
+* Mobile version improvements
+* Chat performance 
+
+### Added
+* Twemoji
+* Action message
+* Button to change player from YouTube to Facebook
+* Moments chart from stream
+* Support for other streamers with poorchat
 
 ## What I use?
 App is build with:

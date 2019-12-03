@@ -18,5 +18,10 @@ export const streamers = [
     name: 'wonziu',
     pageId: '369632869905557',
     twitchId: '28468922'
+  },
+  {
+    name: 'mowpoluckuv12',
+    pageId: '285928328182715',
+    twitchId: '31889910'
   }
 ]

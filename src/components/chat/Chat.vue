@@ -23,6 +23,7 @@ import shortid from 'shortid'
 import { jarchiwumAPI } from '../../helpers/axiosInstances'
 import AppChatMessage from './ChatMessage'
 import ChatWorker from './chat.worker'
+import debounce from 'lodash.debounce'
 
 export default {
   components: {
@@ -36,7 +37,8 @@ export default {
     isPlaying: Boolean,
     finished: Boolean,
     showTime: Boolean,
-    showImg: Boolean
+    showImg: Boolean,
+    chatAdjustment: Number
   },
   data () {
     return {
@@ -54,11 +56,27 @@ export default {
       this.$refs.bottom.scrollIntoView()
       this.scrollingUp = false
     },
+    debounceRestartChat: debounce(function () {
+      this.reStartChat()
+    }, 500),
     scrollEventHandler (event) {
       const out = event.target
       const isScrolledToBottom = out.scrollHeight - out.clientHeight <= out.scrollTop + 100
       if (isScrolledToBottom) {
         this.scrollingUp = false
+      }
+    },
+    async reStartChat () {
+      this.chatWorker.postMessage({
+        type: 'STOP'
+      })
+      this.startTime = new Date(new Date(this.videoStartedDate).getTime() + this.playerPosition * 1000 + this.chatAdjustment * 1000)
+      if (this.isPlaying && !this.finished) {
+        try {
+          await this.fetchMessages(this.startTime, this.videoFinishedDate)
+        } catch (error) {
+          console.log(error)
+        }
       }
     },
     async fetchMessages (gt, lt) {
@@ -126,20 +144,13 @@ export default {
       })
     },
     async playbackRate () {
-      this.chatWorker.postMessage({
-        type: 'STOP'
-      })
-      this.startTime = new Date(new Date(this.videoStartedDate).getTime() + this.playerPosition * 1000)
-      if (this.isPlaying && !this.finished) {
-        try {
-          await this.fetchMessages(this.startTime, this.videoFinishedDate)
-        } catch (error) {
-          console.log(error)
-        }
-      }
+      this.reStartChat()
+    },
+    chatAdjustment () {
+      this.debounceRestartChat()
     },
     async isPlaying () {
-      this.startTime = new Date(new Date(this.videoStartedDate).getTime() + this.playerPosition * 1000)
+      this.startTime = new Date(new Date(this.videoStartedDate).getTime() + this.playerPosition * 1000 + this.chatAdjustment * 1000)
       if (this.isPlaying && !this.finished) {
         try {
           await this.fetchMessages(this.startTime, this.videoFinishedDate)

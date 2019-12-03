@@ -986,6 +986,18 @@ form {
   flex: 0 0 400px;
   width: 400px;
   background-color: #121821;
+  &__adjust {
+    i {
+      margin: 0;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all ease .2s;
+      padding: 0 10px;
+    }
+    i:hover {
+      color: $success;
+    }
+  }
   &__container {
     flex:  1 0 auto;
   }
@@ -1400,10 +1412,16 @@ form {
     }
   }
 }
-@media (max-width: 767.98px) {
+@media (max-width: 926px) {
   input[type="text"] {
     flex: 0 1 90%;
     min-width: 0;
+  }
+
+  .center-flex {
+    flex-direction: column;
+    overflow-x: initial;
+    max-height: calc(100vh);
   }
 
   .hide-medium {
@@ -1447,12 +1465,15 @@ form {
 
   .player {
     flex: 0 1 50%;
-    max-width: 50%;
+    max-height: 50%;
+    max-width: 100%;
   }
 
   .poorchat {
+    width: auto;
     flex: 0 1 50%;
-    max-width: 50%;
+    max-height: 50%;
+    max-width: 100%;
   }
 
   .fb-video {
@@ -1465,11 +1486,7 @@ form {
   }
 }
 @media (max-width: 575.98px) {
-    .center-flex {
-    flex-direction: column;
-    overflow-x: initial;
-    max-height: calc(100vh);
-  }
+
 
   .streamer {
       &__icon {

@@ -48,6 +48,11 @@
           <div @click="showChat = !showChat" class="poorchat__hide"><i :class="{'fas fa-eye-slash': showChat, 'fas fa-eye': !showChat}"></i></div>
           <div class="player__top player__top--left-border">
             <a target="_blank" href="https://www.poorchat.net/subscriptions/jadisco"><i class="fas fa-heart"></i>Subskrybuj czatek</a>
+            <div class="poorchat__adjust">
+              <i @click="chatAdjustment = chatAdjustment - 5" class="fas fa-angle-double-left"></i>
+              <span>{{ chatAdjustment > 0 ? `+${chatAdjustment}` : chatAdjustment }}s</span>
+              <i @click="chatAdjustment = chatAdjustment + 5" class="fas fa-angle-double-right"></i>
+            </div>
           </div>
           <AppChat
             :class="{'hide': showJadisco}"
@@ -59,6 +64,7 @@
             :playbackRate.sync="playbackRate"
             :videoStartedDate="video[0].published_at"
             :videoFinishedDate="video[0].created_at"
+            :chatAdjustment="chatAdjustment"
             v-if="showChat && $route.query.platform === 'facebook'"
           />
           <iframe v-if="showChat && $route.query.platform !== 'facebook' || showJadisco" class="poorchat__container" frameborder="0" width="100%" id="jd-chat" src="https://client.poorchat.net/jadisco"></iframe>
@@ -93,6 +99,7 @@ export default {
       facebookPlayer: false,
       playerPosition: 0,
       player: null,
+      chatAdjustment: 0,
       isPlaying: false,
       playbackRate: 1,
       finished: false,

@@ -10,6 +10,7 @@
   "dependencies": {
     "axios": "^0.18.1",
     "chart.js": "^2.9.1",
+    "dompurify": "^2.0.7",
     "firebase": "^5.11.1",
     "irc-formatting": "^1.0.0-rc3",
     "linkifyjs": "^2.1.8",

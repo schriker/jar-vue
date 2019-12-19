@@ -27,12 +27,14 @@
           :videoId="video[0].youTubeId"
           :seekTo.sync="seekTo"
           @playerEvent="playerEventsHandler"
+          ref="youTubePlayer"
         />
         <AppFacebookPlayer
           v-else-if="$route.query.platform === 'facebook'"
           :videoId="$route.params.video"
           :seekTo.sync="seekTo"
           @playerEvent="playerEventsHandler"
+          ref="facebookPlayer"
         />
         <iframe
           v-else
@@ -49,9 +51,9 @@
           <div class="player__top player__top--left-border">
             <a target="_blank" href="https://www.poorchat.net/subscriptions/jadisco"><i class="fas fa-heart"></i>Subskrybuj czatek</a>
             <div class="poorchat__adjust">
-              <i @click="chatAdjustment = chatAdjustment - 5" class="fas fa-angle-double-left"></i>
+              <i @click="adjustChatHandler('remove')" class="fas fa-angle-double-left"></i>
               <span>{{ chatAdjustment > 0 ? `+${chatAdjustment}` : chatAdjustment }}s</span>
-              <i @click="chatAdjustment = chatAdjustment + 5" class="fas fa-angle-double-right"></i>
+              <i @click="adjustChatHandler('add')" class="fas fa-angle-double-right"></i>
             </div>
           </div>
           <AppChat
@@ -214,6 +216,19 @@ export default {
           break
       }
     },
+    adjustChatHandler (method) {
+      if (this.video[0].youTubeId && !this.facebookPlayer) {
+        this.playerPosition = this.$refs.youTubePlayer.getPlayerPosition()
+      } else if (this.$route.query.platform === 'facebook') {
+        this.playerPosition = this.$refs.facebookPlayer.getPlayerPosition()
+      }
+
+      if (method === 'add') {
+        this.chatAdjustment += 5
+      } else {
+        this.chatAdjustment -= 5
+      }
+    },
     chatOptionsHandler (option) {
       this[option] = !this[option]
       const localStorageOptions = {
@@ -231,13 +246,7 @@ export default {
       await this.getSingleVideo(videoData)
     }
   },
-  watch: {
-    async '$route' () {
-      // this.getVideo()
-    }
-  },
   mounted () {
-    // await this.getVideo()
     if (this.$route.query.platform === 'facebook') {
       jarchiwumAPI.get(`/updateviews?id=${this.$route.params.video}&streamer=${this.$route.params.id}`)
     }

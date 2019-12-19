@@ -22,6 +22,11 @@ export default {
     seekTo: Number
   },
   methods: {
+    getPlayerPosition () {
+      if (this.player) {
+        return this.player.getCurrentPosition()
+      }
+    },
     loadFacebookAPI () {
       window.fbAsyncInit = () => {
         window.FB.Canvas.setAutoResize(7)

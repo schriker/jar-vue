@@ -15,6 +15,11 @@ export default {
     seekTo: Number
   },
   methods: {
+    getPlayerPosition () {
+      if (this.player) {
+        return this.player.getCurrentTime()
+      }
+    },
     loadYouTubeApi () {
       const onPlaybackRateChange = () => {
         this.$emit('playerEvent', {

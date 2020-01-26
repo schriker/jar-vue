@@ -78,10 +78,19 @@
           </div>
           <div class="chat__footer">
             <div class="chat__input">
-                <form action="#">
-                  <input :disabled="!poorchatAuth.user" placeholder="Wpisz wiadomość" type="text">
-                  <a v-if="!poorchatAuth.user" :href="`https://poorchat.net/oauth/authorize?client_id=${auth.client_id}&redirect_uri=${auth.redirect_uri}&response_type=code&scope=user+user_subscriptions`">Zaloguj</a>
-                  <button type="submit" v-if="poorchatAuth.user">Wyślij</button>
+                <form @submit.prevent="noteSubmitHandler">
+                  <input
+                    v-model="note"
+                    :disabled="!poorchatAuth.user"
+                    placeholder="Wpisz wiadomość"
+                    :maxlength="noteMaxLength"
+                    type="text">
+                  <a
+                    v-if="!poorchatAuth.user"
+                    :href="`https://poorchat.net/oauth/authorize?client_id=${auth.client_id}&redirect_uri=${auth.redirect_uri}&response_type=code&scope=user+user_subscriptions`">Zaloguj</a>
+                  <button
+                    type="submit"
+                    v-if="poorchatAuth.user">Wyślij</button>
                 </form>
             </div>
             <div class="chat__options">
@@ -121,7 +130,9 @@ export default {
       showImg: true,
       componentKey: 0,
       seekTo: 0,
-      auth: poorchatAuth
+      auth: poorchatAuth,
+      noteMaxLength: 240,
+      note: 'asd'
     }
   },
   metaInfo () {
@@ -173,8 +184,29 @@ export default {
   },
   methods: {
     ...mapActions([
-      'getSingleVideo'
+      'getSingleVideo',
+      'displayNotification'
     ]),
+    noteSubmitHandler () {
+      if (this.note.length > 0) {
+        let timestamp = null
+
+        if (this.video[0].youTubeId && !this.facebookPlayer) {
+          timestamp = this.$refs.youTubePlayer.getPlayerPosition()
+        } else if (this.$route.query.platform === 'facebook') {
+          timestamp = this.$refs.facebookPlayer.getPlayerPosition()
+        }
+
+        jarchiwumAPI.post('/note', {
+          body: this.note,
+          streamer: this.$route.params.id,
+          timestamp: timestamp,
+          video: this.$route.params.video
+        }, {
+          withCredentials: true
+        })
+      }
+    },
     seekToHandler (time) {
       this.seekTo = time
     },

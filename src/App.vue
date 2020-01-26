@@ -48,7 +48,9 @@ export default {
     ...mapActions([
       'initUser',
       'onAuthStateChange',
-      'fetchStreamers'
+      'fetchStreamers',
+      'poorchatGetAccessToken',
+      'poorchatAuthUser'
     ]),
     toggleFirstVisitModal () {
       this.firstVisit = !this.firstVisit
@@ -64,6 +66,15 @@ export default {
     }
   },
   created () {
+    if (this.$route.query.code) {
+      this.poorchatGetAccessToken(this.$route.query.code)
+      // Send request to api with code walue
+      // On server get access token and send it as a cookie
+      // Also send info about user and store it in localStorage
+      // On visit also auth user
+    } else {
+      this.poorchatAuthUser()
+    }
     setTimeout(() => {
       const firstVisit = !!localStorage.getItem('firstVisit')
       if (!firstVisit) {

@@ -13,8 +13,7 @@
           <img v-for="icon in icons" :key="icon" :src="icon" />
         </span>
         <span class="chat__author" :style="{ color: color(message.color) }">{{ message.author }}</span>:
-        <span v-if="isHTML" :class="{ chat__body: true, 'chat__body--action': isActionMessage}">{{message.body}}</span>
-        <span v-else :class="{ chat__body: true, 'chat__body--action': isActionMessage}" v-html="messageText"></span>
+        <span :class="{ chat__body: true, 'chat__body--action': isActionMessage}" v-html="messageText"></span>
       </div>
   </div>
 </template>
@@ -25,7 +24,6 @@ import linkifyHtml from 'linkifyjs/html'
 import random from '../../helpers/random'
 import ircf from 'irc-formatting'
 import emojisArray from '../../helpers/emojis'
-import DOMPurify from 'dompurify'
 
 export default {
   props: {
@@ -41,7 +39,6 @@ export default {
   data () {
     return {
       messageText: null,
-      isHTML: false,
       card: null,
       mods: {
         tr0lit: 'a',
@@ -54,7 +51,7 @@ export default {
         cbool222: 'h',
         Emil: 'h',
         dzej: 'h',
-        Jaa: 'o',
+        Jaa: 'h',
         bltzkrg22: 'o',
         Pepego: 'o',
         michal: 'h',
@@ -112,36 +109,41 @@ export default {
     }
   },
   created () {
-    this.isHTML = /<\/?[a-z][\s\S]*>/i.test(this.message.body)
+    const replaceTag = (tag) => {
+      const escapeTags = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        '\'': '&#039;'
+      }
+      return escapeTags[tag] || tag
+    }
 
-    if (this.isHTML) {
-      this.messageText = this.message.body
+    let message = linkifyHtml(this.message.body.replace(/[&<>]/g, replaceTag), {
+      defaultProtocol: 'https'
+    })
+    message = message.replace('\u0001ACTION', '')
+    for (const emoticon of this.emoticons) {
+      message = message.replace(new RegExp('\\b' + emoticon.name + '\\b', 'g'), () => `<img class="chat__emoticon" src="https://static.poorchat.net/emoticons/${emoticon.file}/4x" />`)
+    }
+    if (this.message.author === 'irc.poorchat.net') {
+      try {
+        this.card = JSON.parse(this.message.body)
+      } catch (error) {
+        this.messageText = this.message.body
+      }
     } else {
-      let message = linkifyHtml(DOMPurify.sanitize(this.message.body), {
-        defaultProtocol: 'https'
-      })
-      message = message.replace('\u0001ACTION', '')
-      for (const emoticon of this.emoticons) {
-        message = message.replace(new RegExp('\\b' + emoticon.name + '\\b', 'g'), () => `<img class="chat__emoticon" src="https://static.poorchat.net/emoticons/${emoticon.file}/4x" />`)
-      }
-      if (this.message.author === 'irc.poorchat.net') {
-        try {
-          this.card = JSON.parse(this.message.body)
-        } catch (error) {
-          this.messageText = this.message.body
+      const withEmojis = message.replace((new RegExp(/:(\D\d|\w*?):/, 'g')), el => {
+        const shordcode = el.replace(new RegExp(/(:)/, 'g'), '')
+        const emoji = emojisArray.filter(el => el.shortcodes.includes(shordcode))
+        if (emoji.length === 0) {
+          return el
+        } else {
+          return emoji[0].emoji
         }
-      } else {
-        const withEmojis = message.replace((new RegExp(/:(\D\d|\w*?):/, 'g')), el => {
-          const shordcode = el.replace(new RegExp(/(:)/, 'g'), '')
-          const emoji = emojisArray.filter(el => el.shortcodes.includes(shordcode))
-          if (emoji.length === 0) {
-            return el
-          } else {
-            return emoji[0].emoji
-          }
-        })
-        this.messageText = ircf.renderHtml(window.twemoji.parse(withEmojis))
-      }
+      })
+      this.messageText = ircf.renderHtml(window.twemoji.parse(withEmojis))
     }
   }
 }

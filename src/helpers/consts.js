@@ -25,3 +25,8 @@ export const streamers = [
     twitchId: '31889910'
   }
 ]
+
+export const poorchatAuth = {
+  client_id: 'G4TUEPsVkFZ9EX5IJzkVCHB6ihRdeYDZ2tNrPODo',
+  redirect_uri: 'http://localhost:8080'
+}

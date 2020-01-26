@@ -865,7 +865,45 @@ form {
       animation: pulsate 1s ease-out infinite;
     }
   }
+  &__footer {
+    border-top: 1px solid #252E3A;
+    border-left: 1px solid #252E3A;
+    background-color: #1D252F;
+  }
+  &__input {
+    form {
+      margin: 10px;
+      display: flex;
+    }
+    input {
+      flex: 1 1 auto;
+      background-color: #131820;
+      border-radius: 5px;
+      border: 0;
+      font-size: 14px;
+      color: $light;
+      padding: 10px;
+      margin-right: 5px;
+    }
+
+    a,
+    button {
+      cursor: pointer;
+      background-color: $body-bg;
+      color: white;
+      padding: 10px;
+      font-size: 14px;
+      border-radius: 5px;
+      border: 0;
+      transition: all ease .2s;
+      &:hover {
+        color: white;
+        background-color: $bullet;
+      }
+    }
+  }
   &__options {
+    border-top: 1px solid #252E3A;
     font-size: 13px;
     color: white;
     display: flex;
@@ -873,9 +911,6 @@ form {
     align-items: center;
     height: 40px;
     padding: 0 15px;
-    border-top: 1px solid #252E3A;
-    border-left: 1px solid #252E3A;
-    background-color: #1D252F;
     div {
       transition: all .2s ease;
       &:hover {
@@ -1085,6 +1120,10 @@ form {
     background-color: #58667B;
     &--ten {
       height: 10px;
+    }
+    &--hour {
+      height: 100%;
+      background-color: #58667B;
     }
   }
   &__bar {

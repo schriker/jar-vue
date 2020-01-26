@@ -76,9 +76,18 @@
             <div @click="chatOptionsHandler('showTime')">Czas<i v-if="showTime" class="fas fa-check-square"></i></div>
             <div @click="chatOptionsHandler('showImg')">Obrazki<i v-if="showImg" class="fas fa-check-square"></i></div>
           </div>
-          <div class="chat__options">
-            <div @click="switchChat"><i class="fas fa-comments"></i>Czat Jadisco</div>
-            <i @click="showOptions = !showOptions" class="fas fa-cog"></i>
+          <div class="chat__footer">
+            <div class="chat__input">
+                <form action="#">
+                  <input :disabled="!poorchatAuth.user" placeholder="Wpisz wiadomość" type="text">
+                  <a v-if="!poorchatAuth.user" :href="`https://poorchat.net/oauth/authorize?client_id=${auth.client_id}&redirect_uri=${auth.redirect_uri}&response_type=code&scope=user+user_subscriptions`">Zaloguj</a>
+                  <button type="submit" v-if="poorchatAuth.user">Wyślij</button>
+                </form>
+            </div>
+            <div class="chat__options">
+              <div @click="switchChat"><i class="fas fa-comments"></i>Czat Jadisco</div>
+              <i @click="showOptions = !showOptions" class="fas fa-cog"></i>
+            </div>
           </div>
         </div>
     </div>
@@ -90,6 +99,7 @@ import AppChat from '../components/chat/Chat'
 import AppYoutubePlayer from '../components/youtubePlayer/YoutubePlayer'
 import AppFacebookPlayer from '../components/facebookPlayer/FacebookPlayer'
 import AppHighLights from '../components/highlights/HighLights'
+import { poorchatAuth } from '../helpers/consts'
 import { jarchiwumAPI } from '../helpers/axiosInstances'
 import { mapActions, mapState } from 'vuex'
 
@@ -110,7 +120,8 @@ export default {
       showTime: true,
       showImg: true,
       componentKey: 0,
-      seekTo: 0
+      seekTo: 0,
+      auth: poorchatAuth
     }
   },
   metaInfo () {
@@ -129,7 +140,8 @@ export default {
   computed: {
     ...mapState([
       'singleVideo',
-      'streamers'
+      'streamers',
+      'poorchatAuth'
     ]),
     video () {
       const id = this.$route.params.id

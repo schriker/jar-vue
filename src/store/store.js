@@ -3,6 +3,7 @@ import Vuex from 'vuex'
 import actions from './actions'
 import notification from './modules/notification'
 import streamers from './modules/streamers'
+import poorchatAuth from './modules/poorchatAuth'
 import user from './modules/user'
 
 Vue.use(Vuex)
@@ -11,7 +12,7 @@ export default new Vuex.Store({
   state: {
     userData: {
       hideWatched: false,
-      streamers: ['wonziu', 'bonkol', 'mowpoluckuv12', 'dzejth', 'nvidiageforcepl'],
+      streamers: ['wonziu', 'bonkol', 'mowpoluckuv12', 'nexos', 'dzejth', 'nvidiageforcepl'],
       watched: [],
       bookmarksId: [],
       bookmarks: [],
@@ -25,6 +26,9 @@ export default new Vuex.Store({
         mowpoluckuv12: {
           date: ''
         },
+        nexos: {
+          date: ''
+        },
         dzejth: {
           date: ''
         },
@@ -32,7 +36,7 @@ export default new Vuex.Store({
           date: ''
         }
       },
-      version: 2
+      version: 3
     },
     singleVideo: [{}],
     loadingVideos: true,
@@ -127,6 +131,7 @@ export default new Vuex.Store({
   modules: {
     notification,
     streamers,
-    user
+    user,
+    poorchatAuth
   }
 })

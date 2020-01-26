@@ -166,11 +166,11 @@ export default {
     }
   },
   async created () {
-    const jadiscoEmoticons = axios.get('https://api.poorchat.net/v1/emoticons')
-    const bonkolEmoticons = axios.get('https://api.poorchat.net/v1/channels/bonkol/emoticons')
-    const lehEmoticons = axios.get('https://api.poorchat.net/v1/channels/leh/emoticons')
+    const jadiscoEmoticons = axios.get('https://poorchat.net/api/emoticons')
+    const bonkolEmoticons = axios.get('https://poorchat.net/api/channels/6/emoticons')
+    const nexosEmoticons = axios.get('https://poorchat.net/api/channels/8/emoticons')
 
-    const icons = await Promise.all([jadiscoEmoticons, bonkolEmoticons, lehEmoticons])
+    const icons = await Promise.all([jadiscoEmoticons, bonkolEmoticons, nexosEmoticons])
 
     let emoticons = []
 
@@ -181,7 +181,7 @@ export default {
       ]
     }
 
-    const badges = await axios.get('https://api.poorchat.net/v1/channels/jadisco/badges')
+    const badges = await axios.get('https://poorchat.net/api/channels/2/badges')
     this.badges = badges.data
     this.emoticons = emoticons
     this.$refs.div.addEventListener('scroll', this.scrollEventHandler)

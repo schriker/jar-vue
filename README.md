@@ -16,6 +16,14 @@ If you are a streamer yo can share link like:  https://jarchiwum.pl/your-twitch-
 
 *Important note:* chat on some video page is made by [tr0lit](https://tr0l.it/) [poorchat](https://www.poorchat.net/)
 
+## Update 27.01.2020 
+
+![Preview Notes](preview_notes.gif)
+
+### Added
+* Poorchat authentication
+* Ability to post short messages/comments to video
+
 ## Update 07.11.2019 
 
 ### Fixed

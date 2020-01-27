@@ -28,5 +28,5 @@ export const streamers = [
 
 export const poorchatAuth = {
   client_id: 'G4TUEPsVkFZ9EX5IJzkVCHB6ihRdeYDZ2tNrPODo',
-  redirect_uri: 'http://localhost:8080'
+  redirect_uri: 'https://jarchiwum.pl'
 }

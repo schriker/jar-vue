@@ -900,6 +900,10 @@ form {
         color: white;
         background-color: $bullet;
       }
+      &:disabled {
+        cursor: initial;
+        background-color: $light;
+      }
     }
   }
   &__options {
@@ -1011,6 +1015,35 @@ form {
   }
   button {
     margin: 0 0 0 15px;
+  }
+}
+
+.notes {
+  position: absolute;
+  width: 350px;
+  max-height: calc(100% - 45px);
+  padding: 34px 0 0 0;
+  margin-bottom: 45px;
+  bottom: 0;
+  font-size: 14px;
+  right: 15px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  overflow: hidden;
+  &__item {
+    padding: 15px 20px;
+    background-color: $header-bg;
+    border-radius: 5px;
+    margin-bottom: 8px;
+  }
+  &__author {
+    color: white;
+    font-weight: 600;
+  }
+  &__body {
+    color: #B1B1B1;
+    line-height: 18px;
   }
 }
 
@@ -1316,6 +1349,23 @@ form {
 }
 
 .fade-in-leave-to {
+  opacity: 0;
+}
+
+.note-in-enter-active {
+  opacity: 0;
+  transition: all 150ms ease-out;
+}
+
+.note-in-enter-to {
+  opacity: 1;
+}
+
+.note-in-leave-active {
+  transition: all 150ms ease-in;
+}
+
+.note-in-leave-to {
   opacity: 0;
 }
 

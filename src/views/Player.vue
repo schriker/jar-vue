@@ -22,6 +22,14 @@
           <transition name="fade-in" appear v-if="video[0].highLights && video[0].highLights.length > 0">
             <AppHighLights @seekTo="seekToHandler" :end="video[0].created_at" :start="video[0].published_at" v-if="showHighLights" :highLights="video[0].highLights"  />
           </transition>
+        <AppNotes
+          :playerPosition.sync="playerPosition"
+          :isPlaying.sync="isPlaying"
+          :finished.sync="finished"
+          :playbackRate.sync="playbackRate"
+          v-if="showChat && $route.query.platform === 'facebook'"
+          ref="notes"
+        />
         <AppYoutubePlayer
           v-if="video[0].youTubeId && !facebookPlayer"
           :videoId="video[0].youTubeId"
@@ -89,6 +97,7 @@
                     v-if="!poorchatAuth.user"
                     :href="`https://poorchat.net/oauth/authorize?client_id=${auth.client_id}&redirect_uri=${auth.redirect_uri}&response_type=code&scope=user+user_subscriptions`">Zaloguj</a>
                   <button
+                    :disabled="sendingNote"
                     type="submit"
                     v-if="poorchatAuth.user">Wyślij</button>
                 </form>
@@ -104,6 +113,7 @@
 <script>
 import AppToggleWatched from '../UI/ToggleWatched'
 import AppToggleBookMarked from '../UI/ToggleBookMarked'
+import AppNotes from '../components/notes/Notes'
 import AppChat from '../components/chat/Chat'
 import AppYoutubePlayer from '../components/youtubePlayer/YoutubePlayer'
 import AppFacebookPlayer from '../components/facebookPlayer/FacebookPlayer'
@@ -131,8 +141,9 @@ export default {
       componentKey: 0,
       seekTo: 0,
       auth: poorchatAuth,
-      noteMaxLength: 240,
-      note: 'asd'
+      noteMaxLength: 120,
+      sendingNote: false,
+      note: ''
     }
   },
   metaInfo () {
@@ -145,6 +156,7 @@ export default {
     AppToggleBookMarked,
     AppYoutubePlayer,
     AppFacebookPlayer,
+    AppNotes,
     AppChat,
     AppHighLights
   },
@@ -187,24 +199,37 @@ export default {
       'getSingleVideo',
       'displayNotification'
     ]),
-    noteSubmitHandler () {
-      if (this.note.length > 0) {
-        let timestamp = null
+    async noteSubmitHandler () {
+      try {
+        if (this.note.length > 0) {
+          let timestamp = null
 
-        if (this.video[0].youTubeId && !this.facebookPlayer) {
-          timestamp = this.$refs.youTubePlayer.getPlayerPosition()
-        } else if (this.$route.query.platform === 'facebook') {
-          timestamp = this.$refs.facebookPlayer.getPlayerPosition()
+          if (this.video[0].youTubeId && !this.facebookPlayer) {
+            timestamp = this.$refs.youTubePlayer.getPlayerPosition()
+          } else if (this.$route.query.platform === 'facebook') {
+            timestamp = this.$refs.facebookPlayer.getPlayerPosition()
+          }
+          this.sendingNote = true
+          const response = await jarchiwumAPI.post('/note', {
+            body: this.note,
+            streamer: this.$route.params.id,
+            timestamp: timestamp,
+            video: this.$route.params.video
+          }, {
+            withCredentials: true
+          })
+          this.$refs.notes.addLocalMessage(response.data)
+          this.note = ''
+          this.sendingNote = false
         }
-
-        jarchiwumAPI.post('/note', {
-          body: this.note,
-          streamer: this.$route.params.id,
-          timestamp: timestamp,
-          video: this.$route.params.video
-        }, {
-          withCredentials: true
-        })
+      } catch (error) {
+        if (error.response.status === 429) {
+          this.sendingNote = false
+          this.displayNotification({
+            type: 'error',
+            message: 'Musisz odczekać 10s'
+          })
+        }
       }
     },
     seekToHandler (time) {

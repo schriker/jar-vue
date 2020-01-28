@@ -24,6 +24,7 @@ import linkifyHtml from 'linkifyjs/html'
 import random from '../../helpers/random'
 import ircf from 'irc-formatting'
 import emojisArray from '../../helpers/emojis'
+import replaceTag from '../../helpers/escapeTags'
 
 export default {
   props: {
@@ -109,17 +110,6 @@ export default {
     }
   },
   created () {
-    const replaceTag = (tag) => {
-      const escapeTags = {
-        '&': '&amp;',
-        '<': '&lt;',
-        '>': '&gt;',
-        '"': '&quot;',
-        '\'': '&#039;'
-      }
-      return escapeTags[tag] || tag
-    }
-
     let message = linkifyHtml(this.message.body.replace(/[&<>]/g, replaceTag), {
       defaultProtocol: 'https'
     })

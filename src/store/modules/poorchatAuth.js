@@ -1,4 +1,5 @@
 import { jarchiwumAPI } from '../../helpers/axiosInstances'
+import Cookies from 'js-cookie'
 
 const state = {
   user: null
@@ -7,6 +8,9 @@ const state = {
 const mutations = {
   setUser (state, payload) {
     state.user = payload
+  },
+  logoutUser () {
+    state.user = null
   }
 }
 
@@ -20,6 +24,10 @@ const actions = {
     } catch (error) {
       console.log(error)
     }
+  },
+  poorchatLogoutUser ({ commit }) {
+    Cookies.remove('payload_cookie', { domain: '.jarchiwum.pl' })
+    commit('logoutUser')
   },
   async poorchatGetAccessToken ({ commit }, payload) {
     try {

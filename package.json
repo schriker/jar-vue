@@ -12,6 +12,7 @@
     "chart.js": "^2.9.1",
     "firebase": "^5.11.1",
     "irc-formatting": "^1.0.0-rc3",
+    "js-cookie": "^2.2.1",
     "linkifyjs": "^2.1.8",
     "lodash.debounce": "^4.0.8",
     "lodash.merge": "^4.6.2",

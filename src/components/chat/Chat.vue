@@ -18,7 +18,6 @@
   </div>
 </template>
 <script>
-import axios from 'axios'
 import shortid from 'shortid'
 import { jarchiwumAPI } from '../../helpers/axiosInstances'
 import AppChatMessage from './ChatMessage'
@@ -38,13 +37,13 @@ export default {
     finished: Boolean,
     showTime: Boolean,
     showImg: Boolean,
+    emoticons: Array,
+    badges: Object,
     chatAdjustment: Number
   },
   data () {
     return {
       messages: [],
-      badges: {},
-      emoticons: [],
       fetched: null,
       startTime: null,
       scrollingUp: false,
@@ -165,25 +164,7 @@ export default {
       }
     }
   },
-  async created () {
-    const jadiscoEmoticons = axios.get('https://poorchat.net/api/emoticons')
-    const bonkolEmoticons = axios.get('https://poorchat.net/api/channels/6/emoticons')
-    const nexosEmoticons = axios.get('https://poorchat.net/api/channels/8/emoticons')
-
-    const icons = await Promise.all([jadiscoEmoticons, bonkolEmoticons, nexosEmoticons])
-
-    let emoticons = []
-
-    for (let el of icons) {
-      emoticons = [
-        ...emoticons,
-        ...el.data
-      ]
-    }
-
-    const badges = await axios.get('https://poorchat.net/api/channels/2/badges')
-    this.badges = badges.data
-    this.emoticons = emoticons
+  mounted () {
     this.$refs.div.addEventListener('scroll', this.scrollEventHandler)
   },
   destroyed () {

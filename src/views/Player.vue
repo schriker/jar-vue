@@ -23,6 +23,7 @@
             <AppHighLights @seekTo="seekToHandler" :end="video[0].created_at" :start="video[0].published_at" v-if="showHighLights" :highLights="video[0].highLights"  />
           </transition>
         <AppNotes
+          :emoticons.sync="emoticons"
           :playerPosition.sync="playerPosition"
           :isPlaying.sync="isPlaying"
           :finished.sync="finished"
@@ -67,6 +68,8 @@
           <AppChat
             :class="{'hide': showJadisco}"
             :showTime.sync="showTime"
+            :emoticons.sync="emoticons"
+            :badges.sync="badges"
             :showImg.sync="showImg"
             :playerPosition.sync="playerPosition"
             :isPlaying.sync="isPlaying"
@@ -83,12 +86,19 @@
             <h3>Opcje:</h3>
             <div @click="chatOptionsHandler('showTime')">Czas<i v-if="showTime" class="fas fa-check-square"></i></div>
             <div @click="chatOptionsHandler('showImg')">Obrazki<i v-if="showImg" class="fas fa-check-square"></i></div>
+            <button
+              v-if="poorchatAuth.user"
+              @click="poorchatLogoutUser"
+              class="form-btn">Wyloguj
+            </button>
           </div>
           <div class="chat__footer">
             <div class="chat__input">
                 <form @submit.prevent="noteSubmitHandler">
                   <input
                     v-model="note"
+                    @keyup="inputChange"
+                    @keydown.tab.prevent="emoticonSwitch"
                     :disabled="!poorchatAuth.user"
                     placeholder="Wpisz wiadomość"
                     :maxlength="noteMaxLength"
@@ -97,6 +107,7 @@
                     v-if="!poorchatAuth.user"
                     :href="`https://poorchat.net/oauth/authorize?client_id=${auth.client_id}&redirect_uri=${auth.redirect_uri}&response_type=code&scope=user+user_subscriptions`">Zaloguj</a>
                   <button
+                    class="form-btn"
                     :disabled="sendingNote"
                     type="submit"
                     v-if="poorchatAuth.user">Wyślij</button>
@@ -111,6 +122,7 @@
     </div>
 </template>
 <script>
+import axios from 'axios'
 import AppToggleWatched from '../UI/ToggleWatched'
 import AppToggleBookMarked from '../UI/ToggleBookMarked'
 import AppNotes from '../components/notes/Notes'
@@ -130,6 +142,8 @@ export default {
       facebookPlayer: false,
       playerPosition: 0,
       player: null,
+      emoticons: [],
+      badges: {},
       chatAdjustment: 0,
       isPlaying: false,
       playbackRate: 1,
@@ -143,7 +157,9 @@ export default {
       auth: poorchatAuth,
       noteMaxLength: 120,
       sendingNote: false,
-      note: ''
+      note: '',
+      lastWord: '',
+      matchIndex: 0
     }
   },
   metaInfo () {
@@ -197,11 +213,33 @@ export default {
   methods: {
     ...mapActions([
       'getSingleVideo',
+      'poorchatLogoutUser',
       'displayNotification'
     ]),
+    inputChange (e) {
+      if (e.keyCode !== 9) {
+        this.lastWord = this.note.split(' ').pop()
+        this.matchIndex = 0
+      }
+    },
+    emoticonSwitch () {
+      if (this.lastWord.length >= 2) {
+        const regex = new RegExp(`^${this.lastWord.toLowerCase()}`)
+        const matchedEmoticons = this.emoticons.filter(el => regex.test(el.name.toLowerCase()))
+        if (matchedEmoticons.length > 0) {
+          const words = this.note.split(' ')
+          words[words.length - 1] = matchedEmoticons[this.matchIndex].name
+          this.note = words.join(' ')
+          this.matchIndex++
+          if (this.matchIndex > matchedEmoticons.length - 1) {
+            this.matchIndex = 0
+          }
+        }
+      }
+    },
     async noteSubmitHandler () {
       try {
-        if (this.note.length > 0) {
+        if (this.note.trim().length > 0) {
           let timestamp = null
 
           if (this.video[0].youTubeId && !this.facebookPlayer) {
@@ -322,6 +360,26 @@ export default {
   },
   async created () {
     this.getVideo()
+
+    const jadiscoEmoticons = axios.get('https://poorchat.net/api/emoticons')
+    const bonkolEmoticons = axios.get('https://poorchat.net/api/channels/6/emoticons')
+    const nexosEmoticons = axios.get('https://poorchat.net/api/channels/8/emoticons')
+
+    const icons = await Promise.all([jadiscoEmoticons, bonkolEmoticons, nexosEmoticons])
+
+    let emoticons = []
+
+    for (let el of icons) {
+      emoticons = [
+        ...emoticons,
+        ...el.data
+      ]
+    }
+
+    const badges = await axios.get('https://poorchat.net/api/channels/2/badges')
+    this.badges = badges.data
+    this.emoticons = emoticons
+
     const options = JSON.parse(localStorage.getItem('chatOptions'))
     if (options) {
       for (const option in options) {

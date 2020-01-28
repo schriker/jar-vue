@@ -9,7 +9,6 @@
 </template>
 
 <script>
-import axios from 'axios'
 import shortid from 'shortid'
 import NotesWorker from './notes.worker'
 import { jarchiwumAPI } from '../../helpers/axiosInstances'
@@ -23,13 +22,13 @@ export default {
     playerPosition: Number,
     playbackRate: Number,
     isPlaying: Boolean,
-    finished: Boolean
+    finished: Boolean,
+    emoticons: Array
   },
   data () {
     return {
       messages: [],
       badges: {},
-      emoticons: [],
       fetched: null,
       startTime: null,
       notesWorker: new NotesWorker()
@@ -114,26 +113,6 @@ export default {
         })
       }
     }
-  },
-  async created () {
-    const jadiscoEmoticons = axios.get('https://poorchat.net/api/emoticons')
-    const bonkolEmoticons = axios.get('https://poorchat.net/api/channels/6/emoticons')
-    const nexosEmoticons = axios.get('https://poorchat.net/api/channels/8/emoticons')
-
-    const icons = await Promise.all([jadiscoEmoticons, bonkolEmoticons, nexosEmoticons])
-
-    let emoticons = []
-
-    for (let el of icons) {
-      emoticons = [
-        ...emoticons,
-        ...el.data
-      ]
-    }
-
-    const badges = await axios.get('https://poorchat.net/api/channels/2/badges')
-    this.badges = badges.data
-    this.emoticons = emoticons
   },
   destroyed () {
     this.notesWorker.terminate()

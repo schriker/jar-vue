@@ -773,8 +773,8 @@ form {
   &__body {
     word-wrap: anywhere;
     img {
-      height: 28px;
-      width: 28px;
+      height: 26px;
+      width: 26px;
     }
     &--action {
       font-style: italic;
@@ -808,6 +808,8 @@ form {
     align-items: center;
   }
   &__settings {
+    display: flex;
+    flex-direction: column;
     color: white;
     position: absolute;
     right: 10px;
@@ -816,6 +818,9 @@ form {
     max-width: 200px;
     background-color: #121821;
     border: 1px solid #252E3A;
+    button {
+      margin: 10px;
+    }
     div {
       padding: 10px;
       transition: all .2s ease;
@@ -886,8 +891,7 @@ form {
       margin-right: 5px;
     }
 
-    a,
-    button {
+    a {
       cursor: pointer;
       background-color: $body-bg;
       color: white;
@@ -949,6 +953,25 @@ form {
       cursor: pointer;
     }
   }
+}
+
+.form-btn {
+    cursor: pointer;
+    background-color: $body-bg;
+    color: white;
+    padding: 10px;
+    font-size: 14px;
+    border-radius: 5px;
+    border: 0;
+    transition: all ease .2s;
+    &:hover {
+      color: white;
+      background-color: $bullet;
+    }
+    &:disabled {
+      cursor: initial;
+      background-color: $light;
+    }
 }
 
 .card {
@@ -1029,10 +1052,11 @@ form {
   right: 15px;
   display: flex;
   flex-direction: column;
+  align-items: flex-end;
   justify-content: flex-end;
   overflow: hidden;
   &__item {
-    padding: 15px 20px;
+    padding: 5px 15px;
     background-color: $header-bg;
     border-radius: 5px;
     margin-bottom: 8px;
@@ -1042,7 +1066,7 @@ form {
     font-weight: 600;
   }
   &__body {
-    color: #B1B1B1;
+    color: #A3A8C5;;
     line-height: 18px;
   }
 }

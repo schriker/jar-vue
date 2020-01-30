@@ -10,21 +10,23 @@
       <div class="chat__message" v-else-if="message.author !== 'irc.poorchat.net'">
         <span v-if="showTime" class="chat__time">{{ isActionMessage ? '*' : time }}</span>
         <span v-if="!isActionMessage">
-          <img v-for="icon in icons" :key="icon" :src="icon" />
+          <img v-if="icons.mods" :src="icons.mods" />
+          <img v-tooltip.top-center="{ content: message.subscription, offset: 5 }" v-if="icons.subscription" :src="icons.subscription" />
+          <img v-tooltip.top-center="{ content: message.subscriptiongifter, offset: 5 }" v-if="icons.subscriptionGifter" :src="icons.subscriptionGifter" />
         </span>
         <span class="chat__author" :style="{ color: color(message.color) }">{{ message.author }}</span>:
-        <span :class="{ chat__body: true, 'chat__body--action': isActionMessage}" v-html="messageText"></span>
+        <span :class="{ chat__body: true, 'chat__body--action': isActionMessage }">
+          <AppChatMessageParts v-for="part in messageComponents" :key="part.id" :part="part" />
+        </span>
       </div>
   </div>
 </template>
 <script>
 import moment from 'moment'
 import AppChatCard from './ChatCard'
-import linkifyHtml from 'linkifyjs/html'
 import random from '../../helpers/random'
-import ircf from 'irc-formatting'
-import emojisArray from '../../helpers/emojis'
-import replaceTag from '../../helpers/escapeTags'
+import AppChatMessageParts from './ChatMessageParts'
+import { messageParser } from '../../helpers/messagePartsParser'
 
 export default {
   props: {
@@ -35,12 +37,16 @@ export default {
     showImg: Boolean
   },
   components: {
-    AppChatCard
+    AppChatCard,
+    AppChatMessageParts
   },
   data () {
     return {
       messageText: null,
+      messageComponents: [],
       card: null,
+      subscription: null,
+      subscriptionGifter: null,
       mods: {
         tr0lit: 'a',
         trasek: 'a',
@@ -82,17 +88,17 @@ export default {
       }
     },
     icons () {
-      const icons = []
+      const icons = {}
       if (this.mods[this.message.author]) {
-        icons.push(`https://static.poorchat.net/badges/${this.mods[this.message.author]}/1x`)
+        icons.mods = `https://static.poorchat.net/badges/${this.mods[this.message.author]}/1x`
       }
       if (this.badges.subscriber.length > 0) {
         if (this.message.subscription > 0) {
           const badge = this.badges.subscriber.filter(badge => badge.months <= this.message.subscription)
-          icons.push(`https://static.poorchat.net/badges/${badge[badge.length - 1].file}/1x`)
+          icons.subscription = `https://static.poorchat.net/badges/${badge[badge.length - 1].file}/1x`
         }
         if (this.message.subscriptiongifter > 0) {
-          icons.push('https://static.poorchat.net/badges/g/1x')
+          icons.subscriptionGifter = 'https://static.poorchat.net/badges/g/1x'
         }
       }
       return icons
@@ -110,13 +116,6 @@ export default {
     }
   },
   created () {
-    let message = linkifyHtml(this.message.body.replace(/[&<>]/g, replaceTag), {
-      defaultProtocol: 'https'
-    })
-    message = message.replace('\u0001ACTION', '')
-    for (const emoticon of this.emoticons) {
-      message = message.replace(new RegExp('\\b' + emoticon.name + '\\b', 'g'), () => `<img class="chat__emoticon" src="https://static.poorchat.net/emoticons/${emoticon.file}/4x" />`)
-    }
     if (this.message.author === 'irc.poorchat.net') {
       try {
         this.card = JSON.parse(this.message.body)
@@ -124,16 +123,7 @@ export default {
         this.messageText = this.message.body
       }
     } else {
-      const withEmojis = message.replace((new RegExp(/:(\D\d|\w*?):/, 'g')), el => {
-        const shordcode = el.replace(new RegExp(/(:)/, 'g'), '')
-        const emoji = emojisArray.filter(el => el.shortcodes.includes(shordcode))
-        if (emoji.length === 0) {
-          return el
-        } else {
-          return emoji[0].emoji
-        }
-      })
-      this.messageText = ircf.renderHtml(window.twemoji.parse(withEmojis))
+      this.messageComponents = messageParser(this.message.body, this.emoticons)
     }
   }
 }

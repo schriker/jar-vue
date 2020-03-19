@@ -1,7 +1,8 @@
 const state = {
   type: '',
   show: false,
-  message: ''
+  message: '',
+  ommitId: []
 }
 
 const mutations = {
@@ -12,22 +13,38 @@ const mutations = {
   },
   hideNotification (state) {
     state.show = false
+  },
+  setOmmitTimeOut (state, payload) {
+    state.ommitId = [
+      ...state.ommitId,
+      payload
+    ]
+  },
+  resetOmmitTimeOut (state, payload) {
+    state.ommitId = state.ommitId.filter(id => id !== payload)
   }
 }
 
 const actions = {
-  displayNotification ({ commit }, payload) {
+  displayNotification ({ commit, state }, payload) {
     commit('showNotification', payload)
 
-    let notificationTimeOut = window.setTimeout(() => commit('hideNotification'), 4000)
-    while (notificationTimeOut--) {
-      window.clearTimeout(notificationTimeOut)
+    let notificationTimeOut = setTimeout(() => commit('hideNotification'), 4000)
+    for (let i = 0; i < notificationTimeOut; i++) {
+      if (!state.ommitId.includes(i)) {
+        clearTimeout(i)
+      }
     }
-
     if (payload.close) {
       clearTimeout(notificationTimeOut)
       commit('hideNotification')
     }
+  },
+  ommitTimeout ({ commit }, payload) {
+    commit('setOmmitTimeOut', payload)
+  },
+  resetOmmitTimeout ({ commit }, payload) {
+    commit('resetOmmitTimeOut', payload)
   }
 }
 

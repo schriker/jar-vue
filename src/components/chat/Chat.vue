@@ -8,6 +8,7 @@
           :showTime.sync="showTime"
           :showImg.sync="showImg"
           :badges.sync="badges"
+          :mods.sync="mods"
           :emoticons.sync="emoticons"
           :message="message" />
       </div>
@@ -39,6 +40,7 @@ export default {
     showImg: Boolean,
     emoticons: Array,
     badges: Object,
+    mods: Array,
     chatAdjustment: Number
   },
   data () {

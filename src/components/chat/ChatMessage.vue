@@ -32,6 +32,7 @@ export default {
   props: {
     message: Object,
     badges: Object,
+    mods: Array,
     emoticons: Array,
     showTime: Boolean,
     showImg: Boolean
@@ -47,7 +48,7 @@ export default {
       card: null,
       subscription: null,
       subscriptionGifter: null,
-      mods: {
+      mods_temp: {
         tr0lit: 'a',
         trasek: 'a',
         jarzyna: 'm',
@@ -58,7 +59,7 @@ export default {
         cbool222: 'h',
         Emil: 'h',
         dzej: 'h',
-        Jaa: 'h',
+        Jaa: 'o',
         bltzkrg22: 'o',
         Pepego: 'o',
         michal: 'h',
@@ -89,8 +90,8 @@ export default {
     },
     icons () {
       const icons = {}
-      if (this.mods[this.message.author]) {
-        icons.mods = `https://static.poorchat.net/badges/${this.mods[this.message.author]}/1x`
+      if (this.mods_temp[this.message.author]) {
+        icons.mods = `https://static.poorchat.net/badges/${this.mods_temp[this.message.author]}/1x`
       }
       if (this.badges.subscriber.length > 0) {
         if (this.message.subscription > 0) {
@@ -98,7 +99,9 @@ export default {
           icons.subscription = `https://static.poorchat.net/badges/${badge[badge.length - 1].file}/1x`
         }
         if (this.message.subscriptiongifter > 0) {
-          icons.subscriptionGifter = 'https://static.poorchat.net/badges/g/1x'
+          const [ giftBadges ] = this.mods.filter(mode => mode.mode === 'g')
+          const badge = giftBadges.badges.filter(badge => badge.gifts <= this.message.subscriptiongifter)
+          icons.subscriptionGifter = `https://static.poorchat.net/badges/${badge[badge.length - 1].file}/1x`
         }
       }
       return icons

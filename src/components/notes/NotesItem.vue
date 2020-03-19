@@ -14,6 +14,7 @@
 <script>
 import AppChatMessageParts from '../chat/ChatMessageParts'
 import { messageParser } from '../../helpers/messagePartsParser'
+import { mapActions } from 'vuex'
 
 export default {
   props: {
@@ -29,11 +30,18 @@ export default {
       messageComponents: []
     }
   },
+  methods: {
+    ...mapActions([
+      'ommitTimeout',
+      'resetOmmitTimeout'
+    ])
+  },
   created () {
-    setTimeout(() => {
+    const timeOutId = setTimeout(() => {
       this.hide = true
+      this.resetOmmitTimeout(timeOutId)
     }, 15000)
-
+    this.ommitTimeout(timeOutId)
     this.messageComponents = messageParser(this.message.body, this.emoticons)
   }
 }

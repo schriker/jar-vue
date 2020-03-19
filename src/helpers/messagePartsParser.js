@@ -35,8 +35,8 @@ const messagePartsParser = (part, emoticons) => {
           emojis.push({
             id: shortid.generate(),
             type: 'text',
-            value: part,
-            body: part
+            value: shortCode,
+            body: shortCode
           })
         } else {
           emojis.push({

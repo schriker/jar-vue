@@ -70,6 +70,7 @@
             :showTime.sync="showTime"
             :emoticons.sync="emoticons"
             :badges.sync="badges"
+            :mods.sync="mods"
             :showImg.sync="showImg"
             :playerPosition.sync="playerPosition"
             :isPlaying.sync="isPlaying"
@@ -144,6 +145,7 @@ export default {
       player: null,
       emoticons: [],
       badges: {},
+      mods: [],
       chatAdjustment: 0,
       isPlaying: false,
       playbackRate: 1,
@@ -377,6 +379,8 @@ export default {
     }
 
     const badges = await axios.get('https://poorchat.net/api/channels/2/badges')
+    const mods = await axios.get('https://poorchat.net/api/badges')
+    this.mods = mods.data
     this.badges = badges.data
     this.emoticons = emoticons
 

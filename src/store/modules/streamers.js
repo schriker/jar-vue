@@ -1,4 +1,4 @@
-import { twitchAPI } from '../../helpers/axiosInstances'
+import { jarchiwumAPI } from '../../helpers/axiosInstances'
 
 const state = {
   data: {},
@@ -39,7 +39,7 @@ const actions = {
     }
 
     try {
-      const { data: { data: users } } = await twitchAPI.get(`/users?${usersQueryString}`)
+      const { data: { data: users } } = await jarchiwumAPI.get(`/users?${usersQueryString}`)
 
       for (const streamer of users) {
         streamers = {
@@ -61,7 +61,7 @@ const actions = {
         }
       }
 
-      const { data: { data: streams } } = await twitchAPI.get(`/streams?${streamsQueryString}`)
+      const { data: { data: streams } } = await jarchiwumAPI.get(`/streams?${streamsQueryString}`)
 
       for (const streamer of streams) {
         const streamerLogin = streamer.user_name.toLowerCase()

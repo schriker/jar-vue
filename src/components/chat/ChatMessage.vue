@@ -10,9 +10,9 @@
       <div class="chat__message" v-else-if="message.author !== 'irc.poorchat.net'">
         <span v-if="showTime" class="chat__time">{{ isActionMessage ? '*' : time }}</span>
         <span v-if="!isActionMessage">
-          <img v-if="icons.mods" :src="icons.mods" />
-          <img v-tooltip.top-center="{ content: message.subscription, offset: 5 }" v-if="icons.subscription" :src="icons.subscription" />
-          <img v-tooltip.top-center="{ content: message.subscriptiongifter, offset: 5 }" v-if="icons.subscriptionGifter" :src="icons.subscriptionGifter" />
+          <img v-if="icons.mods" v-tooltip.top-center="{ content: icons.modsTooltip, offset: 5 }" :src="icons.mods" />
+          <img v-tooltip.top-center="{ content: `Subskrybuje: ${message.subscription}`, offset: 5 }" v-if="icons.subscription" :src="icons.subscription" />
+          <img v-tooltip.top-center="{ content: `Podarował: ${message.subscriptiongifter}`, offset: 5 }" v-if="icons.subscriptionGifter" :src="icons.subscriptionGifter" />
         </span>
         <span class="chat__author" :style="{ color: color(message.color) }">{{ message.author }}</span>:
         <span :class="{ chat__body: true, 'chat__body--action': isActionMessage }">
@@ -33,6 +33,7 @@ export default {
     message: Object,
     badges: Object,
     mods: Array,
+    userMods: Array,
     emoticons: Array,
     showTime: Boolean,
     showImg: Boolean
@@ -48,31 +49,7 @@ export default {
       card: null,
       subscription: null,
       subscriptionGifter: null,
-      mods_temp: {
-        tr0lit: 'a',
-        trasek: 'a',
-        jarzyna: 'm',
-        Wonziu: 'q',
-        B4rt0: 'o',
-        Navari: 'h',
-        Pancernik: 'o',
-        cbool222: 'h',
-        Emil: 'h',
-        dzej: 'h',
-        Jaa: 'o',
-        bltzkrg22: 'o',
-        Pepego: 'o',
-        michal: 'h',
-        schriker: 'h',
-        Vasu: 'h',
-        kurak55: 'h',
-        ratlooz: 'h',
-        Macon: 'h',
-        Glamhoth: 'h',
-        Bonkol: 'h',
-        kin_zadra: 'h',
-        GeneratorFrajdy: 'h'
-      }
+      modes: { a: 'Admin', m: 'Moderator Globalny', q: 'Właściciel', o: 'Moderator', h: 'Wyróżniony' }
     }
   },
   computed: {
@@ -90,8 +67,11 @@ export default {
     },
     icons () {
       const icons = {}
-      if (this.mods_temp[this.message.author]) {
-        icons.mods = `https://static.poorchat.net/badges/${this.mods_temp[this.message.author]}/1x`
+      const [ authorMods ] = this.userMods.filter(mode => mode.user === this.message.author)
+
+      if (authorMods) {
+        icons.mods = `https://static.poorchat.net/badges/${authorMods.mode[0]}/1x`
+        icons.modsTooltip = this.modes[authorMods.mode[0]]
       }
       if (this.badges.subscriber.length > 0) {
         if (this.message.subscription > 0) {

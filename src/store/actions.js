@@ -1,5 +1,5 @@
 import Vue from 'vue'
-import { twitchAPI, youtubeAPI, playlistAPI, jarchiwumAPI } from '../helpers/axiosInstances'
+import { youtubeAPI, playlistAPI, jarchiwumAPI } from '../helpers/axiosInstances'
 import videoObjectCreator from '../helpers/videoObjectCreator'
 import merge from 'lodash.merge'
 
@@ -106,7 +106,7 @@ const actinos = {
         }
 
         try {
-          const { data: { data: videosArr, pagination } } = await twitchAPI.get(queryString)
+          const { data: { data: videosArr, pagination } } = await jarchiwumAPI.get(queryString)
 
           if (!pagination.cursor && actionPayload.loadMore) {
             dispatch('displayNotification', { type: 'error', message: 'Koniec listy :(' })
@@ -152,7 +152,7 @@ const actinos = {
           bookmarked: state.userData.bookmarksId.includes(payload.video.id)
         }
       } else {
-        const { data: { data } } = await twitchAPI.get(`videos?id=${payload.video.id}`)
+        const { data: { data } } = await jarchiwumAPI.get(`videos?id=${payload.video.id}`)
         refreshed = {
           ...data[0],
           watched: state.userData.watched.includes(payload.video.id),
@@ -218,7 +218,7 @@ const actinos = {
         videoObject
       ]
     } else if (payload.platform === 'twitch') {
-      const singleVideoTwitch = await twitchAPI.get(`/videos?id=${payload.video}`)
+      const singleVideoTwitch = await jarchiwumAPI.get(`/videos?id=${payload.video}`)
       searchResults = [
         ...searchResults,
         ...singleVideoTwitch.data.data
@@ -247,7 +247,7 @@ const actinos = {
 
   async addStreamer ({ commit, dispatch, state }, payload) {
     try {
-      const { data: { data } } = await twitchAPI.get(`/users?&login=${payload}`)
+      const { data: { data } } = await jarchiwumAPI.get(`/users?&login=${payload}`)
       if (data.length === 0) {
         dispatch('displayNotification', { type: 'error', message: 'Podany streamer nie istnieje.' })
         Vue.router.push({ path: `/` })

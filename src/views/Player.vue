@@ -71,6 +71,7 @@
             :emoticons.sync="emoticons"
             :badges.sync="badges"
             :mods.sync="mods"
+            :userMods.sync="userMods"
             :showImg.sync="showImg"
             :playerPosition.sync="playerPosition"
             :isPlaying.sync="isPlaying"
@@ -146,6 +147,7 @@ export default {
       emoticons: [],
       badges: {},
       mods: [],
+      userMods: [],
       chatAdjustment: 0,
       isPlaying: false,
       playbackRate: 1,
@@ -380,7 +382,10 @@ export default {
 
     const badges = await axios.get('https://poorchat.net/api/channels/2/badges')
     const mods = await axios.get('https://poorchat.net/api/badges')
+    const userMods = await axios.get('https://api.jarchiwum.pl/modes?streamer=wonziu')
+
     this.mods = mods.data
+    this.userMods = userMods.data
     this.badges = badges.data
     this.emoticons = emoticons
 

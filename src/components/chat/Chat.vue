@@ -9,6 +9,7 @@
           :showImg.sync="showImg"
           :badges.sync="badges"
           :mods.sync="mods"
+          :userMods.sync="userMods"
           :emoticons.sync="emoticons"
           :message="message" />
       </div>
@@ -41,6 +42,7 @@ export default {
     emoticons: Array,
     badges: Object,
     mods: Array,
+    userMods: Array,
     chatAdjustment: Number
   },
   data () {

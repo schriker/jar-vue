@@ -53,14 +53,16 @@ const actinos = {
           } else {
             queryString = `/facebookvideo?page=${page + 1}&per_page=20&streamer=${actionPayload.streamerName}`
           }
-          const { data: videosArr } = await jarchiwumAPI.get(queryString)
+          if (actionPayload.playlistId) {
+            const { data: videosArr } = await jarchiwumAPI.get(queryString)
 
-          if (actionPayload.loadMore && videosArr.length === 0) {
-            dispatch('displayNotification', { type: 'error', message: 'Koniec listy :(' })
-            commit('loadingVideosStop')
-            return
+            if (actionPayload.loadMore && videosArr.length === 0) {
+              dispatch('displayNotification', { type: 'error', message: 'Koniec listy :(' })
+              commit('loadingVideosStop')
+              return
+            }
+            payload = videoObjectCreator({ state, videosArr, payload, actionPayload }).payload
           }
-          payload = videoObjectCreator({ state, videosArr, payload, actionPayload }).payload
         } catch (error) {
           dispatch('displayNotification', { type: 'error', message: 'Wystąpił bląd.' })
           commit('loadingVideosStop')
@@ -99,7 +101,7 @@ const actinos = {
           return
         }
       } else if (actionPayload.platform === 'twitch') {
-        let queryString = `/videos?user_id=${state.streamers.data[actionPayload.streamerName].info.id}`
+        let queryString = `/videos?user_id=${state.streamers.data[actionPayload.streamerName].info.id}&test`
 
         if (actionPayload.loadMore) {
           queryString += `&after=${state.streamers.data[actionPayload.streamerName].videos.pagination.cursor}`
@@ -177,7 +179,6 @@ const actinos = {
 
   async getSingleVideo ({ state, dispatch }, payload) {
     if (!state.streamers.data[payload.streamer]) {
-      // await dispatch('fetchStreamers', payload.streamer)
       await dispatch('fetchVideos', { streamerName: payload.streamer, loadMore: false })
     }
 
@@ -296,7 +297,6 @@ const actinos = {
     } else if (localStorage.getItem('jarchiwumData')) {
       commit('updateUserData', userDataObject)
     } else {
-      console.log('default')
       localStorage.setItem('jarchiwumData', userDataString)
     }
   }

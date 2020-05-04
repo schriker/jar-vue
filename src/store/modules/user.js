@@ -87,7 +87,7 @@ const actions = {
         dispatch('fetchUserData')
       } else {
         dispatch('initUser', null, { root: true })
-        dispatch('routerRedirect', { data: rootState.userData, route: payload.id, playlistId: payload.playlistId, platform: Vue.router.history.current.params.platform })
+        dispatch('routerRedirect', { data: rootState.userData, route: payload.id, playlistId: payload.playlistId, platform: payload.platform })
         commit('doneFetching')
       }
     })

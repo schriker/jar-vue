@@ -82,7 +82,7 @@ export default {
         localStorage.setItem('firstVisit', 1)
       }
     }, 2000)
-    this.onAuthStateChange({ id: this.$route.params.id, playlistId: this.$route.params.playlistId, platform: this.$route.params.platform })
+    this.onAuthStateChange({ id: this.$route.params.id, playlistId: this.$route.params.playlistId, platform: this.$route.params.platform || this.$route.query.platform })
   }
 }
 </script>

@@ -93,8 +93,6 @@ export default {
           this.chatWorker.postMessage({
             type: 'STOP'
           })
-          const error = 'End of messages!'
-          throw error
         }
         for (const message of messages.data) {
           message.uid = shortid.generate()

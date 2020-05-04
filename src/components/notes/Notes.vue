@@ -58,8 +58,6 @@ export default {
           this.notesWorker.postMessage({
             type: 'STOP'
           })
-          const error = 'End of notes!'
-          throw error
         }
         for (const message of messages.data) {
           message.uid = shortid.generate()

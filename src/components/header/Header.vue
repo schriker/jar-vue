@@ -90,7 +90,7 @@ export default {
         this.$store.dispatch('fetchVideos', { streamerName: this.$route.params.id, loadMore: false, playlistId: this.$route.params.playlistId, platform: 'facebook' })
       } else if (this.$route.params.platform === 'youtube') {
         this.$store.dispatch('fetchVideos', { streamerName: this.$route.params.id, loadMore: false, playlistId: this.$route.params.playlistId, platform: 'youtube' })
-      } else if (this.$route.params.id) {
+      } else if (this.$route.params.id && this.$route.query.platform !== 'facebook') {
         this.$store.dispatch('fetchVideos', { streamerName: this.$route.params.id, loadMore: false, playlistId: null, platform: 'twitch' })
       }
     }

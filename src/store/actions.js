@@ -177,7 +177,7 @@ const actinos = {
 
   async getSingleVideo ({ state, dispatch }, payload) {
     if (!state.streamers.data[payload.streamer]) {
-      await dispatch('fetchStreamers', payload.streamer)
+      // await dispatch('fetchStreamers', payload.streamer)
       await dispatch('fetchVideos', { streamerName: payload.streamer, loadMore: false })
     }
 

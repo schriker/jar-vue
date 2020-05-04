@@ -380,9 +380,11 @@ export default {
       ]
     }
 
-    const badges = await axios.get('https://poorchat.net/api/channels/2/badges')
-    const mods = await axios.get('https://poorchat.net/api/badges')
-    const userMods = await axios.get('https://api.jarchiwum.pl/modes?streamer=wonziu')
+    const badgesRequest = axios.get('https://poorchat.net/api/channels/2/badges')
+    const modsRequest = axios.get('https://poorchat.net/api/badges')
+    const userModsRequest = axios.get('https://api.jarchiwum.pl/modes?streamer=wonziu')
+
+    const [ badges, mods, userMods ] = await Promise.all([badgesRequest, modsRequest, userModsRequest])
 
     this.mods = mods.data
     this.userMods = userMods.data

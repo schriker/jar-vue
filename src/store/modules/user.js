@@ -84,7 +84,7 @@ const actions = {
       if (user) {
         dispatch('displayNotification', { type: 'success', message: 'Zostałeś zalogowany.' }, { root: true })
         commit('setUserData', user)
-        dispatch('fetchUserData')
+        dispatch('fetchUserData', { data: rootState.userData, route: payload.id, playlistId: payload.playlistId, platform: payload.platform })
       } else {
         dispatch('initUser', null, { root: true })
         dispatch('routerRedirect', { data: rootState.userData, route: payload.id, playlistId: payload.playlistId, platform: payload.platform })
@@ -112,16 +112,15 @@ const actions = {
         .catch(() => dispatch('displayNotification', { type: 'error', message: 'Błąd podczas zapisywania danych.' }, { root: true }))
     }
   },
-  fetchUserData ({ state, dispatch, commit }) {
+  fetchUserData ({ state, dispatch, commit }, payload) {
     commit('startFetching')
     const user = db.collection('users').doc(state.data.uid)
-
     user.get()
       .then(async user => {
         if (user.exists) {
           const userObject = user.data()
           dispatch('initUser', userObject, { root: true })
-          dispatch('routerRedirect', { data: userObject, route: Vue.router.history.current.params.id, platform: Vue.router.history.current.params.platform })
+          dispatch('routerRedirect', { data: userObject, playlistId: payload.playlistId, route: Vue.router.history.current.params.id, platform: Vue.router.history.current.params.platform })
         } else {
           dispatch('displayNotification', { type: 'error', message: 'Użytkownik nie istnieje.' }, { root: true })
         }
@@ -132,7 +131,7 @@ const actions = {
   async routerRedirect ({ dispatch, rootState }, payload) {
     if (!payload.route) {
       Vue.router.push({ path: `/wonziu/facebook/369632869905557` })
-      dispatch('fetchStreamers', { streamerName: 'wonziu', playlistId: payload.playlistId, platform: 'facebook' }, { root: true })
+      dispatch('fetchStreamers', { streamerName: 'wonziu', playlistId: '369632869905557', platform: 'facebook' }, { root: true })
     } else if (!payload.data.streamers.includes(payload.route)) {
       await dispatch('addStreamer', payload.route, { root: true })
       dispatch('fetchVideos', { streamerName: payload.route, loadMore: false }, { root: true })

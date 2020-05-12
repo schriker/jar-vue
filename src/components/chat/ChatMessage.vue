@@ -68,10 +68,12 @@ export default {
     icons () {
       const icons = {}
       const [ authorMods ] = this.userMods.filter(mode => mode.user === this.message.author)
-
       if (authorMods) {
-        icons.mods = `https://static.poorchat.net/badges/${authorMods.mode[0]}/1x`
-        icons.modsTooltip = this.modes[authorMods.mode[0]]
+        const [ mode ] = authorMods.mode.filter(mode => !!this.modes[mode])
+        if (mode) {
+          icons.mods = `https://static.poorchat.net/badges/${mode}/1x`
+          icons.modsTooltip = this.modes[authorMods.mode[0]]
+        }
       }
       if (this.badges.subscriber.length > 0) {
         if (this.message.subscription > 0) {
